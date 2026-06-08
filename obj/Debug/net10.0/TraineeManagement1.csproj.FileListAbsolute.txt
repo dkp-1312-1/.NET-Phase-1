@@ -47,3 +47,4 @@
 /mnt/d/Day2/123/TraineeManagement1/obj/Debug/net10.0/TraineeManagement1.pdb
 /mnt/d/Day2/123/TraineeManagement1/obj/Debug/net10.0/TraineeManagement1.genruntimeconfig.cache
 /mnt/d/Day2/123/TraineeManagement1/obj/Debug/net10.0/ref/TraineeManagement1.dll
+/mnt/d/Day2/123/TraineeManagement1/obj/Debug/net10.0/TraineeManagement1.sourcelink.json

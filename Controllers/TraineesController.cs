@@ -16,7 +16,7 @@ namespace TraineeManagement1.Controllers
             _traineeServices = traineeService;
         }
         [HttpGet]
-        public async Task<IActionResult> GetAllTrainees([FromQuery] string search)
+        public async Task<IActionResult> GetAllTrainees([FromQuery] string search=null)
         {
             var trainees = await _traineeServices.GetAll(search);
             return Ok(trainees);
