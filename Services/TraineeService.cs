@@ -11,14 +11,13 @@ namespace TraineeManagement1.Services
         {
             _context=context;
         }
-        public async Task<IEnumerable<TraineeResponseDTO>> GetAll(string search=null)
+        public async Task<IEnumerable<TraineeResponseDTO>> GetAll(string? name=null,string? email=null,string? techstack=null,string? status=null)
         {
             var trainees=await _context.Trainees.ToListAsync();
-            if(search!=null)
+            if(name!=null||email!=null||techstack!=null||status!=null)
             {
-                search=search.ToLower();
                 trainees=await _context.Trainees.Where( t=>
-                t.FirstName.ToLower().Contains(search)|| t.LastName.ToLower().Contains(search)||t.Email.ToLower().Contains(search)||t.TechStack.ToLower().Contains(search)).ToListAsync();
+                (!string.IsNullOrWhiteSpace(name)&&t.FirstName.ToLower().Contains(name))|| (!string.IsNullOrWhiteSpace(name)&&t.LastName.ToLower().Contains(name))||(!string.IsNullOrWhiteSpace(email)&&t.Email.ToLower().Contains(email))||(!string.IsNullOrWhiteSpace(techstack)&&t.TechStack.ToLower().Contains(techstack))||(!string.IsNullOrWhiteSpace(status)&&t.Status.ToLower().Contains(status))).ToListAsync();
                 return trainees.Select(MapToResponse);
             }
             return trainees.Select(MapToResponse);
@@ -32,7 +31,7 @@ namespace TraineeManagement1.Services
         {
             var newTrainee = new Trainee
             {
-                id=trainee.id,
+                id=_context.Trainees.Any()? _context.Trainees.Max(t=>t.id)+1:1,
                 FirstName = trainee.FirstName,
                 LastName = trainee.LastName,
                 Email = trainee.Email,
@@ -65,14 +64,14 @@ namespace TraineeManagement1.Services
             if (trainee == null)
                 return false;
             _context.Trainees.Remove(trainee);
-            _context.SaveChangesAsync();
+            await _context.SaveChangesAsync();
             return true;
         }
         private TraineeResponseDTO MapToResponse(Trainee trainee)
         {
             return new TraineeResponseDTO
             {
-                id = trainee.id,
+                id=trainee.id,
                 FirstName = trainee.FirstName,
                 LastName = trainee.LastName,
                 Email = trainee.Email,
