@@ -8,6 +8,9 @@ dotnet add package Microsoft.AspNETCore
 Project Name =TraineeManagement1
 Technology Used =Asp.NET Web API, Service Layer, DTOs, EFCore.InMemory Databases  
 How to Run =Install zip file ,install Packages given above 
+Comand to Run: dotnet run --launch-profile https
+
+
 API List =
 GET /api/health
 
