@@ -20,11 +20,12 @@ namespace TraineeManagement1.Controllers {
         SearchTraineeDTO SearchObject=new SearchTraineeDTO{ Name =TraineeName};
        
         var trainees = await _traineeServices.GetAll(SearchObject);
-        ApiResponsesDTO result =new ApiResponsesDTO{ Data = new DataObject{ Trainees = trainees, Total = trainees.Count() },
+        ApiResponsesDTO result =
+            new ApiResponsesDTO{ Data = new DataObject{ Trainees = trainees, Total = trainees.Count() },
                   Success = true };
         return Ok(result);
       } catch (Exception ex) {
-        return BadRequest(ex.Message);
+        return StatusCode(StatusCodes.Status500InternalServerError, "Something went wrong on our end.");
       }
     }
     [HttpGet("{Id}")]
@@ -37,28 +38,13 @@ namespace TraineeManagement1.Controllers {
         }
         return Ok(result);
       } catch (Exception ex) {
-        return BadRequest(ex.Message);
+        return StatusCode(StatusCodes.Status500InternalServerError, "Something went wrong on our end.");
       }
     }
     [HttpPost]
+    [ValidateModel]
     public async Task<IActionResult> CreateTrainee(
         [FromBody] CreateTraineeRequestDTO newTrainee) {
-            
-
-        if (!ModelState.IsValid)
-        {
-            var errorDetails = ModelState
-                .Where(x => x.Value.Errors.Count > 0)
-                .Select(x => new Errors{ 
-                    Field = x.Key, 
-                    Message = x.Value.Errors.First().ErrorMessage 
-                });
-            ApiErrorResponseDTO response=new ApiErrorResponseDTO{
-                Errors=errorDetails,
-                Success=true
-            };
-            return BadRequest(response);
-        }
       try {
         var trainee = await _traineeServices.Create(newTrainee);
         ApiResponseDTO result = new ApiResponseDTO{ Data =  trainee , Success = true };
@@ -66,11 +52,12 @@ namespace TraineeManagement1.Controllers {
             nameof(GetTraineeById), new { Id = trainee.Id },
            result);
       } catch (Exception ex) {
-        return BadRequest(ex.Message);
+        return StatusCode(StatusCodes.Status500InternalServerError, "Something went wrong on our end.");
       }
     }
 
     [HttpPut("{Id}")]
+    [ValidateModel]
     public async Task<IActionResult> UpdateTrainee(
         int Id, [FromBody] UpdateTraineeRequestDTO trainee) {
       try {
@@ -81,7 +68,7 @@ namespace TraineeManagement1.Controllers {
         }
         return Ok(result);
       } catch (Exception ex) {
-        return BadRequest(ex.Message);
+        return StatusCode(StatusCodes.Status500InternalServerError, "Something went wrong on our end.");
       }
     }
     [HttpDelete("{Id}")]
@@ -92,7 +79,7 @@ namespace TraineeManagement1.Controllers {
           return NotFound();
         return Ok(isDeleted);
       } catch (Exception ex) {
-        return BadRequest(ex.Message);
+        return StatusCode(StatusCodes.Status500InternalServerError, "Something went wrong on our end.");
       }
     }
   }
