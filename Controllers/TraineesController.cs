@@ -15,32 +15,26 @@ namespace TraineeManagement1.Controllers {
     }
     [HttpGet]
     public async Task<IActionResult> GetAllTrainees(
-        [FromQuery] string? name = null, [FromQuery] string? email = null,
-        [FromQuery] string? techstack = null,
-        [FromQuery] string? status = null) {
+        [FromQuery]string TraineeName) {
       try {
-        var trainees = await _traineeServices.GetAll(
-            name != null ? name.ToLower() : null,
-            email != null ? email.ToLower() : null,
-            techstack != null ? techstack.ToLower() : null,
-            status != null ? status.ToLower() : null);
-        var result =
-            new { data = new { Trainees = trainees, total = trainees.Count() },
-                  success = true };
+        SearchTraineeDTO SearchObject=new SearchTraineeDTO{ Name =TraineeName};
+       
+        var trainees = await _traineeServices.GetAll(SearchObject);
+        ApiResponsesDTO result =new ApiResponsesDTO{ Data = new DataObject{ Trainees = trainees, Total = trainees.Count() },
+                  Success = true };
         return Ok(result);
       } catch (Exception ex) {
         return BadRequest(ex.Message);
       }
     }
-    [HttpGet("{id}")]
-    public async Task<IActionResult> GetTraineeById(int id) {
+    [HttpGet("{Id}")]
+    public async Task<IActionResult> GetTraineeById(int Id) {
       try {
-        var trainee = await _traineeServices.GetById(id);
-        var result = new { data = new { Trainees = trainee }, success = true };
+        var trainee = await _traineeServices.GetById(Id);
+        ApiResponseDTO result = new ApiResponseDTO{ Data =  trainee , Success = true };
         if (trainee == null) {
           return NotFound(result);
         }
-
         return Ok(result);
       } catch (Exception ex) {
         return BadRequest(ex.Message);
@@ -49,23 +43,39 @@ namespace TraineeManagement1.Controllers {
     [HttpPost]
     public async Task<IActionResult> CreateTrainee(
         [FromBody] CreateTraineeRequestDTO newTrainee) {
+            
+
+        if (!ModelState.IsValid)
+        {
+            var errorDetails = ModelState
+                .Where(x => x.Value.Errors.Count > 0)
+                .Select(x => new Errors{ 
+                    Field = x.Key, 
+                    Message = x.Value.Errors.First().ErrorMessage 
+                });
+            ApiErrorResponseDTO response=new ApiErrorResponseDTO{
+                Errors=errorDetails,
+                Success=true
+            };
+            return BadRequest(response);
+        }
       try {
         var trainee = await _traineeServices.Create(newTrainee);
+        ApiResponseDTO result = new ApiResponseDTO{ Data =  trainee , Success = true };
         return CreatedAtAction(
-            nameof(GetTraineeById), new { id = trainee.id },
-            new { data = new { Trainees = trainee }, success = true });
+            nameof(GetTraineeById), new { Id = trainee.Id },
+           result);
       } catch (Exception ex) {
         return BadRequest(ex.Message);
       }
     }
 
-    [HttpPut("{id}")]
+    [HttpPut("{Id}")]
     public async Task<IActionResult> UpdateTrainee(
-        int id, [FromBody] UpdateTraineeRequestDTO trainee) {
+        int Id, [FromBody] UpdateTraineeRequestDTO trainee) {
       try {
-        var updatedTrainee = await _traineeServices.Update(id, trainee);
-        var result =
-            new { data = new { Trainees = updatedTrainee }, success = true };
+        var updatedTrainee = await _traineeServices.Update(Id, trainee);
+        ApiResponseDTO result = new ApiResponseDTO{ Data = updatedTrainee , Success = true };
         if (updatedTrainee == null) {
           return NotFound(result);
         }
@@ -74,10 +84,10 @@ namespace TraineeManagement1.Controllers {
         return BadRequest(ex.Message);
       }
     }
-    [HttpDelete("{id}")]
-    public async Task<IActionResult> DeleteTrainee(int id) {
+    [HttpDelete("{Id}")]
+    public async Task<IActionResult> DeleteTrainee(int Id) {
       try {
-        var isDeleted = await _traineeServices.Delete(id);
+        var isDeleted = await _traineeServices.Delete(Id);
         if (!isDeleted)
           return NotFound();
         return Ok(isDeleted);

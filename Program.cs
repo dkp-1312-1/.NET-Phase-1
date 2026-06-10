@@ -9,30 +9,11 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-builder.Services.AddControllers().ConfigureApiBehaviorOptions(options =>
-    {
-        options.InvalidModelStateResponseFactory = context =>
-        {
-            // Extract the errors from the ModelState
-            var errors = context.ModelState
-                .Where(e => e.Value.Errors.Count > 0)
-                .Select(e => new
-                {
-                    Field = e.Key,
-                    Message = e.Value.Errors.First().ErrorMessage
-                }).ToList();
-
-            // Create your own custom response payload shape
-            var customResponse = new
-            {
-                Errors = errors,
-                Success=false
-            };
-
-            // Return your custom structure as a Bad Request (400)
-            return new BadRequestObjectResult(customResponse);
-        };
-    });
+builder.Services.AddControllers()
+.ConfigureApiBehaviorOptions(options =>
+{
+    options.SuppressModelStateInvalidFilter = true;
+});
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 builder.Services.AddDbContext<AppDbContext>(options=>

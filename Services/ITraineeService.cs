@@ -5,10 +5,10 @@ namespace TraineeManagement1.Services
 {
     public interface ITraineeService
     {
-        Task<IEnumerable<TraineeResponseDTO>> GetAll(string? name=null,string? email=null,string? techstack=null,string? status=null);
-        Task<TraineeResponseDTO>? GetById(int id);
+        Task<IEnumerable<TraineeResponseDTO>> GetAll(SearchTraineeDTO trainee);
+        Task<TraineeResponseDTO>? GetById(int Id);
         Task<TraineeResponseDTO> Create(CreateTraineeRequestDTO Trainee);
-        Task<TraineeResponseDTO> Update(int id, UpdateTraineeRequestDTO request);
-        Task<bool> Delete(int id);
+        Task<TraineeResponseDTO> Update(int Id, UpdateTraineeRequestDTO request);
+        Task<bool> Delete(int Id);
     }
 }

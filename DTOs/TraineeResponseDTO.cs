@@ -1,9 +1,10 @@
 using System.ComponentModel.DataAnnotations;
-namespace TraineeManagement1.Models
+
+namespace TraineeManagement1.DTOs
 {
-    public class Trainee
+    public class TraineeResponseDTO 
     {
-        public required int Id { get; set; }
+        public int? Id{get;set;}
         public string? FirstName { get; set; }
         public string? LastName { get; set; }
         public string? Email { get; set; }
