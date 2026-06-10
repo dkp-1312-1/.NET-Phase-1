@@ -24,7 +24,7 @@ namespace TraineeManagement1.Controllers
             {
                 data=new{Trainees=trainees,total=trainees.Count()} ,
                 success=true
-                };
+            };
             return Ok(result);
         }
         [HttpGet("{id}")]
@@ -46,12 +46,20 @@ namespace TraineeManagement1.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateTrainee([FromBody] CreateTraineeRequestDTO newTrainee)
         {
+            try
+            {
             var trainee =await _traineeServices.Create(newTrainee);
             return CreatedAtAction(nameof(GetTraineeById), new { id = trainee.id }, new 
             {
                 data=new{Trainees=trainee} ,
                 success=true
                 });
+            }
+            catch(Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            
         }
 
         [HttpPut("{id}")]

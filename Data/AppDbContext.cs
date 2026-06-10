@@ -9,5 +9,6 @@ namespace TraineeManagement1.Data
 
         }
         public DbSet<Trainee> Trainees {get;set;}
+        
     }
 }
