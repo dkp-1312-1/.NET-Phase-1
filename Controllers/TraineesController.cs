@@ -15,7 +15,7 @@ namespace TraineeManagement1.Controllers {
     }
     [HttpGet]
     public async Task<IActionResult> GetAllTrainees(
-        [FromQuery]string TraineeName) {
+        [FromQuery]string? TraineeName) {
       try {
         SearchTraineeDTO SearchObject=new SearchTraineeDTO{ Name =TraineeName};
        

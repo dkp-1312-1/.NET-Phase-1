@@ -1,17 +1,17 @@
-#.NET Phase - 1
-Install Packages:
+# .NET Phase - 1
+# Install Packages:
 
 dotnet add package NSwag.AspNetCore
 dotnet add package Microsoft.EntityFrameworkCore.InMemory
 dotnet add package Microsoft.AspNETCore
 
-Project Name =TraineeManagement1
-Technology Used =Asp.NET Web API, Service Layer, DTOs, EFCore.InMemory Databases  
-How to Run =Install zip file ,install Packages given above 
-Comand to Run: dotnet run --launch-profile https
+# Project Name =TraineeManagement1
+Technology Used =Asp.NET Web API, Service Layer, DTOs, EFCore.InMemory Databases, MySql.EntityFrameworkCore,Microsoft.EntityFrameworkCore.Design, 
+>How to Run =Install zip file ,install Packages given above ,
+>Comand to Run: dotnet run --launch-profile https
 
 
-API List =
+# API List =
 GET /api/health
 
 GET /api/trainees
@@ -27,7 +27,7 @@ DELETE /api/trainees/{id}
 GET /api/trainees?search=amit
 
 
-Sample Request JSON 
+# Sample Request JSON 
 {
  "firstName": "Amit",
  "lastName": "Sharma",
@@ -37,7 +37,7 @@ Sample Request JSON
 }
 
 
-Sample Response JSON 
+# Sample Response JSON 
 
 {
   "id": 1,
@@ -51,6 +51,33 @@ Sample Response JSON
 }
 
 
-Known Limitations
+# Known Limitations
 -It currently uses In Memory database which holds data temporarily. It lacks real Sql/No Sql database connection.
 -Absence of authentication and authorisation
+
+
+
+# Database Setup Steps
+
+>Read the database connection string from appsettings.json and append it in starts:  
+{  
+"ConnectionStrings":  
+  {  
+    "DefaultConnection": "server=localhost;port=3306;database=trainee_management_db;user=root;password=your_password;"  
+  }  
+} 
+
+>Change Program.cs file with addding given code snipper before  var app=builder.build(); 
+
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection"); 
+builder.Services.AddDbContext<AppDbContext>(options => 
+       options.UseMySQL(connectionString)); 
+
+>Run given command in ubuntu for creating migration: It creates migration folder and 3 files. 
+dotnet ef migrations add InitialCreate 
+
+>Run given command in ubuntu for updating and connecting to databases. 
+dotnet ef database update 
+ 
+
+ 
