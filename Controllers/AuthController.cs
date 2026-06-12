@@ -24,7 +24,6 @@ namespace TraineeManagement1.Controllers
         }
 
         [HttpPost("login")]
-        [ValidateModel]
         public async Task<IActionResult> Login([FromBody] LoginRequestDTO loginRequest)
         {
             try
@@ -34,7 +33,6 @@ namespace TraineeManagement1.Controllers
                 {
                     return Unauthorized(new { message = "Invalid username or password" });
                 }
-                Console.WriteLine(result.Token);
                 return Ok(result);
             }
             catch(Exception ex)

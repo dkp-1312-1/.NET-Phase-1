@@ -6,10 +6,12 @@ using TraineeManagement1.Models;
 using TraineeManagement1.Services;
 using Microsoft.AspNetCore.Authorization;
 namespace TraineeManagement1.Controllers {
+  
   [Route("api/[controller]")]
-  [Authorize]
   [ApiController]
+  [Authorize]
   public class TraineesController : ControllerBase {
+    
     private readonly ITraineeService _traineeServices;
 
     public TraineesController(ITraineeService traineeService) {
