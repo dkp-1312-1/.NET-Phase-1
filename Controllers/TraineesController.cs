@@ -4,8 +4,10 @@ using System.Text.Json;
 using TraineeManagement1.DTOs;
 using TraineeManagement1.Models;
 using TraineeManagement1.Services;
+using Microsoft.AspNetCore.Authorization;
 namespace TraineeManagement1.Controllers {
   [Route("api/[controller]")]
+  [Authorize]
   [ApiController]
   public class TraineesController : ControllerBase {
     private readonly ITraineeService _traineeServices;
@@ -25,7 +27,7 @@ namespace TraineeManagement1.Controllers {
                   Success = true };
         return Ok(result);
       } catch (Exception ex) {
-        return StatusCode(StatusCodes.Status500InternalServerError, "Something went wrong on our end.");
+        return StatusCode(StatusCodes.Status500InternalServerError, "Something went wrong on our end."+ex.Message);
       }
     }
     [HttpGet("{Id}")]
@@ -38,7 +40,7 @@ namespace TraineeManagement1.Controllers {
         }
         return Ok(result);
       } catch (Exception ex) {
-        return StatusCode(StatusCodes.Status500InternalServerError, "Something went wrong on our end.");
+        return StatusCode(StatusCodes.Status500InternalServerError, "Something went wrong on our end."+ex.Message);
       }
     }
     [HttpPost]
@@ -52,7 +54,7 @@ namespace TraineeManagement1.Controllers {
             nameof(GetTraineeById), new { Id = trainee.Id },
            result);
       } catch (Exception ex) {
-        return StatusCode(StatusCodes.Status500InternalServerError, "Something went wrong on our end.");
+        return StatusCode(StatusCodes.Status500InternalServerError, "Something went wrong on our end."+ex.Message);
       }
     }
 
@@ -68,7 +70,7 @@ namespace TraineeManagement1.Controllers {
         }
         return Ok(result);
       } catch (Exception ex) {
-        return StatusCode(StatusCodes.Status500InternalServerError, "Something went wrong on our end.");
+        return StatusCode(StatusCodes.Status500InternalServerError, "Something went wrong on our end."+ex.Message);
       }
     }
     [HttpDelete("{Id}")]
@@ -79,7 +81,7 @@ namespace TraineeManagement1.Controllers {
           return NotFound();
         return Ok(isDeleted);
       } catch (Exception ex) {
-        return StatusCode(StatusCodes.Status500InternalServerError, "Something went wrong on our end.");
+        return StatusCode(StatusCodes.Status500InternalServerError, "Something went wrong on our end."+ex.Message);
       }
     }
   }

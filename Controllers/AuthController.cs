@@ -8,8 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using System.Text;
-using TraineeManagement.Api.Data;
+using TraineeManagement1.Data;
 using BCrypt.Net;
 
 namespace TraineeManagement1.Controllers
@@ -18,24 +17,30 @@ namespace TraineeManagement1.Controllers
     [ApiController]
     public class AuthController : ControllerBase
     {
-        private readonly AppDbContext _context;
-        private readonly IConfiguration _configuration;
-        public AuthController AuthController(AppDbContext context, IConfiguration configuration)
+        private readonly IJWTService _jwtService;
+        public AuthController(IJWTService jwtService)
         {
-            _context = context;
-            _configuration = configuration;
+            _jwtService = jwtService;
         }
+
         [HttpPost("login")]
+        [ValidateModel]
         public async Task<IActionResult> Login([FromBody] LoginRequestDTO loginRequest)
         {
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.Username == loginRequest.Username);
-            if (user == null || !BCrypt.Net.BCrypt.Verify(loginRequest.Password, user.PasswordHash))
+            try
             {
-                return Unauthorized(new { message = "Invalid username or password" });
+                LoginResponseDTO result =await _jwtService.GenerateToken(loginRequest);
+                if(result==null)
+                {
+                    return Unauthorized(new { message = "Invalid username or password" });
+                }
+                Console.WriteLine(result.Token);
+                return Ok(result);
             }
-        
+            catch(Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "Something went wrong on our end."+ex.Message);
+            }            
         }
     }
-
-
 }

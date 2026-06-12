@@ -4,8 +4,8 @@ namespace TraineeManagement1.DTOs
 {
     public class Errors
     {
-        public string Field{get;set;}
-        public string Message{get;set;}
+        public string? Field{get;set;}
+        public string? Message{get;set;}
     }
     public class ApiErrorResponseDTO
     {

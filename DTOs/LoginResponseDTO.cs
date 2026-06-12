@@ -1,11 +1,10 @@
 using System.ComponentModel.DataAnnotations;
-using TraineeManagement1.DTOs;
 namespace TraineeManagement1.DTOs
 {
     public class LoginResponseDTO
     {
-        public string Token;
-        public int ExpiresIn;
-        public UserInfoDTO User;
+        public string Token{get;set;}
+        public int ExpiresIn{get;set;}
+        public UserInfoDTO User{get;set;}
     }
 }

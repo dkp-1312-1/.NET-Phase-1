@@ -1,6 +1,9 @@
 using System.Security.Claims;
-
-public interface IJwtService
+using TraineeManagement1.DTOs;
+namespace TraineeManagement1.Services
 {
-    string GenerateToken(string username, string role);
+    public interface IJWTService
+    {
+        Task<LoginResponseDTO> GenerateToken(LoginRequestDTO info);
+    }
 }

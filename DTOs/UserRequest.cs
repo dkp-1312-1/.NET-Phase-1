@@ -6,16 +6,13 @@ namespace TraineeManagement1.DTOs
     {
         [Required(ErrorMessage = "User name is required")]
         [StringLength(50, ErrorMessage = "Max 50 Characters")]
-        public string Username { get; set; }
+        public required string Username { get; set; }
         
         [Required(ErrorMessage = "Email is required")]
         [EmailAddress(ErrorMessage = "Valid email is required")]
-        public string Email { get; set; }
-
-        [Required(ErrorMessage = "PasswordHash is required")]
-        public string PasswordHash { get; set; }
+        public required string Email { get; set; }
 
         [Required(ErrorMessage = "Role[Admin, Mentor, Trainee] is required")]
-        public RoleType Role { get; set; }
+        public required RoleType Role { get; set; }
     }
 }

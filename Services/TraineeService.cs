@@ -2,7 +2,6 @@ using TraineeManagement1.DTOs;
 using Microsoft.EntityFrameworkCore;
 using TraineeManagement1.Models;
 using TraineeManagement1.Data;
-using TraineeManagement1.DTOs;
 using System.Collections.Generic;
 using System.Linq;
 namespace TraineeManagement1.Services
