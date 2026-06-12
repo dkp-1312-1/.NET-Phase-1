@@ -11,8 +11,8 @@ using TraineeManagement1.Data;
 namespace TraineeManagement1.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260611102104_UserCreate")]
-    partial class UserCreate
+    [Migration("20260611125854_CreateUserTable")]
+    partial class CreateUserTable
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -52,6 +52,48 @@ namespace TraineeManagement1.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Trainees");
+                });
+
+            modelBuilder.Entity("TraineeManagement1.Models.User", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("Email")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("PasswordHash")
+                        .HasColumnType("longtext");
+
+                    b.Property<int?>("Role")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("UpdatedDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("Username")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Users");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            CreatedDate = new DateTime(2026, 6, 11, 12, 58, 53, 451, DateTimeKind.Utc).AddTicks(3488),
+                            Email = "admin@gmail.com",
+                            PasswordHash = "$2a$12$D./Ra9bTZ3fRitJNBoMVEe6JT//O3NfBf03SwFTZrI4SjYzf7BUFq",
+                            Role = 0,
+                            UpdatedDate = new DateTime(2026, 6, 11, 12, 58, 53, 451, DateTimeKind.Utc).AddTicks(3672),
+                            Username = "admin"
+                        });
                 });
 #pragma warning restore 612, 618
         }

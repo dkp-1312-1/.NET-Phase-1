@@ -150,3 +150,4 @@
 /mnt/d/Day2/123/TraineeManagement1/bin/Debug/net10.0/tr/Microsoft.CodeAnalysis.Workspaces.MSBuild.resources.dll
 /mnt/d/Day2/123/TraineeManagement1/bin/Debug/net10.0/zh-Hans/Microsoft.CodeAnalysis.Workspaces.MSBuild.resources.dll
 /mnt/d/Day2/123/TraineeManagement1/bin/Debug/net10.0/zh-Hant/Microsoft.CodeAnalysis.Workspaces.MSBuild.resources.dll
+/mnt/d/Day2/123/TraineeManagement1/bin/Debug/net10.0/BCrypt-Net-Next.dll

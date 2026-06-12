@@ -16,5 +16,7 @@ namespace TraineeManagement1.Models
         public RoleType? Role { get; set; }
         public DateTime CreatedDate { get; set; }
         public DateTime UpdatedDate { get; set; }
+        
     }
+    
 }
