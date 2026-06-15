@@ -94,6 +94,9 @@ builder.Services.AddScoped<ITraineeService, TraineeService>();
 builder.Services.AddScoped<IJWTService, JWTService>();
 builder.Services.AddScoped<IMentorService, MentorService>();
 builder.Services.AddScoped<ILearningTaskService, LearningTaskService>();
+builder.Services.AddScoped<ITaskAssignmentService,TaskAssignmentService>();
+builder.Services.AddScoped<ISubmissionService, SubmissionService>();
+builder.Services.AddScoped<IReviewService, ReviewService>();
 
 builder.Logging.ClearProviders();
 builder.Logging.AddConsole();

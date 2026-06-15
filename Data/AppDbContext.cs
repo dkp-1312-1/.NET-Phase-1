@@ -14,7 +14,10 @@ namespace TraineeManagement1.Data
         public DbSet<Trainee> Trainees { get; set; }
         public DbSet<Mentor> Mentors { get; set; }
         public DbSet<User> Users { get; set; }
-        public DbSet<LearningTask> LearningTasks{get;set;}
+        public DbSet<LearningTask> LearningTasks { get; set; }
+        public DbSet<TaskAssignment> TaskAssignments { get; set; }
+        public DbSet<Submission> Submissions { get; set; }
+        public DbSet<Review> Reviews { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -22,12 +25,12 @@ namespace TraineeManagement1.Data
                new User()
                {
                    Id = 1,
-                   Username="admin",
-                   Email="admin@gmail.com",
-                   PasswordHash=BCrypt.Net.BCrypt.EnhancedHashPassword("password", workFactor: 12),
-                   Role=RoleType.Admin,
-                   CreatedDate=DateTime.UtcNow,
-                   UpdatedDate=DateTime.UtcNow
+                   Username = "admin",
+                   Email = "admin@gmail.com",
+                   PasswordHash = BCrypt.Net.BCrypt.EnhancedHashPassword("password", workFactor: 12),
+                   Role = RoleType.Admin,
+                   CreatedDate = DateTime.UtcNow,
+                   UpdatedDate = DateTime.UtcNow
                }
                );
         }

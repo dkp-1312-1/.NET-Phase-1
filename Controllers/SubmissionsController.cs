@@ -8,12 +8,12 @@ namespace TraineeManagement1.Controllers
     [Route("api/[controller]")]
     [ApiController]
     [Authorize]
-    public class TaskAssignmentsController : ControllerBase
+    public class SubmissionController : ControllerBase
     {
-        private readonly ITaskAssignmentService _service;
-        private readonly ILogger<TaskAssignmentsController> _logger;
+        private readonly ISubmissionService _service;
+        private readonly ILogger<SubmissionController> _logger;
 
-        public TaskAssignmentsController(ITaskAssignmentService service, ILogger<TaskAssignmentsController> logger)
+        public SubmissionController(ISubmissionService service, ILogger<SubmissionController> logger)
         {
             _service = service;
             _logger = logger;
@@ -43,7 +43,7 @@ namespace TraineeManagement1.Controllers
                     _logger.LogWarning("Assignment {Id} not found.", id);
                     return NotFound();
                 }
-                return Ok(new ApiResponseDTO<TaskAssignmentResponseDTO>
+                return Ok(new ApiResponseDTO<SubmissionResponseDTO>
                 {
                     Data = result,
                     Success = true
@@ -56,33 +56,17 @@ namespace TraineeManagement1.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] CreateTaskAssignmentRequestDTO request)
+        public async Task<IActionResult> Create([FromBody] CreateSubmissionRequestDTO request)
         {
             try
             {
                 var result = await _service.Create(request);
                 _logger.LogInformation("Assignment created: {Id}", result.Id);
-                return CreatedAtAction(nameof(GetById), new { id = result.Id }, new ApiResponseDTO<TaskAssignmentResponseDTO> { Data = result, Success = true });
+                return CreatedAtAction(nameof(GetById), new { id = result.Id }, new ApiResponseDTO<SubmissionResponseDTO> { Data = result, Success = true });
             }
             catch (ArgumentException ex)
             {
                 return BadRequest(ex.Message);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, ex.Message);
-            }
-        }
-
-        [HttpPut("{id}/status")]
-        public async Task<IActionResult> UpdateStatus(int id, [FromBody] UpdateAssignmentStatusRequestDTO request)
-        {
-            try
-            {
-                var result = await _service.UpdateStatus(id, request.Status);
-                if (result == null)
-                    return NotFound();
-                return Ok(new ApiResponseDTO<TaskAssignmentResponseDTO> { Data = result, Success = true });
             }
             catch (Exception ex)
             {
