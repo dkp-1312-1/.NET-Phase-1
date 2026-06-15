@@ -24,12 +24,11 @@ namespace TraineeManagement1.Controllers
     }
     [HttpGet]
     public async Task<IActionResult> GetAllTrainees(
-        [FromQuery] string? TraineeName, int PageNumber, int PageSize, string? Status)
+        [FromQuery] SearchDTO searchObject)
     {
       try
       {
-        SearchTraineeDTO SearchObject = new SearchTraineeDTO { Name = TraineeName, PageNumber = PageNumber, PageSize = PageSize, Status = Status };
-        PagedResponseDTO<TraineeResponseDTO> trainees = await _traineeServices.GetAll(SearchObject);
+        PagedResponseDTO<TraineeResponseDTO> trainees = await _traineeServices.GetAll(searchObject);
         return Ok(trainees);
       }
       catch (Exception ex)
@@ -43,7 +42,7 @@ namespace TraineeManagement1.Controllers
       try
       {
         var trainee = await _traineeServices.GetById(Id);
-        ApiResponseDTO result = new ApiResponseDTO { Data = trainee, Success = true };
+        ApiResponseDTO<TraineeResponseDTO> result = new ApiResponseDTO<TraineeResponseDTO> { Data = trainee, Success = true };
         if (trainee == null)
         {
            _logger.LogWarning("Trainee with ID {Id} was not found.", Id);
@@ -64,7 +63,7 @@ namespace TraineeManagement1.Controllers
       try
       {
         var trainee = await _traineeServices.Create(newTrainee);
-        ApiResponseDTO result = new ApiResponseDTO { Data = trainee, Success = true };
+        ApiResponseDTO<TraineeResponseDTO> result = new ApiResponseDTO<TraineeResponseDTO> { Data = trainee, Success = true };
         _logger.LogInformation("Trainee created successfully with ID {Id}", trainee.Id);
         return CreatedAtAction(
             nameof(GetTraineeById), new { Id = trainee.Id },
@@ -84,7 +83,7 @@ namespace TraineeManagement1.Controllers
       try
       {
         var updatedTrainee = await _traineeServices.Update(Id, trainee);
-        ApiResponseDTO result = new ApiResponseDTO { Data = updatedTrainee, Success = true };
+        ApiResponseDTO<TraineeResponseDTO> result = new ApiResponseDTO<TraineeResponseDTO> { Data = updatedTrainee, Success = true };
         if (updatedTrainee == null)
         {
            _logger.LogWarning("Trainee with ID {Id} was not found.", Id);

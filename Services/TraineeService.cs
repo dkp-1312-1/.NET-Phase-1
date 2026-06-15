@@ -13,7 +13,7 @@ namespace TraineeManagement1.Services
         {
             _context = context;
         }
-        public async Task<PagedResponseDTO<TraineeResponseDTO>> GetAll(SearchTraineeDTO trainee)
+        public async Task<PagedResponseDTO<TraineeResponseDTO>> GetAll(SearchDTO trainee)
         {
             IQueryable<Trainee> Query = _context.Trainees.AsQueryable();
             if (trainee.Name != null)

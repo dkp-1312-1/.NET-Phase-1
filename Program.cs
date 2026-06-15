@@ -92,6 +92,8 @@ builder.Services.AddOpenApi();
 // options.UseInMemoryDatabase("TraineeManagementDb"));
 builder.Services.AddScoped<ITraineeService, TraineeService>();
 builder.Services.AddScoped<IJWTService, JWTService>();
+builder.Services.AddScoped<IMentorService, MentorService>();
+builder.Services.AddScoped<ILearningTaskService, LearningTaskService>();
 
 builder.Logging.ClearProviders();
 builder.Logging.AddConsole();
@@ -99,8 +101,6 @@ builder.Logging.AddConsole();
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<AppDbContext>(options =>
        options.UseMySQL(connectionString));
-
-
 
 var app = builder.Build();
 

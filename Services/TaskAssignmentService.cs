@@ -1,0 +1,98 @@
+using Microsoft.EntityFrameworkCore;
+using TraineeManagement1.Data;
+using TraineeManagement1.DTOs;
+using TraineeManagement1.Models;
+ 
+namespace TraineeManagement1.Services
+{
+    public class TaskAssignmentService : ITaskAssignmentService
+    {
+        private readonly AppDbContext _context;
+ 
+        public TaskAssignmentService(AppDbContext context)
+        {
+            _context = context;
+        }
+ 
+        public async Task<PagedResponseDTO<TaskAssignmentResponseDTO>> GetAll(SearchDTO search)
+        {
+            var query = _context.TaskAssignments.AsQueryable();
+            
+            if (!string.IsNullOrEmpty(search.Status))
+            {
+                query = query.Where(t => t.Status.ToLower() == search.Status.ToLower());
+            }
+ 
+            var totalRecords = await query.CountAsync();
+            var assignments = await query.Skip((search.PageNumber - 1) * search.PageSize)
+                                         .Take(search.PageSize).ToListAsync();
+ 
+            return new PagedResponseDTO<TaskAssignmentResponseDTO>
+            {
+                PageNumber = search.PageNumber,
+                PageSize = search.PageSize,
+                TotalRecords = totalRecords,
+                Data = assignments.Select(MapToResponse)
+            };
+        }
+ 
+        public async Task<TaskAssignmentResponseDTO> GetById(int id)
+        {
+            var assignment = await _context.TaskAssignments.FindAsync(id);
+            return assignment != null ? MapToResponse(assignment) : null;
+        }
+ 
+        public async Task<TaskAssignmentResponseDTO> Create(CreateTaskAssignmentRequestDTO request)
+        {
+            if (request.DueDate < DateTime.UtcNow)
+                throw new ArgumentException("DueDate should not be before AssignedDate.");
+            
+            var traineeExists = await _context.Trainees.AnyAsync(t => t.Id == request.TraineeId);
+            var mentorExists = await _context.Mentors.AnyAsync(m => m.Id == request.MentorId);
+            var taskExists = await _context.LearningTasks.AnyAsync(l => l.Id == request.LearningTaskId);
+ 
+            if (!traineeExists || !mentorExists || !taskExists)
+                throw new ArgumentException("TraineeId, MentorId, or LearningTaskId does not exist.");
+ 
+            var newAssignment = new TaskAssignment
+            {
+                TraineeId = request.TraineeId,
+                MentorId = request.MentorId,
+                LearningTaskId = request.LearningTaskId,
+                AssignedDate = DateTime.UtcNow,
+                DueDate = request.DueDate,
+                Status = "Assigned",
+                Remarks = request.Remarks
+            };
+ 
+            await _context.TaskAssignments.AddAsync(newAssignment);
+            await _context.SaveChangesAsync();
+            return MapToResponse(newAssignment);
+        }
+ 
+        public async Task<TaskAssignmentResponseDTO> UpdateStatus(int id, string status)
+        {
+            var assignment = await _context.TaskAssignments.FindAsync(id);
+            if (assignment == null) return null;
+ 
+            assignment.Status = status;
+            await _context.SaveChangesAsync();
+            return MapToResponse(assignment);
+        }
+ 
+        private TaskAssignmentResponseDTO MapToResponse(TaskAssignment assignment)
+        {
+            return new TaskAssignmentResponseDTO
+            {
+                Id = assignment.Id, 
+                TraineeId = assignment.TraineeId, 
+                MentorId = assignment.MentorId,
+                LearningTaskId = assignment.LearningTaskId, 
+                AssignedDate = assignment.AssignedDate,
+                DueDate = assignment.DueDate, 
+                Status = assignment.Status, 
+                Remarks = assignment.Remarks
+            };
+        }
+    }
+}
