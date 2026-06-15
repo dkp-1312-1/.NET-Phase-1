@@ -13,6 +13,16 @@ var builder = WebApplication.CreateBuilder(args);
 
 var jwtSettings = builder.Configuration.GetSection("Jwt");
  
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("ReactClientPolicy", policy =>
+    {
+        policy.WithOrigins("http://localhost:3000", "http://localhost:5173") // Local React development origins
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
+});
+
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -83,6 +93,9 @@ builder.Services.AddOpenApi();
 builder.Services.AddScoped<ITraineeService, TraineeService>();
 builder.Services.AddScoped<IJWTService, JWTService>();
 
+builder.Logging.ClearProviders();
+builder.Logging.AddConsole();
+
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<AppDbContext>(options =>
        options.UseMySQL(connectionString));
@@ -102,7 +115,7 @@ if (app.Environment.IsDevelopment())
     });
 }
 
-
+app.UseCors("ReactClientPolicy");
 app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();

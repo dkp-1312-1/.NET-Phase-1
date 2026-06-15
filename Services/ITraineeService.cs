@@ -5,7 +5,7 @@ namespace TraineeManagement1.Services
 {
     public interface ITraineeService
     {
-        Task<IEnumerable<TraineeResponseDTO>> GetAll(SearchTraineeDTO trainee);
+        Task<PagedResponseDTO<TraineeResponseDTO>> GetAll(SearchTraineeDTO trainee);
         Task<TraineeResponseDTO>? GetById(int Id);
         Task<TraineeResponseDTO> Create(CreateTraineeRequestDTO Trainee);
         Task<TraineeResponseDTO> Update(int Id, UpdateTraineeRequestDTO request);

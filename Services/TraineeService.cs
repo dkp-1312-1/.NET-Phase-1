@@ -11,30 +11,43 @@ namespace TraineeManagement1.Services
         private readonly AppDbContext _context;
         public TraineeService(AppDbContext context)
         {
-            _context=context;
+            _context = context;
         }
-        public async Task<IEnumerable<TraineeResponseDTO>> GetAll(SearchTraineeDTO trainee)
+        public async Task<PagedResponseDTO<TraineeResponseDTO>> GetAll(SearchTraineeDTO trainee)
         {
             IQueryable<Trainee> Query = _context.Trainees.AsQueryable();
-            if(trainee.Name!=null)
+            if (trainee.Name != null)
             {
-                var Name=trainee.Name.ToLower();
-                Query=Query.Where( t=>
-                t.FirstName.ToLower().Contains(Name)|| t.LastName.ToLower().Contains(Name)||t.Email.ToLower().Contains(Name)||t.TechStack.ToLower().Contains(Name)||t.Status.ToLower().Contains(Name));
+                var Name = trainee.Name.ToLower();
+                Query = Query.Where(t =>
+                t.FirstName.ToLower().Contains(Name) || t.LastName.ToLower().Contains(Name) || t.Email.ToLower().Contains(Name) || t.TechStack.ToLower().Contains(Name));
             }
-            var trainees = await Query.ToListAsync();
-            return trainees.Select(MapToResponse);
+            if (trainee.Status != null)
+            {
+                var Status = trainee.Status.ToLower();
+                Query = Query.Where(t =>
+               t.Status.ToLower() == Status);
+            }
+            var totalRecords = await Query.CountAsync();
+            var trainees = await Query.Skip((trainee.PageNumber - 1) * trainee.PageSize).Take(trainee.PageSize).ToListAsync();
+            return new PagedResponseDTO<TraineeResponseDTO>
+            {
+                PageNumber = trainee.PageNumber,
+                PageSize = trainee.PageSize,
+                TotalRecords = totalRecords,
+                Data = trainees.Select(MapToResponse)
+            };
         }
         public async Task<TraineeResponseDTO> GetById(int Id)
         {
-            var trainee =await _context.Trainees.FindAsync(Id);
+            var trainee = await _context.Trainees.FindAsync(Id);
             return trainee != null ? MapToResponse(trainee) : null;
         }
         public async Task<TraineeResponseDTO> Create(CreateTraineeRequestDTO trainee)
         {
             var newTrainee = new Trainee
             {
-                Id=_context.Trainees.Any()? _context.Trainees.Max(t=>t.Id)+1:1,
+                Id = _context.Trainees.Any() ? _context.Trainees.Max(t => t.Id) + 1 : 1,
                 FirstName = trainee.FirstName,
                 LastName = trainee.LastName,
                 Email = trainee.Email,
@@ -47,7 +60,7 @@ namespace TraineeManagement1.Services
             await _context.SaveChangesAsync();
             return MapToResponse(newTrainee);
         }
-        public async Task<TraineeResponseDTO> Update(int Id,UpdateTraineeRequestDTO trainee)
+        public async Task<TraineeResponseDTO> Update(int Id, UpdateTraineeRequestDTO trainee)
         {
             var updatedTrainee = await _context.Trainees.FindAsync(Id);
             if (updatedTrainee == null)
@@ -74,7 +87,7 @@ namespace TraineeManagement1.Services
         {
             return new TraineeResponseDTO
             {
-                Id=trainee.Id,
+                Id = trainee.Id,
                 FirstName = trainee.FirstName,
                 LastName = trainee.LastName,
                 Email = trainee.Email,

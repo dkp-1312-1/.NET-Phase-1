@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
-namespace TraineeManagement1.Controllers1
+namespace TraineeManagement1.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
