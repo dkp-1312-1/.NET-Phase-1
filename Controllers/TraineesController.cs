@@ -4,6 +4,7 @@ using System.Text.Json;
 using TraineeManagement1.DTOs;
 using TraineeManagement1.Models;
 using TraineeManagement1.Services;
+using TraineeManagement1.Middleware;
 using Microsoft.AspNetCore.Authorization;
 namespace TraineeManagement1.Controllers
 {
@@ -17,104 +18,70 @@ namespace TraineeManagement1.Controllers
     private readonly ITraineeService _traineeServices;
     private readonly ILogger<TraineesController> _logger;
 
-    public TraineesController(ITraineeService traineeService,ILogger<TraineesController> logger)
+    public TraineesController(ITraineeService traineeService, ILogger<TraineesController> logger)
     {
       _traineeServices = traineeService;
-       _logger = logger;
+      _logger = logger;
     }
     [HttpGet]
     public async Task<IActionResult> GetAllTrainees(
         [FromQuery] SearchDTO searchObject)
     {
-      try
-      {
-        PagedResponseDTO<TraineeResponseDTO> trainees = await _traineeServices.GetAll(searchObject);
-        return Ok(trainees);
-      }
-      catch (Exception ex)
-      {
-        return StatusCode(StatusCodes.Status500InternalServerError, "Something went wrong on our end." + ex.Message);
-      }
+      PagedResponseDTO<TraineeResponseDTO> trainees = await _traineeServices.GetAll(searchObject);
+      return Ok(trainees);
     }
     [HttpGet("{Id}")]
     public async Task<IActionResult> GetTraineeById(int Id)
     {
-      try
+      var trainee = await _traineeServices.GetById(Id);
+      ApiResponseDTO<TraineeResponseDTO> result = new ApiResponseDTO<TraineeResponseDTO> { Data = trainee, Success = true };
+      if (trainee == null)
       {
-        var trainee = await _traineeServices.GetById(Id);
-        ApiResponseDTO<TraineeResponseDTO> result = new ApiResponseDTO<TraineeResponseDTO> { Data = trainee, Success = true };
-        if (trainee == null)
-        {
-           _logger.LogWarning("Trainee with ID {Id} was not found.", Id);
-          return NotFound(result);
-        }
-        return Ok(result);
+        throw new NotFoundException($"Trainee with id {Id} isnot found");
       }
-      catch (Exception ex)
-      {
-        return StatusCode(StatusCodes.Status500InternalServerError, "Something went wrong on our end." + ex.Message);
-      }
+      return Ok(result);
     }
+
     [HttpPost]
     [ValidateModel]
     public async Task<IActionResult> CreateTrainee(
         [FromBody] CreateTraineeRequestDTO newTrainee)
     {
-      try
-      {
-        var trainee = await _traineeServices.Create(newTrainee);
-        ApiResponseDTO<TraineeResponseDTO> result = new ApiResponseDTO<TraineeResponseDTO> { Data = trainee, Success = true };
-        _logger.LogInformation("Trainee created successfully with ID {Id}", trainee.Id);
-        return CreatedAtAction(
-            nameof(GetTraineeById), new { Id = trainee.Id },
-           result);
-      }
-      catch (Exception ex)
-      {
-        return StatusCode(StatusCodes.Status500InternalServerError, "Something went wrong on our end." + ex.Message);
-      }
+      var trainee = await _traineeServices.Create(newTrainee);
+      ApiResponseDTO<TraineeResponseDTO> result = new ApiResponseDTO<TraineeResponseDTO> { Data = trainee, Success = true };
+      _logger.LogInformation("Trainee created successfully with ID {Id}", trainee.Id);
+      return CreatedAtAction(
+          nameof(GetTraineeById), new { Id = trainee.Id },
+         result);
     }
+
 
     [HttpPut("{Id}")]
     [ValidateModel]
     public async Task<IActionResult> UpdateTrainee(
         int Id, [FromBody] UpdateTraineeRequestDTO trainee)
     {
-      try
+      var updatedTrainee = await _traineeServices.Update(Id, trainee);
+      ApiResponseDTO<TraineeResponseDTO> result = new ApiResponseDTO<TraineeResponseDTO> { Data = updatedTrainee, Success = true };
+      if (updatedTrainee == null)
       {
-        var updatedTrainee = await _traineeServices.Update(Id, trainee);
-        ApiResponseDTO<TraineeResponseDTO> result = new ApiResponseDTO<TraineeResponseDTO> { Data = updatedTrainee, Success = true };
-        if (updatedTrainee == null)
-        {
-           _logger.LogWarning("Trainee with ID {Id} was not found.", Id);
-          return NotFound(result);
-        }
-        _logger.LogInformation("Trainee updated successfully with ID {Id}", updatedTrainee.Id);
-        return Ok(result);
+        throw new NotFoundException($"Trainee with id {Id} isnot found");
       }
-      catch (Exception ex)
-      {
-        return StatusCode(StatusCodes.Status500InternalServerError, "Something went wrong on our end." + ex.Message);
-      }
+      _logger.LogInformation("Trainee updated successfully with ID {Id}", updatedTrainee.Id);
+      return Ok(result);
+
     }
     [HttpDelete("{Id}")]
     public async Task<IActionResult> DeleteTrainee(int Id)
     {
-      try
+      var isDeleted = await _traineeServices.Delete(Id);
+      if (!isDeleted)
       {
-        var isDeleted = await _traineeServices.Delete(Id);
-        if (!isDeleted)
-        {
-           _logger.LogWarning("Trainee with ID {Id} was not found.", Id);
-          return NotFound();
-        }
-        _logger.LogInformation("Trainee Deleted successfully with ID {Id}", Id);
-        return Ok(isDeleted);
+        throw new NotFoundException($"Trainee with id {Id} isnot found");
       }
-      catch (Exception ex)
-      {
-        return StatusCode(StatusCodes.Status500InternalServerError, "Something went wrong on our end." + ex.Message);
-      }
+      _logger.LogInformation("Trainee Deleted successfully with ID {Id}", Id);
+      return Ok(isDeleted);
     }
   }
 }
+

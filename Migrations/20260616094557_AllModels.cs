@@ -7,7 +7,7 @@ using MySql.EntityFrameworkCore.Metadata;
 namespace TraineeManagement1.Migrations
 {
     /// <inheritdoc />
-    public partial class LearningTasks : Migration
+    public partial class AllModels : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -56,6 +56,63 @@ namespace TraineeManagement1.Migrations
                 .Annotation("MySQL:Charset", "utf8mb4");
 
             migrationBuilder.CreateTable(
+                name: "Reviews",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySQL:ValueGenerationStrategy", MySQLValueGenerationStrategy.IdentityColumn),
+                    SubmissionId = table.Column<int>(type: "int", nullable: false),
+                    MentorId = table.Column<int>(type: "int", nullable: false),
+                    Feedback = table.Column<string>(type: "longtext", nullable: false),
+                    Score = table.Column<int>(type: "int", nullable: true),
+                    ReviewStatus = table.Column<string>(type: "longtext", nullable: false),
+                    ReviewedDate = table.Column<DateTime>(type: "datetime(6)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Reviews", x => x.Id);
+                })
+                .Annotation("MySQL:Charset", "utf8mb4");
+
+            migrationBuilder.CreateTable(
+                name: "Submissions",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySQL:ValueGenerationStrategy", MySQLValueGenerationStrategy.IdentityColumn),
+                    TaskAssignmentId = table.Column<int>(type: "int", nullable: false),
+                    SubmissionUrl = table.Column<string>(type: "longtext", nullable: false),
+                    Notes = table.Column<string>(type: "longtext", nullable: false),
+                    SubmittedDate = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    Status = table.Column<string>(type: "longtext", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Submissions", x => x.Id);
+                })
+                .Annotation("MySQL:Charset", "utf8mb4");
+
+            migrationBuilder.CreateTable(
+                name: "TaskAssignments",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySQL:ValueGenerationStrategy", MySQLValueGenerationStrategy.IdentityColumn),
+                    TraineeId = table.Column<int>(type: "int", nullable: false),
+                    MentorId = table.Column<int>(type: "int", nullable: false),
+                    LearningTaskId = table.Column<int>(type: "int", nullable: false),
+                    AssignedDate = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    DueDate = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    Status = table.Column<string>(type: "longtext", nullable: false),
+                    Remarks = table.Column<string>(type: "longtext", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TaskAssignments", x => x.Id);
+                })
+                .Annotation("MySQL:Charset", "utf8mb4");
+
+            migrationBuilder.CreateTable(
                 name: "Trainees",
                 columns: table => new
                 {
@@ -97,7 +154,7 @@ namespace TraineeManagement1.Migrations
             migrationBuilder.InsertData(
                 table: "Users",
                 columns: new[] { "Id", "CreatedDate", "Email", "PasswordHash", "Role", "UpdatedDate", "Username" },
-                values: new object[] { 1, new DateTime(2026, 6, 15, 10, 36, 16, 272, DateTimeKind.Utc).AddTicks(2480), "admin@gmail.com", "$2a$12$Z39sFXdDYf.kMef2uey3qONb8JGJ8HESYHjhOItsMRdvMfqpRAPGK", 0, new DateTime(2026, 6, 15, 10, 36, 16, 272, DateTimeKind.Utc).AddTicks(2707), "admin" });
+                values: new object[] { 1, new DateTime(2026, 6, 16, 9, 45, 56, 414, DateTimeKind.Utc).AddTicks(9605), "admin@gmail.com", "$2a$12$CoP0muCl.EuRzfShYjtS3OY.e85yVBWpZw4yzJDNJBQFTh2aL/Lfe", 0, new DateTime(2026, 6, 16, 9, 45, 56, 414, DateTimeKind.Utc).AddTicks(9838), "admin" });
         }
 
         /// <inheritdoc />
@@ -108,6 +165,15 @@ namespace TraineeManagement1.Migrations
 
             migrationBuilder.DropTable(
                 name: "Mentors");
+
+            migrationBuilder.DropTable(
+                name: "Reviews");
+
+            migrationBuilder.DropTable(
+                name: "Submissions");
+
+            migrationBuilder.DropTable(
+                name: "TaskAssignments");
 
             migrationBuilder.DropTable(
                 name: "Trainees");

@@ -1,6 +1,7 @@
 using System.Reflection.Metadata;
 using TraineeManagement1.Services;
 using TraineeManagement1.Data;
+using TraineeManagement1.Middleware;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -17,7 +18,7 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("ReactClientPolicy", policy =>
     {
-        policy.WithOrigins("http://localhost:3000", "http://localhost:5173") // Local React development origins
+        policy.WithOrigins("http://localhost:3000", "http://localhost:5173") 
               .AllowAnyHeader()
               .AllowAnyMethod();
     });
@@ -78,14 +79,15 @@ builder.Services.AddOpenApi("v1", options =>
     });
 });
  
- 
+builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
 builder.Services.AddControllers(options =>
 { options.Filters.Add<ValidateModelAttribute>(); })
 .ConfigureApiBehaviorOptions(options =>
 {
     options.SuppressModelStateInvalidFilter = true;
 
-});
+})
+.AddDataAnnotationsLocalization();;
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 // builder.Services.AddDbContext<AppDbContext>(options=>
@@ -101,22 +103,36 @@ builder.Services.AddScoped<IReviewService, ReviewService>();
 builder.Logging.ClearProviders();
 builder.Logging.AddConsole();
 
+// builder.Services.AddExceptionHandler<GlobalExceptionMiddleware>();
+
+
+
+
+
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<AppDbContext>(options =>
        options.UseMySQL(connectionString));
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// app.UseExceptionHandler(); 
+app.UseMiddleware<GlobalExceptionMiddleware>();
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
-    // Serves the interactive Swagger UI web page
     app.UseSwaggerUi(options =>
     {
         options.DocumentPath = "/openapi/v1.json";
     });
 }
+
+var supportedCultures = new[] { "en-US", "fr-FR", "es-ES" };
+var localizationOptions = new RequestLocalizationOptions()
+    .SetDefaultCulture(supportedCultures[0])
+    .AddSupportedCultures(supportedCultures)
+    .AddSupportedUICultures(supportedCultures);
+ 
+app.UseRequestLocalization(localizationOptions);
 
 app.UseCors("ReactClientPolicy");
 app.UseHttpsRedirection();

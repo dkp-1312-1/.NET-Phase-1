@@ -87,6 +87,100 @@ namespace TraineeManagement1.Migrations
                     b.ToTable("Mentors");
                 });
 
+            modelBuilder.Entity("TraineeManagement1.Models.Review", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<string>("Feedback")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<int>("MentorId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ReviewStatus")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTime>("ReviewedDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<int?>("Score")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SubmissionId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Reviews");
+                });
+
+            modelBuilder.Entity("TraineeManagement1.Models.Submission", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<string>("Notes")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("SubmissionUrl")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTime>("SubmittedDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<int>("TaskAssignmentId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Submissions");
+                });
+
+            modelBuilder.Entity("TraineeManagement1.Models.TaskAssignment", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("AssignedDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<DateTime>("DueDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<int>("LearningTaskId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("MentorId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Remarks")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<int>("TraineeId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("TaskAssignments");
+                });
+
             modelBuilder.Entity("TraineeManagement1.Models.Trainee", b =>
                 {
                     b.Property<int>("Id")
@@ -154,11 +248,11 @@ namespace TraineeManagement1.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedDate = new DateTime(2026, 6, 15, 10, 36, 16, 272, DateTimeKind.Utc).AddTicks(2480),
+                            CreatedDate = new DateTime(2026, 6, 16, 9, 45, 56, 414, DateTimeKind.Utc).AddTicks(9605),
                             Email = "admin@gmail.com",
-                            PasswordHash = "$2a$12$Z39sFXdDYf.kMef2uey3qONb8JGJ8HESYHjhOItsMRdvMfqpRAPGK",
+                            PasswordHash = "$2a$12$CoP0muCl.EuRzfShYjtS3OY.e85yVBWpZw4yzJDNJBQFTh2aL/Lfe",
                             Role = 0,
-                            UpdatedDate = new DateTime(2026, 6, 15, 10, 36, 16, 272, DateTimeKind.Utc).AddTicks(2707),
+                            UpdatedDate = new DateTime(2026, 6, 16, 9, 45, 56, 414, DateTimeKind.Utc).AddTicks(9838),
                             Username = "admin"
                         });
                 });

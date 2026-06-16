@@ -25,52 +25,35 @@ namespace TraineeManagement1.Controllers
         public async Task<IActionResult> GetAllMentors(
             [FromQuery] SearchDTO searchObject)
         {
-            try
-            {
-                PagedResponseDTO<MentorResponseDTO> mentors = await _mentorServices.GetAll(searchObject);
-                return Ok(mentors);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, "Something went wrong on our end." + ex.Message);
-            }
+
+            PagedResponseDTO<MentorResponseDTO> mentors = await _mentorServices.GetAll(searchObject);
+            return Ok(mentors);
+
         }
         [HttpGet("{Id}")]
         public async Task<IActionResult> GetMentorById(int Id)
         {
-            try
+            var mentor = await _mentorServices.GetById(Id);
+            ApiResponseDTO<MentorResponseDTO> result = new ApiResponseDTO<MentorResponseDTO> { Data = mentor, Success = true };
+            if (mentor == null)
             {
-                var mentor = await _mentorServices.GetById(Id);
-                ApiResponseDTO<MentorResponseDTO> result = new ApiResponseDTO<MentorResponseDTO> { Data = mentor, Success = true };
-                if (mentor == null)
-                {
-                    _logger.LogWarning("Mentor with ID {Id} was not found.", Id);
-                    return NotFound(result);
-                }
-                return Ok(result);
+                throw new NotFoundException($"Mentor with id {Id} isnot found");
             }
-            catch (Exception ex)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, "Something went wrong on our end." + ex.Message);
-            }
+            return Ok(result);
+
         }
         [HttpPost]
         [ValidateModel]
         public async Task<IActionResult> CreateMentor([FromBody] CreateMentorRequestDTO newMentor)
         {
-            try
-            {
-                var mentor = await _mentorServices.Create(newMentor);
-                ApiResponseDTO<MentorResponseDTO> result = new ApiResponseDTO<MentorResponseDTO> { Data = mentor, Success = true };
-                _logger.LogInformation("Mentor created successfully with ID {Id}", mentor.Id);
-                return CreatedAtAction(
-                    nameof(GetMentorById), new { Id = mentor.Id },
-                   result);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, "Something went wrong on our end." + ex.Message);
-            }
+
+            var mentor = await _mentorServices.Create(newMentor);
+            ApiResponseDTO<MentorResponseDTO> result = new ApiResponseDTO<MentorResponseDTO> { Data = mentor, Success = true };
+            _logger.LogInformation("Mentor created successfully with ID {Id}", mentor.Id);
+            return CreatedAtAction(
+                nameof(GetMentorById), new { Id = mentor.Id },
+               result);
+
         }
 
         [HttpPut("{Id}")]
@@ -78,41 +61,27 @@ namespace TraineeManagement1.Controllers
         public async Task<IActionResult> UpdateMentor(
             int Id, [FromBody] UpdateMentorRequestDTO mentor)
         {
-            try
+            var updatedMentor = await _mentorServices.Update(Id, mentor);
+            ApiResponseDTO<MentorResponseDTO> result = new ApiResponseDTO<MentorResponseDTO> { Data = updatedMentor, Success = true };
+            if (updatedMentor == null)
             {
-                var updatedMentor = await _mentorServices.Update(Id, mentor);
-                ApiResponseDTO<MentorResponseDTO> result = new ApiResponseDTO<MentorResponseDTO> { Data = updatedMentor, Success = true };
-                if (updatedMentor == null)
-                {
-                    _logger.LogWarning("Mentor with ID {Id} was not found.", Id);
-                    return NotFound(result);
-                }
-                _logger.LogInformation("Mentor updated successfully with ID {Id}", updatedMentor.Id);
-                return Ok(result);
+                throw new NotFoundException($"Mentor with id {Id} isnot found");
             }
-            catch (Exception ex)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, "Something went wrong on our end." + ex.Message);
-            }
+            _logger.LogInformation("Mentor updated successfully with ID {Id}", updatedMentor.Id);
+            return Ok(result);
+
         }
         [HttpDelete("{Id}")]
         public async Task<IActionResult> DeleteMentor(int Id)
         {
-            try
+
+            var isDeleted = await _mentorServices.Delete(Id);
+            if (!isDeleted)
             {
-                var isDeleted = await _mentorServices.Delete(Id);
-                if (!isDeleted)
-                {
-                    _logger.LogWarning("Mentor with ID {Id} was not found.", Id);
-                    return NotFound();
-                }
-                _logger.LogInformation("Mentor Deleted successfully with ID {Id}", Id);
-                return Ok(isDeleted);
+                throw new NotFoundException($"Mentor with id {Id} isnot found");
             }
-            catch (Exception ex)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, "Something went wrong on our end." + ex.Message);
-            }
+            _logger.LogInformation("Mentor Deleted successfully with ID {Id}", Id);
+            return Ok(isDeleted);
         }
     }
 }

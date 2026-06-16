@@ -19,7 +19,7 @@ namespace TraineeManagement1.Controllers
     {
         private readonly ILogger<AuthController> _logger;
         private readonly IJWTService _jwtService;
-        public AuthController(ILogger<AuthController> logger,IJWTService jwtService)
+        public AuthController(ILogger<AuthController> logger, IJWTService jwtService)
         {
             _logger = logger;
             _jwtService = jwtService;
@@ -28,21 +28,13 @@ namespace TraineeManagement1.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginRequestDTO loginRequest)
         {
-            try
+            LoginResponseDTO result = await _jwtService.GenerateToken(loginRequest);
+            if (result == null)
             {
-                LoginResponseDTO result = await _jwtService.GenerateToken(loginRequest);
-                if (result == null)
-                {
-                    _logger.LogWarning("Failed login attempt for username: {Username}", loginRequest.Username);
-                    return Unauthorized(new { message = "Invalid username or password" });
-                }
-                 _logger.LogInformation("Successful login for username: {Username}", loginRequest.Username); 
-                return Ok(result);
+                throw new UnauthorizedException("Invalid username or password");
             }
-            catch (Exception ex)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, "Something went wrong on our end." + ex.Message);
-            }
+            _logger.LogInformation("Successful login for username: {Username}", loginRequest.Username);
+            return Ok(result);
         }
     }
 }

@@ -22,72 +22,43 @@ namespace TraineeManagement1.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAll([FromQuery] SearchDTO search)
         {
-            try
-            {
-                return Ok(await _service.GetAll(search));
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, ex.Message);
-            }
+            return Ok(await _service.GetAll(search));
         }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
-            try
+            var result = await _service.GetById(id);
+            if (result == null)
             {
-                var result = await _service.GetById(id);
-                if (result == null)
-                {
-                    _logger.LogWarning("Assignment {Id} not found.", id);
-                    return NotFound();
-                }
-                return Ok(new ApiResponseDTO<TaskAssignmentResponseDTO>
-                {
-                    Data = result,
-                    Success = true
-                });
+                throw new NotFoundException($"Task with id {id} isnot found");
             }
-            catch (Exception ex)
+            return Ok(new ApiResponseDTO<TaskAssignmentResponseDTO>
             {
-                return StatusCode(500, ex.Message);
-            }
+                Data = result,
+                Success = true
+            });
+
         }
 
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateTaskAssignmentRequestDTO request)
         {
-            try
-            {
-                var result = await _service.Create(request);
-                _logger.LogInformation("Assignment created: {Id}", result.Id);
-                return CreatedAtAction(nameof(GetById), new { id = result.Id }, new ApiResponseDTO<TaskAssignmentResponseDTO> { Data = result, Success = true });
-            }
-            catch (ArgumentException ex)
-            {
-                return BadRequest(ex.Message);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, ex.Message);
-            }
+            var result = await _service.Create(request);
+            _logger.LogInformation("Assignment created: {Id}", result.Id);
+            return CreatedAtAction(nameof(GetById), new { id = result.Id }, new ApiResponseDTO<TaskAssignmentResponseDTO> { Data = result, Success = true });
+
         }
 
         [HttpPut("{id}/status")]
         public async Task<IActionResult> UpdateStatus(int id, [FromBody] UpdateAssignmentStatusRequestDTO request)
         {
-            try
-            {
-                var result = await _service.UpdateStatus(id, request.Status);
-                if (result == null)
-                    return NotFound();
-                return Ok(new ApiResponseDTO<TaskAssignmentResponseDTO> { Data = result, Success = true });
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, ex.Message);
-            }
+
+            var result = await _service.UpdateStatus(id, request.Status);
+            if (result == null)
+                throw new NotFoundException($"Task with id {id} isnot found");
+            return Ok(new ApiResponseDTO<TaskAssignmentResponseDTO> { Data = result, Success = true });
+
         }
     }
 }
