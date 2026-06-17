@@ -4,10 +4,11 @@ using System.Text.Json;
 using TraineeManagement1.DTOs;
 using TraineeManagement1.Models;
 using TraineeManagement1.Services;
+using Microsoft.Extensions.Localization;
 using Microsoft.AspNetCore.Authorization;
+using TraineeManagement1.Resources;
 namespace TraineeManagement1.Controllers
 {
-
     [Route("api/[controller]")]
     [ApiController]
     [Authorize]
@@ -15,11 +16,12 @@ namespace TraineeManagement1.Controllers
     {
         private readonly IMentorService _mentorServices;
         private readonly ILogger<MentorsController> _logger;
-
-        public MentorsController(IMentorService mentorService, ILogger<MentorsController> logger)
+        private readonly IStringLocalizer<SharedResource> _localizer;
+        public MentorsController(IMentorService mentorService, ILogger<MentorsController> logger,IStringLocalizer<SharedResource> localizer)
         {
             _mentorServices = mentorService;
             _logger = logger;
+            _localizer=localizer;
         }
         [HttpGet]
         public async Task<IActionResult> GetAllMentors(
@@ -37,10 +39,9 @@ namespace TraineeManagement1.Controllers
             ApiResponseDTO<MentorResponseDTO> result = new ApiResponseDTO<MentorResponseDTO> { Data = mentor, Success = true };
             if (mentor == null)
             {
-                throw new NotFoundException($"Mentor with id {Id} isnot found");
+                throw new NotFoundException(_localizer["MentorNotFound", Id]);
             }
             return Ok(result);
-
         }
         [HttpPost]
         [ValidateModel]
@@ -53,7 +54,6 @@ namespace TraineeManagement1.Controllers
             return CreatedAtAction(
                 nameof(GetMentorById), new { Id = mentor.Id },
                result);
-
         }
 
         [HttpPut("{Id}")]
@@ -65,7 +65,7 @@ namespace TraineeManagement1.Controllers
             ApiResponseDTO<MentorResponseDTO> result = new ApiResponseDTO<MentorResponseDTO> { Data = updatedMentor, Success = true };
             if (updatedMentor == null)
             {
-                throw new NotFoundException($"Mentor with id {Id} isnot found");
+                throw new NotFoundException(_localizer["MentorNotFound", Id].Value);
             }
             _logger.LogInformation("Mentor updated successfully with ID {Id}", updatedMentor.Id);
             return Ok(result);
@@ -78,7 +78,7 @@ namespace TraineeManagement1.Controllers
             var isDeleted = await _mentorServices.Delete(Id);
             if (!isDeleted)
             {
-                throw new NotFoundException($"Mentor with id {Id} isnot found");
+                throw new NotFoundException(_localizer["MentorNotFound", Id].Value);
             }
             _logger.LogInformation("Mentor Deleted successfully with ID {Id}", Id);
             return Ok(isDeleted);

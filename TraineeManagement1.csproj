@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <PackageReference Include="BCrypt.Net-Next" Version="4.2.0" />
+    <PackageReference Include="DotNetEnv" Version="3.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication" Version="2.3.11" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.9" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.2" />
@@ -19,6 +20,12 @@
     <PackageReference Include="Microsoft.NETCore.App" Version="2.2.8" />
     <PackageReference Include="MySql.EntityFrameworkCore" Version="10.0.7" />
     <PackageReference Include="NSwag.AspNetCore" Version="14.7.1" />
+  <EmbeddedResource Update="Resources\SharedResource.resx">
+    <Generator>ResXFileCodeGenerator</Generator>
+  </EmbeddedResource>
+  <EmbeddedResource Update="Resources\SharedResource.en.resx">
+    <Generator>ResXFileCodeGenerator</Generator>
+  </EmbeddedResource>
   </ItemGroup>
 
 </Project>

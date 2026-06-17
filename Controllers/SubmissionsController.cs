@@ -2,7 +2,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TraineeManagement1.DTOs;
 using TraineeManagement1.Services;
-
+using Microsoft.Extensions.Localization;
+using TraineeManagement1.Resources;
 namespace TraineeManagement1.Controllers
 {
     [Route("api/[controller]")]
@@ -12,11 +13,13 @@ namespace TraineeManagement1.Controllers
     {
         private readonly ISubmissionService _service;
         private readonly ILogger<SubmissionController> _logger;
+        private readonly IStringLocalizer<SharedResource> _localizer;
 
-        public SubmissionController(ISubmissionService service, ILogger<SubmissionController> logger)
+        public SubmissionController(ISubmissionService service, ILogger<SubmissionController> logger,IStringLocalizer<SharedResource> localizer)
         {
             _service = service;
             _logger = logger;
+            _localizer=localizer;
         }
 
         [HttpGet]
@@ -31,7 +34,7 @@ namespace TraineeManagement1.Controllers
             var result = await _service.GetById(id);
             if (result == null)
             {
-                throw new NotFoundException($"Submission with id {id} isnot found");
+                throw new NotFoundException(_localizer["SubmissionNotFound", id]);
             }
             return Ok(new ApiResponseDTO<SubmissionResponseDTO>
             {

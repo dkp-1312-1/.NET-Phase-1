@@ -2,7 +2,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TraineeManagement1.DTOs;
 using TraineeManagement1.Services;
-
+using Microsoft.Extensions.Localization;
+using TraineeManagement1.Resources;
 namespace TraineeManagement1.Controllers
 {
 
@@ -13,17 +14,18 @@ namespace TraineeManagement1.Controllers
     {
         private readonly ILearningTaskService _learningTaskService;
         private readonly ILogger<LearningTasksController> _logger;
+        private readonly IStringLocalizer<SharedResource> _localizer;
 
-        public LearningTasksController(ILearningTaskService learningTaskService, ILogger<LearningTasksController> logger)
+        public LearningTasksController(ILearningTaskService learningTaskService, ILogger<LearningTasksController> logger,IStringLocalizer<SharedResource> localizer)
         {
             _learningTaskService = learningTaskService;
             _logger = logger;
+            _localizer=localizer;
         }
 
         [HttpGet]
         public async Task<IActionResult> GetAllLearningTasks([FromQuery] SearchDTO searchObject)
         {
-
             PagedResponseDTO<LearningTaskResponseDTO> tasks = await _learningTaskService.GetAll(searchObject);
             return Ok(tasks);
 
@@ -37,7 +39,7 @@ namespace TraineeManagement1.Controllers
             ApiResponseDTO<LearningTaskResponseDTO> result = new ApiResponseDTO<LearningTaskResponseDTO> { Data = task, Success = true };
             if (task == null)
             {
-                throw new NotFoundException($"Learning Task with id {Id} isnot found");
+                throw new NotFoundException(_localizer["SubmissionNotFound", Id]);
             }
 
             return Ok(task);

@@ -29,3 +29,7 @@ build_property.MSBuildProjectDirectory = /mnt/d/Day2/123/TraineeManagement1
 build_property._RazorSourceGeneratorDebug = 
 build_property.EffectiveAnalysisLevelStyle = 10.0
 build_property.EnableCodeStyleSeverity = 
+
+[/mnt/d/Day2/123/TraineeManagement1/Resources/Resources.SharedResource.resx]
+build_metadata.AdditionalFiles.TargetPath = Resources/Resources.SharedResource.resx
+build_metadata.AdditionalFiles.CssScope = 

@@ -8,17 +8,20 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
-using Microsoft.OpenApi.Models; 
-
+using Microsoft.OpenApi.Models;
+using DotNetEnv;
+DotNetEnv.Env.Load();
 var builder = WebApplication.CreateBuilder(args);
 
+
+
 var jwtSettings = builder.Configuration.GetSection("Jwt");
- 
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("ReactClientPolicy", policy =>
     {
-        policy.WithOrigins("http://localhost:3000", "http://localhost:5173") 
+        policy.WithOrigins("http://localhost:3000", "http://localhost:5173")
               .AllowAnyHeader()
               .AllowAnyMethod();
     });
@@ -58,10 +61,10 @@ builder.Services.AddOpenApi("v1", options =>
             In = Microsoft.OpenApi.Models.ParameterLocation.Header,
             Description = "Enter your JWT token directly"
         };
- 
+
         document.Components ??= new Microsoft.OpenApi.Models.OpenApiComponents();
         document.Components.SecuritySchemes.Add("Bearer", scheme);
- 
+
         // 2. Apply it globally to all endpoints
         document.SecurityRequirements.Add(new Microsoft.OpenApi.Models.OpenApiSecurityRequirement
         {
@@ -74,11 +77,11 @@ builder.Services.AddOpenApi("v1", options =>
                 }
             }] = Array.Empty<string>()
         });
- 
+
         return Task.CompletedTask;
     });
 });
- 
+
 builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
 builder.Services.AddControllers(options =>
 { options.Filters.Add<ValidateModelAttribute>(); })
@@ -87,7 +90,7 @@ builder.Services.AddControllers(options =>
     options.SuppressModelStateInvalidFilter = true;
 
 })
-.AddDataAnnotationsLocalization();;
+.AddDataAnnotationsLocalization(); ;
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 // builder.Services.AddDbContext<AppDbContext>(options=>
@@ -96,7 +99,7 @@ builder.Services.AddScoped<ITraineeService, TraineeService>();
 builder.Services.AddScoped<IJWTService, JWTService>();
 builder.Services.AddScoped<IMentorService, MentorService>();
 builder.Services.AddScoped<ILearningTaskService, LearningTaskService>();
-builder.Services.AddScoped<ITaskAssignmentService,TaskAssignmentService>();
+builder.Services.AddScoped<ITaskAssignmentService, TaskAssignmentService>();
 builder.Services.AddScoped<ISubmissionService, SubmissionService>();
 builder.Services.AddScoped<IReviewService, ReviewService>();
 
@@ -131,7 +134,7 @@ var localizationOptions = new RequestLocalizationOptions()
     .SetDefaultCulture(supportedCultures[0])
     .AddSupportedCultures(supportedCultures)
     .AddSupportedUICultures(supportedCultures);
- 
+
 app.UseRequestLocalization(localizationOptions);
 
 app.UseCors("ReactClientPolicy");

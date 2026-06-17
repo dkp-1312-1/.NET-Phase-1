@@ -10,6 +10,8 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using TraineeManagement1.Data;
 using BCrypt.Net;
+using Microsoft.Extensions.Localization;
+using TraineeManagement1.Resources;
 
 namespace TraineeManagement1.Controllers
 {
@@ -19,10 +21,12 @@ namespace TraineeManagement1.Controllers
     {
         private readonly ILogger<AuthController> _logger;
         private readonly IJWTService _jwtService;
-        public AuthController(ILogger<AuthController> logger, IJWTService jwtService)
+        private readonly IStringLocalizer<SharedResource> _localizer;
+        public AuthController(ILogger<AuthController> logger, IJWTService jwtService,IStringLocalizer<SharedResource> localizer)
         {
             _logger = logger;
             _jwtService = jwtService;
+            _localizer=localizer;
         }
 
         [HttpPost("login")]
@@ -31,7 +35,7 @@ namespace TraineeManagement1.Controllers
             LoginResponseDTO result = await _jwtService.GenerateToken(loginRequest);
             if (result == null)
             {
-                throw new UnauthorizedException("Invalid username or password");
+                throw new UnauthorizedException(_localizer["Unauthorized"]);
             }
             _logger.LogInformation("Successful login for username: {Username}", loginRequest.Username);
             return Ok(result);

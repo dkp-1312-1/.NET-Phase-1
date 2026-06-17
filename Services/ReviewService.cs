@@ -20,8 +20,10 @@ namespace TraineeManagement1.Services
  
             return new PagedResponseDTO<ReviewResponseDTO>
             {
-                PageNumber = search.PageNumber, PageSize = search.PageSize,
-                TotalRecords = totalRecords, Data = reviews.Select(MapToResponse)
+                PageNumber = search.PageNumber,
+                PageSize = search.PageSize,
+                TotalRecords = totalRecords, 
+                Data = reviews.Select(MapToResponse)
             };
         }
  

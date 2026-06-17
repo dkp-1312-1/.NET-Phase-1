@@ -6,6 +6,8 @@ using TraineeManagement1.Models;
 using TraineeManagement1.Services;
 using TraineeManagement1.Middleware;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.Extensions.Localization;
+using TraineeManagement1.Resources;
 namespace TraineeManagement1.Controllers
 {
 
@@ -14,14 +16,15 @@ namespace TraineeManagement1.Controllers
   [Authorize]
   public class TraineesController : ControllerBase
   {
-
+    private readonly IStringLocalizer<SharedResource> _localizer;
     private readonly ITraineeService _traineeServices;
     private readonly ILogger<TraineesController> _logger;
 
-    public TraineesController(ITraineeService traineeService, ILogger<TraineesController> logger)
+    public TraineesController(ITraineeService traineeService, ILogger<TraineesController> logger,IStringLocalizer<SharedResource> localizer)
     {
       _traineeServices = traineeService;
       _logger = logger;
+      _localizer=localizer;
     }
     [HttpGet]
     public async Task<IActionResult> GetAllTrainees(
@@ -37,7 +40,7 @@ namespace TraineeManagement1.Controllers
       ApiResponseDTO<TraineeResponseDTO> result = new ApiResponseDTO<TraineeResponseDTO> { Data = trainee, Success = true };
       if (trainee == null)
       {
-        throw new NotFoundException($"Trainee with id {Id} isnot found");
+        throw new NotFoundException(_localizer["TraineeNotFound", Id]);
       }
       return Ok(result);
     }
@@ -65,7 +68,7 @@ namespace TraineeManagement1.Controllers
       ApiResponseDTO<TraineeResponseDTO> result = new ApiResponseDTO<TraineeResponseDTO> { Data = updatedTrainee, Success = true };
       if (updatedTrainee == null)
       {
-        throw new NotFoundException($"Trainee with id {Id} isnot found");
+         throw new NotFoundException(_localizer["TraineeNotFound", Id]);
       }
       _logger.LogInformation("Trainee updated successfully with ID {Id}", updatedTrainee.Id);
       return Ok(result);
@@ -77,7 +80,7 @@ namespace TraineeManagement1.Controllers
       var isDeleted = await _traineeServices.Delete(Id);
       if (!isDeleted)
       {
-        throw new NotFoundException($"Trainee with id {Id} isnot found");
+         throw new NotFoundException(_localizer["TraineeNotFound", Id]);
       }
       _logger.LogInformation("Trainee Deleted successfully with ID {Id}", Id);
       return Ok(isDeleted);

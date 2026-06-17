@@ -2,7 +2,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TraineeManagement1.DTOs;
 using TraineeManagement1.Services;
-
+using Microsoft.Extensions.Localization;
+using TraineeManagement1.Resources;
 namespace TraineeManagement1.Controllers
 {
     [Route("api/[controller]")]
@@ -10,13 +11,15 @@ namespace TraineeManagement1.Controllers
     [Authorize]
     public class TaskAssignmentsController : ControllerBase
     {
+        private readonly IStringLocalizer<SharedResource> _localizer;
         private readonly ITaskAssignmentService _service;
         private readonly ILogger<TaskAssignmentsController> _logger;
 
-        public TaskAssignmentsController(ITaskAssignmentService service, ILogger<TaskAssignmentsController> logger)
+        public TaskAssignmentsController(ITaskAssignmentService service, ILogger<TaskAssignmentsController> logger,IStringLocalizer<SharedResource> localizer)
         {
             _service = service;
             _logger = logger;
+            _localizer=localizer;
         }
 
         [HttpGet]
@@ -31,7 +34,7 @@ namespace TraineeManagement1.Controllers
             var result = await _service.GetById(id);
             if (result == null)
             {
-                throw new NotFoundException($"Task with id {id} isnot found");
+                 throw new NotFoundException(_localizer["AssignmentNotFound", id]);
             }
             return Ok(new ApiResponseDTO<TaskAssignmentResponseDTO>
             {
@@ -56,7 +59,7 @@ namespace TraineeManagement1.Controllers
 
             var result = await _service.UpdateStatus(id, request.Status);
             if (result == null)
-                throw new NotFoundException($"Task with id {id} isnot found");
+                throw new NotFoundException(_localizer["AssignmentNotFound", id]);
             return Ok(new ApiResponseDTO<TaskAssignmentResponseDTO> { Data = result, Success = true });
 
         }
