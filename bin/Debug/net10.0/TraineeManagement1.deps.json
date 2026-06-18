@@ -15,6 +15,7 @@
           "Microsoft.EntityFrameworkCore.Design": "10.0.9",
           "Microsoft.EntityFrameworkCore.InMemory": "10.0.8",
           "MySql.EntityFrameworkCore": "10.0.7",
+          "MySqlConnector": "2.6.0",
           "NSwag.AspNetCore": "14.7.1"
         },
         "runtime": {
@@ -609,6 +610,14 @@
           }
         }
       },
+      "MySqlConnector/2.6.0": {
+        "runtime": {
+          "lib/net10.0/MySqlConnector.dll": {
+            "assemblyVersion": "2.0.0.0",
+            "fileVersion": "2.6.0.0"
+          }
+        }
+      },
       "Namotion.Reflection/3.5.0": {
         "runtime": {
           "lib/net8.0/Namotion.Reflection.dll": {
@@ -1142,6 +1151,13 @@
       "sha512": "sha512-XFTQ173PMhMuj+ALt6C0BCQKUL8EbDHkzujgJE5Xkfgoo+EN/XD28o0qmiOY0irjE3J20F+Cqvo011renwKsgA==",
       "path": "mysql.entityframeworkcore/10.0.7",
       "hashPath": "mysql.entityframeworkcore.10.0.7.nupkg.sha512"
+    },
+    "MySqlConnector/2.6.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-YLceXhrEznpXf8XkwvH6JWHjAq0AA2lsf/zYWiESe4B9ki2v473XH2GRcPbLwktBqYu1Uy3Dvs7G+mu48QKL2w==",
+      "path": "mysqlconnector/2.6.0",
+      "hashPath": "mysqlconnector.2.6.0.nupkg.sha512"
     },
     "Namotion.Reflection/3.5.0": {
       "type": "package",

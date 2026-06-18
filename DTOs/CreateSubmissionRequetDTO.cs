@@ -1,3 +1,5 @@
+using TraineeManagement1.Models;
+
 namespace TraineeManagement1.DTOs
 {
     public class CreateSubmissionRequestDTO
@@ -5,6 +7,6 @@ namespace TraineeManagement1.DTOs
         public int TaskAssignmentId { get; set; }
         public string SubmissionUrl { get; set; }
         public string Notes { get; set; }
-        public string Status { get; set; }
+        public SubType Status { get; set; }
     }
 }

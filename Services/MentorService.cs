@@ -13,7 +13,7 @@ namespace TraineeManagement1.Services
         {
             _context = context;
         }
-        public async Task<PagedResponseDTO<MentorResponseDTO>> GetAll(SearchDTO mentor)
+        public async Task<PagedResponseDTO<MentorResponseDTO>> GetAll(SearchDTO<MentorStatusType> mentor)
         {
             IQueryable<Mentor> Query = _context.Mentors.AsQueryable();
             if (mentor.Name != null)
@@ -24,9 +24,9 @@ namespace TraineeManagement1.Services
             }
             if (mentor.Status != null)
             {
-                var Status = mentor.Status.ToLower();
+                MentorStatusType Status = mentor.Status;
                 Query = Query.Where(t =>
-               t.Status.ToLower() == Status);
+               t.Status == Status);
             }
             var totalRecords = await Query.CountAsync();
             var mentors = await Query.Skip((mentor.PageNumber - 1) * mentor.PageSize).Take(mentor.PageSize).ToListAsync();

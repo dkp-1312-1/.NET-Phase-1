@@ -4,6 +4,7 @@ using TraineeManagement1.DTOs;
 using TraineeManagement1.Services;
 using Microsoft.Extensions.Localization;
 using TraineeManagement1.Resources;
+using TraineeManagement1.Models;
 namespace TraineeManagement1.Controllers
 {
     [Route("api/[controller]")]
@@ -13,17 +14,15 @@ namespace TraineeManagement1.Controllers
     {
         private readonly ISubmissionService _service;
         private readonly ILogger<SubmissionController> _logger;
-        private readonly IStringLocalizer<SharedResource> _localizer;
 
-        public SubmissionController(ISubmissionService service, ILogger<SubmissionController> logger,IStringLocalizer<SharedResource> localizer)
+        public SubmissionController(ISubmissionService service, ILogger<SubmissionController> logger)
         {
             _service = service;
             _logger = logger;
-            _localizer=localizer;
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAll([FromQuery] SearchDTO search)
+        public async Task<IActionResult> GetAll([FromQuery] SearchDTO<SubType> search)
         {
             return Ok(await _service.GetAll(search));
         }
@@ -34,7 +33,7 @@ namespace TraineeManagement1.Controllers
             var result = await _service.GetById(id);
             if (result == null)
             {
-                throw new NotFoundException(_localizer["SubmissionNotFound", id]);
+                throw new NotFoundException(SharedResource.SubmissionNotFound(id));
             }
             return Ok(new ApiResponseDTO<SubmissionResponseDTO>
             {

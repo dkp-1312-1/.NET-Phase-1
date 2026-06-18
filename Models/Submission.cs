@@ -1,5 +1,10 @@
 namespace TraineeManagement1.Models
 {
+    public enum SubType
+    {
+        Submitted,
+        Resubmitted
+    }
     public class Submission
     {
         public required int Id { get; set; }
@@ -8,7 +13,7 @@ namespace TraineeManagement1.Models
         public string SubmissionUrl { get; set; }
         public string Notes { get; set; }
         public DateTime SubmittedDate { get; set; }
-        public string Status { get; set; } 
+        public SubType Status { get; set; } 
         public ICollection<Review> Reviews { get; set; }
     }
 }

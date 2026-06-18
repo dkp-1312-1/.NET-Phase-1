@@ -9,13 +9,9 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.OpenApi.Models;
-using DotNetEnv;
-DotNetEnv.Env.Load();
 var builder = WebApplication.CreateBuilder(args);
 
-
-
-var jwtSettings = builder.Configuration.GetSection("Jwt");
+Config.Initialize(builder.Configuration);
 
 builder.Services.AddCors(options =>
 {
@@ -40,15 +36,14 @@ builder.Services.AddAuthentication(options =>
         ValidateAudience = true,
         ValidateLifetime = true,
         ValidateIssuerSigningKey = true,
-        ValidIssuer = jwtSettings["Issuer"],
-        ValidAudience = jwtSettings["Audience"],
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings["Key"]))
+        ValidIssuer = Config.Issuer,
+        ValidAudience = Config.Audience,
+        IssuerSigningKey =Config.SecurityKey
     };
 });
 builder.Services.AddAuthorization();
 
 
-// Add services to the container.
 builder.Services.AddOpenApi("v1", options =>
 {
     options.AddDocumentTransformer((document, context, cancellationToken) =>
@@ -65,7 +60,6 @@ builder.Services.AddOpenApi("v1", options =>
         document.Components ??= new Microsoft.OpenApi.Models.OpenApiComponents();
         document.Components.SecuritySchemes.Add("Bearer", scheme);
 
-        // 2. Apply it globally to all endpoints
         document.SecurityRequirements.Add(new Microsoft.OpenApi.Models.OpenApiSecurityRequirement
         {
             [new Microsoft.OpenApi.Models.OpenApiSecurityScheme
@@ -82,7 +76,6 @@ builder.Services.AddOpenApi("v1", options =>
     });
 });
 
-builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
 builder.Services.AddControllers(options =>
 { options.Filters.Add<ValidateModelAttribute>(); })
 .ConfigureApiBehaviorOptions(options =>
@@ -91,7 +84,6 @@ builder.Services.AddControllers(options =>
 
 })
 .AddDataAnnotationsLocalization(); ;
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 // builder.Services.AddDbContext<AppDbContext>(options=>
 // options.UseInMemoryDatabase("TraineeManagementDb"));
@@ -106,7 +98,6 @@ builder.Services.AddScoped<IReviewService, ReviewService>();
 builder.Logging.ClearProviders();
 builder.Logging.AddConsole();
 
-// builder.Services.AddExceptionHandler<GlobalExceptionMiddleware>();
 
 
 
@@ -118,7 +109,6 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 var app = builder.Build();
 
-// app.UseExceptionHandler(); 
 app.UseMiddleware<GlobalExceptionMiddleware>();
 if (app.Environment.IsDevelopment())
 {
@@ -129,13 +119,6 @@ if (app.Environment.IsDevelopment())
     });
 }
 
-var supportedCultures = new[] { "en-US", "fr-FR", "es-ES" };
-var localizationOptions = new RequestLocalizationOptions()
-    .SetDefaultCulture(supportedCultures[0])
-    .AddSupportedCultures(supportedCultures)
-    .AddSupportedUICultures(supportedCultures);
-
-app.UseRequestLocalization(localizationOptions);
 
 app.UseCors("ReactClientPolicy");
 app.UseHttpsRedirection();

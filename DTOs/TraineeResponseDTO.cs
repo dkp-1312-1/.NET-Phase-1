@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using TraineeManagement1.Models;
 
 namespace TraineeManagement1.DTOs
 {
@@ -9,7 +10,7 @@ namespace TraineeManagement1.DTOs
         public string? LastName { get; set; }
         public string? Email { get; set; }
         public string? TechStack { get; set; }
-        public string? Status { get; set; }
+        public TraineeStatusType? Status { get; set; }
         public DateTime CreatedDate { get; set; }
         public DateTime UpdatedDate { get; set; }
     }

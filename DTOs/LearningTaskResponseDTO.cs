@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using TraineeManagement1.Models;
 namespace TraineeManagement1.DTOs
 {
     public class LearningTaskResponseDTO
@@ -8,7 +9,7 @@ namespace TraineeManagement1.DTOs
         public string Description { get; set; }
         public string ExpectedTechStack { get; set; }
         public DateTime DueDate { get; set; }
-        public string Status { get; set; }
+        public LTStatusType Status { get; set; }
         public DateTime CreatedDate { get; set; }
         public DateTime UpdatedDate { get; set; }
     }

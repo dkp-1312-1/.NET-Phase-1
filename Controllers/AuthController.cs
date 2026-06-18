@@ -21,12 +21,10 @@ namespace TraineeManagement1.Controllers
     {
         private readonly ILogger<AuthController> _logger;
         private readonly IJWTService _jwtService;
-        private readonly IStringLocalizer<SharedResource> _localizer;
-        public AuthController(ILogger<AuthController> logger, IJWTService jwtService,IStringLocalizer<SharedResource> localizer)
+        public AuthController(ILogger<AuthController> logger, IJWTService jwtService)
         {
             _logger = logger;
             _jwtService = jwtService;
-            _localizer=localizer;
         }
 
         [HttpPost("login")]
@@ -35,7 +33,7 @@ namespace TraineeManagement1.Controllers
             LoginResponseDTO result = await _jwtService.GenerateToken(loginRequest);
             if (result == null)
             {
-                throw new UnauthorizedException(_localizer["Unauthorized"]);
+                throw new UnauthorizedException(SharedResource.Unauthorized);
             }
             _logger.LogInformation("Successful login for username: {Username}", loginRequest.Username);
             return Ok(result);

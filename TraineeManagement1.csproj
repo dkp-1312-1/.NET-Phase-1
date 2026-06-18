@@ -19,6 +19,7 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="10.0.8" />
     <PackageReference Include="Microsoft.NETCore.App" Version="2.2.8" />
     <PackageReference Include="MySql.EntityFrameworkCore" Version="10.0.7" />
+    <PackageReference Include="MySqlConnector" Version="2.6.0" />
     <PackageReference Include="NSwag.AspNetCore" Version="14.7.1" />
   <EmbeddedResource Update="Resources\SharedResource.resx">
     <Generator>ResXFileCodeGenerator</Generator>

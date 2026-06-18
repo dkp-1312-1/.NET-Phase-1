@@ -13,7 +13,7 @@ namespace TraineeManagement1.Services
         {
             _context = context;
         }
-        public async Task<PagedResponseDTO<TraineeResponseDTO>> GetAll(SearchDTO trainee)
+        public async Task<PagedResponseDTO<TraineeResponseDTO>> GetAll(SearchDTO<TraineeStatusType> trainee)
         {
             IQueryable<Trainee> Query = _context.Trainees.AsQueryable();
             if (trainee.Name != null)
@@ -24,9 +24,9 @@ namespace TraineeManagement1.Services
             }
             if (trainee.Status != null)
             {
-                var Status = trainee.Status.ToLower();
+                var Status = trainee.Status;
                 Query = Query.Where(t =>
-               t.Status.ToLower() == Status);
+               t.Status == Status);
             }
             var totalRecords = await Query.CountAsync();
             var trainees = await Query.Skip((trainee.PageNumber - 1) * trainee.PageSize).Take(trainee.PageSize).ToListAsync();

@@ -7,7 +7,7 @@ namespace TraineeManagement1.Services
 {
     public interface IReviewService
     {
-        Task<PagedResponseDTO<ReviewResponseDTO>> GetAll(SearchDTO search);
+        Task<PagedResponseDTO<ReviewResponseDTO>> GetAll(SearchDTO<RSType> search);
         Task<ReviewResponseDTO> GetById(int id);
         Task<ReviewResponseDTO> Create(CreateReviewRequestDTO request);
     }

@@ -2,6 +2,9 @@ using Microsoft.AspNetCore.Http;
 using System.Net;
 using System.Text.Json;
 using TraineeManagement1.Services;
+using MySql.Data.MySqlClient;
+using TraineeManagement1.DTOs;
+using Google.Protobuf.WellKnownTypes;
 
 namespace TraineeManagement1.Middleware
 {
@@ -43,7 +46,44 @@ namespace TraineeManagement1.Middleware
             }
             catch (Exception ex)
             {
-                await HandleExceptionAsync(context);
+                if (ex.InnerException is MySqlException mysqlEx)
+                {
+                    _logger.LogError($"ERROR CODE::::{mysqlEx.Number}::::::::::");
+                    if (mysqlEx.Number == 1451)
+                    {
+                        _logger.LogWarning("Foreign key constraint failure on Delete: {Message}", mysqlEx.Message);
+                        await WriteResponse(context, StatusCodes.Status400BadRequest, "Cannot delete or update because of related data. Please remove related data first or change reference");
+                    }
+                    if (mysqlEx.Number == 1452) 
+                    {
+                        _logger.LogWarning("Foreign key constraint failure on Insert or Update: {Message}", mysqlEx.Message);
+                        await WriteResponse(context, StatusCodes.Status400BadRequest, "Related data not found, Please ensure referenced data exists..");
+                    }
+                    if (mysqlEx.Number == 1062) 
+                    {
+                        _logger.LogWarning("Duplicate entry constraint failure: {Message}", mysqlEx.Message);
+
+                        if (mysqlEx.Message.Contains("Email"))
+                        {
+                            await WriteResponse(context, StatusCodes.Status409Conflict, "This email address is already registered.");
+                        }
+                        else if (mysqlEx.Message.Contains("Username"))
+                        {
+                            await WriteResponse(context, StatusCodes.Status409Conflict, "Username already exists.");
+                        }
+                        else
+                        {
+                            await WriteResponse(context, StatusCodes.Status409Conflict, "A record with these details already exists.");
+                        }
+                    }
+                }
+                else
+                {
+                    _logger.LogError(ex, "Unhandled exception on {Method} {Path}",
+                        context.Request.Method, context.Request.Path);
+                    await WriteResponse(context, StatusCodes.Status500InternalServerError, "Something Went Wrong, Please Try Again");
+                }
+
             }
         }
         private static Task HandleExceptionAsync(HttpContext context)
@@ -61,7 +101,15 @@ namespace TraineeManagement1.Middleware
         {
             context.Response.StatusCode = statusCode;
             context.Response.ContentType = "application/json";
-            await context.Response.WriteAsJsonAsync(new { Message = message}); 
+            if(statusCode==404)
+            {
+                await context.Response.WriteAsJsonAsync(new {Message=message,Data=new List<String>{},Success=false});
+            }
+            else
+            {
+                await context.Response.WriteAsJsonAsync(new { Message = message });
+            }
+            
         }
     }
 }

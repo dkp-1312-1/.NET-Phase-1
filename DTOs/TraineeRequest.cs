@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using TraineeManagement1.Models;
 
 namespace TraineeManagement1.DTOs
 {
@@ -16,6 +17,6 @@ namespace TraineeManagement1.DTOs
         [Required(ErrorMessage = "TechStack is required")]
         public string TechStack { get; set; }
         [Required(ErrorMessage = "Status is required")]
-        public string Status { get; set; }
+        public TraineeStatusType Status { get; set; }
     }
 }

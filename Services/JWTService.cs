@@ -10,11 +10,9 @@ namespace TraineeManagement1.Services
     public class JWTService : IJWTService
     {
         private readonly AppDbContext _context;
-        private readonly IConfiguration _configuration;
-        public JWTService(AppDbContext context, IConfiguration configuration)
+        public JWTService(AppDbContext context)
         {
             _context = context;
-            _configuration = configuration;
         }
         public async Task<LoginResponseDTO> GenerateToken(LoginRequestDTO loginRequest)
         {
@@ -29,8 +27,6 @@ namespace TraineeManagement1.Services
                 Username = user.Username,
                 Role = user.Role
             };
-            var jwtSettings = _configuration.GetSection("jwt");
-            var key = Encoding.UTF8.GetBytes(jwtSettings["key"]);
 
             var claims = new[]
             {
@@ -40,14 +36,14 @@ namespace TraineeManagement1.Services
             };
 
             var signingCredentials = new SigningCredentials(
-                new SymmetricSecurityKey(key),
+                Config.SecurityKey,
                 SecurityAlgorithms.HmacSha256
             );
-            var expiryMinutes = Convert.ToInt32(jwtSettings["ExpiryMinutes"]);
+            var expiryMinutes = Convert.ToInt32(Config.ExpiryMinutes);
 
             var token = new JwtSecurityToken(
-                issuer: jwtSettings["Issuer"],
-                audience: jwtSettings["Audience"],
+                issuer: Config.Issuer,
+                audience: Config.Audience,
                 claims: claims,
                 expires: DateTime.UtcNow.AddMinutes(expiryMinutes),
                 signingCredentials: signingCredentials);

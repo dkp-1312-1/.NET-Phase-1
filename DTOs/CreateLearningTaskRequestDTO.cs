@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
- 
+using TraineeManagement1.Models;
+
 namespace TraineeManagement1.DTOs
 {
     public class CreateLearningTaskRequestDTO   
@@ -18,6 +19,6 @@ namespace TraineeManagement1.DTOs
         public DateTime DueDate { get; set; }
  
         [Required(ErrorMessage = "Status is required")]
-        public string Status { get; set; }
+        public LTStatusType Status { get; set; }
     }
 }

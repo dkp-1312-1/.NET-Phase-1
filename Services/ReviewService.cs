@@ -11,7 +11,7 @@ namespace TraineeManagement1.Services
  
         public ReviewService(AppDbContext context) { _context = context; }
  
-        public async Task<PagedResponseDTO<ReviewResponseDTO>> GetAll(SearchDTO search)
+        public async Task<PagedResponseDTO<ReviewResponseDTO>> GetAll(SearchDTO<RSType> search)
         {
             var query = _context.Reviews.AsQueryable();
             var totalRecords = await query.CountAsync();

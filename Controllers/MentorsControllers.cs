@@ -16,21 +16,17 @@ namespace TraineeManagement1.Controllers
     {
         private readonly IMentorService _mentorServices;
         private readonly ILogger<MentorsController> _logger;
-        private readonly IStringLocalizer<SharedResource> _localizer;
-        public MentorsController(IMentorService mentorService, ILogger<MentorsController> logger,IStringLocalizer<SharedResource> localizer)
+        public MentorsController(IMentorService mentorService, ILogger<MentorsController> logger)
         {
             _mentorServices = mentorService;
             _logger = logger;
-            _localizer=localizer;
         }
         [HttpGet]
         public async Task<IActionResult> GetAllMentors(
-            [FromQuery] SearchDTO searchObject)
+            [FromQuery] SearchDTO<MentorStatusType> searchObject)
         {
-
             PagedResponseDTO<MentorResponseDTO> mentors = await _mentorServices.GetAll(searchObject);
             return Ok(mentors);
-
         }
         [HttpGet("{Id}")]
         public async Task<IActionResult> GetMentorById(int Id)
@@ -39,7 +35,7 @@ namespace TraineeManagement1.Controllers
             ApiResponseDTO<MentorResponseDTO> result = new ApiResponseDTO<MentorResponseDTO> { Data = mentor, Success = true };
             if (mentor == null)
             {
-                throw new NotFoundException(_localizer["MentorNotFound", Id]);
+                throw new NotFoundException(SharedResource.MentorNotFound(Id));
             }
             return Ok(result);
         }
@@ -65,7 +61,7 @@ namespace TraineeManagement1.Controllers
             ApiResponseDTO<MentorResponseDTO> result = new ApiResponseDTO<MentorResponseDTO> { Data = updatedMentor, Success = true };
             if (updatedMentor == null)
             {
-                throw new NotFoundException(_localizer["MentorNotFound", Id].Value);
+                throw new NotFoundException(SharedResource.MentorNotFound(Id));
             }
             _logger.LogInformation("Mentor updated successfully with ID {Id}", updatedMentor.Id);
             return Ok(result);
@@ -78,7 +74,7 @@ namespace TraineeManagement1.Controllers
             var isDeleted = await _mentorServices.Delete(Id);
             if (!isDeleted)
             {
-                throw new NotFoundException(_localizer["MentorNotFound", Id].Value);
+                throw new NotFoundException(SharedResource.MentorNotFound(Id));
             }
             _logger.LogInformation("Mentor Deleted successfully with ID {Id}", Id);
             return Ok(isDeleted);

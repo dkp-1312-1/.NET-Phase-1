@@ -4,6 +4,7 @@ using TraineeManagement1.DTOs;
 using TraineeManagement1.Services;
 using Microsoft.Extensions.Localization;
 using TraineeManagement1.Resources;
+using TraineeManagement1.Models;
 namespace TraineeManagement1.Controllers
 {
 
@@ -14,21 +15,18 @@ namespace TraineeManagement1.Controllers
     {
         private readonly ILearningTaskService _learningTaskService;
         private readonly ILogger<LearningTasksController> _logger;
-        private readonly IStringLocalizer<SharedResource> _localizer;
 
-        public LearningTasksController(ILearningTaskService learningTaskService, ILogger<LearningTasksController> logger,IStringLocalizer<SharedResource> localizer)
+        public LearningTasksController(ILearningTaskService learningTaskService, ILogger<LearningTasksController> logger)
         {
             _learningTaskService = learningTaskService;
             _logger = logger;
-            _localizer=localizer;
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllLearningTasks([FromQuery] SearchDTO searchObject)
+        public async Task<IActionResult> GetAllLearningTasks([FromQuery] SearchDTO<LTStatusType> searchObject)
         {
             PagedResponseDTO<LearningTaskResponseDTO> tasks = await _learningTaskService.GetAll(searchObject);
             return Ok(tasks);
-
         }
 
         [HttpGet("{Id}")]
@@ -39,7 +37,7 @@ namespace TraineeManagement1.Controllers
             ApiResponseDTO<LearningTaskResponseDTO> result = new ApiResponseDTO<LearningTaskResponseDTO> { Data = task, Success = true };
             if (task == null)
             {
-                throw new NotFoundException(_localizer["SubmissionNotFound", Id]);
+                throw new NotFoundException(SharedResource.TaskNotFound(Id));
             }
 
             return Ok(task);
@@ -66,7 +64,7 @@ namespace TraineeManagement1.Controllers
             ApiResponseDTO<LearningTaskResponseDTO> result = new ApiResponseDTO<LearningTaskResponseDTO> { Data = updatedTask, Success = true };
             if (updatedTask == null)
             {
-                throw new NotFoundException($"Learning Task with id {Id} isnot found");
+                throw new NotFoundException(SharedResource.TaskNotFound(Id));
             }
             _logger.LogInformation("Task updated successfully with ID {Id}", updatedTask.Id);
             return Ok(result);
@@ -78,7 +76,7 @@ namespace TraineeManagement1.Controllers
             var isDeleted = await _learningTaskService.Delete(Id);
             if (!isDeleted)
             {
-                throw new NotFoundException($"Learning Task with id {Id} isnot found");
+               throw new NotFoundException(SharedResource.TaskNotFound(Id));
             }
             _logger.LogInformation("Task Deleted successfully with ID {Id}", Id);
             return Ok(isDeleted);

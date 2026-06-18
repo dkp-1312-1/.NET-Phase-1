@@ -39,9 +39,8 @@ namespace TraineeManagement1.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasColumnType("longtext");
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
 
                     b.Property<string>("Title")
                         .IsRequired()
@@ -65,7 +64,7 @@ namespace TraineeManagement1.Migrations
                         .HasColumnType("datetime(6)");
 
                     b.Property<string>("Email")
-                        .HasColumnType("longtext");
+                        .HasColumnType("varchar(255)");
 
                     b.Property<string>("Expertise")
                         .HasColumnType("longtext");
@@ -76,13 +75,16 @@ namespace TraineeManagement1.Migrations
                     b.Property<string>("LastName")
                         .HasColumnType("longtext");
 
-                    b.Property<string>("Status")
-                        .HasColumnType("longtext");
+                    b.Property<int?>("Status")
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("UpdatedDate")
                         .HasColumnType("datetime(6)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Email")
+                        .IsUnique();
 
                     b.ToTable("Mentors");
                 });
@@ -100,9 +102,8 @@ namespace TraineeManagement1.Migrations
                     b.Property<int>("MentorId")
                         .HasColumnType("int");
 
-                    b.Property<string>("ReviewStatus")
-                        .IsRequired()
-                        .HasColumnType("longtext");
+                    b.Property<int>("ReviewStatus")
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("ReviewedDate")
                         .HasColumnType("datetime(6)");
@@ -114,6 +115,10 @@ namespace TraineeManagement1.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("MentorId");
+
+                    b.HasIndex("SubmissionId");
 
                     b.ToTable("Reviews");
                 });
@@ -128,9 +133,8 @@ namespace TraineeManagement1.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasColumnType("longtext");
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
 
                     b.Property<string>("SubmissionUrl")
                         .IsRequired()
@@ -143,6 +147,8 @@ namespace TraineeManagement1.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("TaskAssignmentId");
 
                     b.ToTable("Submissions");
                 });
@@ -169,14 +175,19 @@ namespace TraineeManagement1.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasColumnType("longtext");
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
 
                     b.Property<int>("TraineeId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("LearningTaskId");
+
+                    b.HasIndex("MentorId");
+
+                    b.HasIndex("TraineeId");
 
                     b.ToTable("TaskAssignments");
                 });
@@ -191,7 +202,7 @@ namespace TraineeManagement1.Migrations
                         .HasColumnType("datetime(6)");
 
                     b.Property<string>("Email")
-                        .HasColumnType("longtext");
+                        .HasColumnType("varchar(255)");
 
                     b.Property<string>("FirstName")
                         .HasColumnType("longtext");
@@ -199,8 +210,8 @@ namespace TraineeManagement1.Migrations
                     b.Property<string>("LastName")
                         .HasColumnType("longtext");
 
-                    b.Property<string>("Status")
-                        .HasColumnType("longtext");
+                    b.Property<int?>("Status")
+                        .HasColumnType("int");
 
                     b.Property<string>("TechStack")
                         .HasColumnType("longtext");
@@ -209,6 +220,9 @@ namespace TraineeManagement1.Migrations
                         .HasColumnType("datetime(6)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Email")
+                        .IsUnique();
 
                     b.ToTable("Trainees");
                 });
@@ -224,7 +238,7 @@ namespace TraineeManagement1.Migrations
 
                     b.Property<string>("Email")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("varchar(255)");
 
                     b.Property<string>("PasswordHash")
                         .IsRequired()
@@ -242,19 +256,106 @@ namespace TraineeManagement1.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("Email")
+                        .IsUnique();
+
                     b.ToTable("Users");
 
                     b.HasData(
                         new
                         {
                             Id = 1,
-                            CreatedDate = new DateTime(2026, 6, 16, 9, 45, 56, 414, DateTimeKind.Utc).AddTicks(9605),
+                            CreatedDate = new DateTime(2026, 6, 18, 11, 43, 56, 168, DateTimeKind.Utc).AddTicks(555),
                             Email = "admin@gmail.com",
-                            PasswordHash = "$2a$12$CoP0muCl.EuRzfShYjtS3OY.e85yVBWpZw4yzJDNJBQFTh2aL/Lfe",
+                            PasswordHash = "$2a$12$4oHgZzsYF5cWhhtv4mGSr.IVzu7XnBYy6/XUm.Ofa7cuKk39gRwzK",
                             Role = 0,
-                            UpdatedDate = new DateTime(2026, 6, 16, 9, 45, 56, 414, DateTimeKind.Utc).AddTicks(9838),
+                            UpdatedDate = new DateTime(2026, 6, 18, 11, 43, 56, 168, DateTimeKind.Utc).AddTicks(906),
                             Username = "admin"
                         });
+                });
+
+            modelBuilder.Entity("TraineeManagement1.Models.Review", b =>
+                {
+                    b.HasOne("TraineeManagement1.Models.Mentor", "Mentor")
+                        .WithMany("Reviews")
+                        .HasForeignKey("MentorId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("TraineeManagement1.Models.Submission", "Submission")
+                        .WithMany("Reviews")
+                        .HasForeignKey("SubmissionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Mentor");
+
+                    b.Navigation("Submission");
+                });
+
+            modelBuilder.Entity("TraineeManagement1.Models.Submission", b =>
+                {
+                    b.HasOne("TraineeManagement1.Models.TaskAssignment", "TaskAssignment")
+                        .WithMany("Submissions")
+                        .HasForeignKey("TaskAssignmentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("TaskAssignment");
+                });
+
+            modelBuilder.Entity("TraineeManagement1.Models.TaskAssignment", b =>
+                {
+                    b.HasOne("TraineeManagement1.Models.LearningTask", "LearningTask")
+                        .WithMany("TaskAssignments")
+                        .HasForeignKey("LearningTaskId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("TraineeManagement1.Models.Mentor", "Mentor")
+                        .WithMany("TaskAssignments")
+                        .HasForeignKey("MentorId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("TraineeManagement1.Models.Trainee", "Trainee")
+                        .WithMany("TaskAssignments")
+                        .HasForeignKey("TraineeId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("LearningTask");
+
+                    b.Navigation("Mentor");
+
+                    b.Navigation("Trainee");
+                });
+
+            modelBuilder.Entity("TraineeManagement1.Models.LearningTask", b =>
+                {
+                    b.Navigation("TaskAssignments");
+                });
+
+            modelBuilder.Entity("TraineeManagement1.Models.Mentor", b =>
+                {
+                    b.Navigation("Reviews");
+
+                    b.Navigation("TaskAssignments");
+                });
+
+            modelBuilder.Entity("TraineeManagement1.Models.Submission", b =>
+                {
+                    b.Navigation("Reviews");
+                });
+
+            modelBuilder.Entity("TraineeManagement1.Models.TaskAssignment", b =>
+                {
+                    b.Navigation("Submissions");
+                });
+
+            modelBuilder.Entity("TraineeManagement1.Models.Trainee", b =>
+                {
+                    b.Navigation("TaskAssignments");
                 });
 #pragma warning restore 612, 618
         }

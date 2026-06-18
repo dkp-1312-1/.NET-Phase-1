@@ -7,9 +7,9 @@ namespace TraineeManagement1.Services
 {
     public interface ITaskAssignmentService
     {
-        Task<PagedResponseDTO<TaskAssignmentResponseDTO>> GetAll(SearchDTO search);
+        Task<PagedResponseDTO<TaskAssignmentResponseDTO>> GetAll(SearchDTO<TAType> search);
         Task<TaskAssignmentResponseDTO> GetById(int id);
         Task<TaskAssignmentResponseDTO> Create(CreateTaskAssignmentRequestDTO request);
-        Task<TaskAssignmentResponseDTO> UpdateStatus(int id, string status);
+        Task<TaskAssignmentResponseDTO> UpdateStatus(int id, TAType status);
     }
 }

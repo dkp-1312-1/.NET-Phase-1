@@ -14,13 +14,13 @@ namespace TraineeManagement1.Services
             _context = context;
         }
  
-        public async Task<PagedResponseDTO<TaskAssignmentResponseDTO>> GetAll(SearchDTO search)
+        public async Task<PagedResponseDTO<TaskAssignmentResponseDTO>> GetAll(SearchDTO<TAType> search)
         {
             var query = _context.TaskAssignments.AsQueryable();
             
-            if (!string.IsNullOrEmpty(search.Status))
+            if (search.Status!=null)
             {
-                query = query.Where(t => t.Status.ToLower() == search.Status.ToLower());
+                query = query.Where(t => t.Status == search.Status);
             }
  
             var totalRecords = await query.CountAsync();
@@ -61,7 +61,7 @@ namespace TraineeManagement1.Services
                 LearningTaskId = request.LearningTaskId,
                 AssignedDate = DateTime.UtcNow,
                 DueDate = request.DueDate,
-                Status = "Assigned",
+                Status = TAType.Assigned,
                 Remarks = request.Remarks
             };
  
@@ -70,7 +70,7 @@ namespace TraineeManagement1.Services
             return MapToResponse(newAssignment);
         }
  
-        public async Task<TaskAssignmentResponseDTO> UpdateStatus(int id, string status)
+        public async Task<TaskAssignmentResponseDTO> UpdateStatus(int id, TAType status)
         {
             var assignment = await _context.TaskAssignments.FindAsync(id);
             if (assignment == null) return null;

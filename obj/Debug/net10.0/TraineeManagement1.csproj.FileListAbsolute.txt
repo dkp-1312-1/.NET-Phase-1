@@ -139,7 +139,6 @@
 /mnt/d/Day2/123/TraineeManagement1/bin/Debug/net10.0/runtimes/win/lib/net8.0/System.Windows.Extensions.dll
 /mnt/d/Day2/123/TraineeManagement1/obj/Debug/net10.0/TraineeManagement1.csproj.AssemblyReference.cache
 /mnt/d/Day2/123/TraineeManagement1/obj/Debug/net10.0/rpswa.dswa.cache.json
-/mnt/d/Day2/123/TraineeManagement1/obj/Debug/net10.0/TraineeManagement1.csproj.GenerateResource.cache
 /mnt/d/Day2/123/TraineeManagement1/obj/Debug/net10.0/TraineeManagement1.GeneratedMSBuildEditorConfig.editorconfig
 /mnt/d/Day2/123/TraineeManagement1/obj/Debug/net10.0/TraineeManagement1.AssemblyInfoInputs.cache
 /mnt/d/Day2/123/TraineeManagement1/obj/Debug/net10.0/TraineeManagement1.AssemblyInfo.cs
@@ -162,4 +161,4 @@
 /mnt/d/Day2/123/TraineeManagement1/obj/Debug/net10.0/TraineeManagement1.pdb
 /mnt/d/Day2/123/TraineeManagement1/obj/Debug/net10.0/TraineeManagement1.genruntimeconfig.cache
 /mnt/d/Day2/123/TraineeManagement1/obj/Debug/net10.0/ref/TraineeManagement1.dll
-/mnt/d/Day2/123/TraineeManagement1/obj/Debug/net10.0/TraineeManagement1.Resources.Resources.SharedResource.resources
+/mnt/d/Day2/123/TraineeManagement1/bin/Debug/net10.0/MySqlConnector.dll

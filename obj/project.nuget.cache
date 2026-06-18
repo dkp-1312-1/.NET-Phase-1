@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "/xtH9IHenPo=",
+  "dgSpecHash": "Y9cb5UYPTYY=",
   "success": true,
   "projectFilePath": "/mnt/d/Day2/123/TraineeManagement1/TraineeManagement1.csproj",
   "expectedPackageFiles": [
@@ -46,6 +46,7 @@
     "/home/dhrumil-patel/.nuget/packages/mono.texttemplating/3.0.0/mono.texttemplating.3.0.0.nupkg.sha512",
     "/home/dhrumil-patel/.nuget/packages/mysql.data/9.7.0/mysql.data.9.7.0.nupkg.sha512",
     "/home/dhrumil-patel/.nuget/packages/mysql.entityframeworkcore/10.0.7/mysql.entityframeworkcore.10.0.7.nupkg.sha512",
+    "/home/dhrumil-patel/.nuget/packages/mysqlconnector/2.6.0/mysqlconnector.2.6.0.nupkg.sha512",
     "/home/dhrumil-patel/.nuget/packages/namotion.reflection/3.5.0/namotion.reflection.3.5.0.nupkg.sha512",
     "/home/dhrumil-patel/.nuget/packages/netstandard.library/2.0.3/netstandard.library.2.0.3.nupkg.sha512",
     "/home/dhrumil-patel/.nuget/packages/newtonsoft.json/13.0.3/newtonsoft.json.13.0.3.nupkg.sha512",

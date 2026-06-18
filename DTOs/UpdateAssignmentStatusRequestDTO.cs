@@ -1,8 +1,10 @@
+using TraineeManagement1.Models;
+
 namespace TraineeManagement1.DTOs
 {
     public class UpdateAssignmentStatusRequestDTO
     {
-        public string Status { get; set; }
+        public TAType Status { get; set; }
     }
 }
  

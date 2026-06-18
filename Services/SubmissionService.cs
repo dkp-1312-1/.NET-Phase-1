@@ -11,7 +11,7 @@ namespace TraineeManagement1.Services
 
         public SubmissionService(AppDbContext context) { _context = context; }
 
-        public async Task<PagedResponseDTO<SubmissionResponseDTO>> GetAll(SearchDTO search)
+        public async Task<PagedResponseDTO<SubmissionResponseDTO>> GetAll(SearchDTO<SubType> search)
         {
             var query = _context.Submissions.AsQueryable();
             var totalRecords = await query.CountAsync();

@@ -14,7 +14,7 @@ namespace TraineeManagement1.Services
             _context = context;
         }
  
-        public async Task<PagedResponseDTO<LearningTaskResponseDTO>> GetAll(SearchDTO searchDTO)
+        public async Task<PagedResponseDTO<LearningTaskResponseDTO>> GetAll(SearchDTO<LTStatusType> searchDTO)
         {
             IQueryable<LearningTask> Query = _context.LearningTasks.AsQueryable();
             if (searchDTO.Name != null)
@@ -25,9 +25,9 @@ namespace TraineeManagement1.Services
             }
             if (searchDTO.Status != null)
             {
-                var Status = searchDTO.Status.ToLower();
+                var Status = searchDTO.Status;
                 Query = Query.Where(t =>
-               t.Status.ToLower() == Status);
+               t.Status == Status);
             }
             var totalRecords = await Query.CountAsync();
             var learningTasks = await Query.Skip((searchDTO.PageNumber - 1) * searchDTO.PageSize).Take(searchDTO.PageSize).ToListAsync();

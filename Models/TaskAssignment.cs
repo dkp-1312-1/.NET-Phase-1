@@ -1,5 +1,13 @@
 namespace TraineeManagement1.Models
 {
+    public enum TAType
+    {
+        Assigned,
+        Inprogress,
+        Submitted,
+        Reviewed,
+        Completed
+    }
     public class TaskAssignment
     {
         public int Id { get; set; }
@@ -15,7 +23,7 @@ namespace TraineeManagement1.Models
         
         public DateTime AssignedDate { get; set; }
         public DateTime DueDate { get; set; }
-        public string Status { get; set; } 
+        public TAType Status { get; set; } 
         public string Remarks { get; set; }
         public ICollection<Submission>? Submissions { get; set; }
     }

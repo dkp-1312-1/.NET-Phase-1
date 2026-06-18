@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using TraineeManagement1.Models;
 
 namespace TraineeManagement1.DTOs
 {
@@ -17,6 +18,6 @@ namespace TraineeManagement1.DTOs
         public string Expertise { get; set; }
 
         [Required(ErrorMessage = "Status is required")]
-        public string Status { get; set; }
+        public MentorStatusType Status { get; set; }
     }
 }

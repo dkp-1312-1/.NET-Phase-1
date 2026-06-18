@@ -1,5 +1,11 @@
 namespace TraineeManagement1.Models
 {
+    public enum RSType
+    {
+        Accepted,
+        ChangesRequired,
+        Rejected
+    }
     public class Review
     {
         public required int Id { get; set; }
@@ -11,7 +17,7 @@ namespace TraineeManagement1.Models
         
         public string Feedback { get; set; }
         public int? Score { get; set; }
-        public string ReviewStatus { get; set; } 
+        public RSType ReviewStatus { get; set; } 
         public DateTime ReviewedDate { get; set; }
     }
 }

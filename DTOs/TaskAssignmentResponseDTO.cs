@@ -1,3 +1,5 @@
+using TraineeManagement1.Models;
+
 namespace TraineeManagement1.DTOs
 {
     public class TaskAssignmentResponseDTO
@@ -8,7 +10,7 @@ namespace TraineeManagement1.DTOs
         public int LearningTaskId { get; set; }
         public DateTime AssignedDate { get; set; }
         public DateTime DueDate { get; set; }
-        public string Status { get; set; }
+        public TAType Status { get; set; }
         public string Remarks { get; set; }
     }
 }
