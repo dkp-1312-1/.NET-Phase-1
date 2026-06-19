@@ -1,5 +1,5 @@
 using System.ComponentModel.DataAnnotations; 
-namespace TraineeManagement1.Models
+namespace TraineeManagement.Api.Models
 {
     public enum RoleType
     {

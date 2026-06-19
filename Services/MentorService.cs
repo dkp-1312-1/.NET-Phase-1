@@ -1,10 +1,11 @@
-using TraineeManagement1.DTOs;
+using TraineeManagement.Api.DTOs;
 using Microsoft.EntityFrameworkCore;
-using TraineeManagement1.Models;
-using TraineeManagement1.Data;
+using TraineeManagement.Api.Models;
+using TraineeManagement.Api.Enums;
+using TraineeManagement.Api.Data;
 using System.Collections.Generic;
 using System.Linq;
-namespace TraineeManagement1.Services
+namespace TraineeManagement.Api.Services
 {
     public class MentorService : IMentorService
     {

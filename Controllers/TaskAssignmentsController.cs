@@ -1,11 +1,12 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using TraineeManagement1.DTOs;
-using TraineeManagement1.Services;
+using TraineeManagement.Api.DTOs;
+using TraineeManagement.Api.Services;
 using Microsoft.Extensions.Localization;
-using TraineeManagement1.Resources;
-using TraineeManagement1.Models;
-namespace TraineeManagement1.Controllers
+using TraineeManagement.Api.Resources;
+using TraineeManagement.Api.Models;
+using TraineeManagement.Api.Enums;
+namespace TraineeManagement.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]

@@ -1,11 +1,6 @@
-namespace TraineeManagement1.Models
+using TraineeManagement.Api.Enums;
+namespace TraineeManagement.Api.Models
 {
-    public enum RSType
-    {
-        Accepted,
-        ChangesRequired,
-        Rejected
-    }
     public class Review
     {
         public required int Id { get; set; }

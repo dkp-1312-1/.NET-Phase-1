@@ -1,8 +1,8 @@
 using System.Diagnostics.Eventing.Reader;
-using TraineeManagement1.DTOs;
-using TraineeManagement1.Data;
-using TraineeManagement1.Models;
-namespace TraineeManagement1.Services
+using TraineeManagement.Api.DTOs;
+using TraineeManagement.Api.Data;
+using TraineeManagement.Api.Enums;
+namespace TraineeManagement.Api.Services
 {
     public interface IMentorService
     {

@@ -1,5 +1,5 @@
 
-namespace TraineeManagement1.Services
+namespace TraineeManagement.Api.Services
 {
     public class NotFoundException : Exception
     {

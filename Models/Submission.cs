@@ -1,10 +1,6 @@
-namespace TraineeManagement1.Models
-{
-    public enum SubType
-    {
-        Submitted,
-        Resubmitted
-    }
+using TraineeManagement.Api.Enums;
+namespace TraineeManagement.Api.Models
+{ 
     public class Submission
     {
         public required int Id { get; set; }

@@ -1,9 +1,9 @@
 using Microsoft.EntityFrameworkCore;
-using TraineeManagement1.Models;
+using TraineeManagement.Api.Models;
 using Microsoft.AspNetCore.Identity;
 using BCrypt.Net;
 
-namespace TraineeManagement1.Data
+namespace TraineeManagement.Api.Data
 {
     public class AppDbContext : DbContext
     {

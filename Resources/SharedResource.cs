@@ -1,4 +1,4 @@
-namespace TraineeManagement1.Resources
+namespace TraineeManagement.Api.Resources
 {
     public class SharedResource
     {

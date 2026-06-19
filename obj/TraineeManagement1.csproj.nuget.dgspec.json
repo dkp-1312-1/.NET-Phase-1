@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "/mnt/d/Day2/123/TraineeManagement1/TraineeManagement1.csproj": {}
+    "/mnt/d/Day2/123/TraineeManagement.Api/TraineeManagement1.csproj": {}
   },
   "projects": {
-    "/mnt/d/Day2/123/TraineeManagement1/TraineeManagement1.csproj": {
+    "/mnt/d/Day2/123/TraineeManagement.Api/TraineeManagement1.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/mnt/d/Day2/123/TraineeManagement1/TraineeManagement1.csproj",
+        "projectUniqueName": "/mnt/d/Day2/123/TraineeManagement.Api/TraineeManagement1.csproj",
         "projectName": "TraineeManagement1",
-        "projectPath": "/mnt/d/Day2/123/TraineeManagement1/TraineeManagement1.csproj",
+        "projectPath": "/mnt/d/Day2/123/TraineeManagement.Api/TraineeManagement1.csproj",
         "packagesPath": "/home/dhrumil-patel/.nuget/packages/",
-        "outputPath": "/mnt/d/Day2/123/TraineeManagement1/obj/",
+        "outputPath": "/mnt/d/Day2/123/TraineeManagement.Api/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "/home/dhrumil-patel/.nuget/NuGet/NuGet.Config"

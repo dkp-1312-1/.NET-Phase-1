@@ -3,11 +3,11 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using TraineeManagement1.Data;
+using TraineeManagement.Api.Data;
 
 #nullable disable
 
-namespace TraineeManagement1.Migrations
+namespace TraineeManagement.Api.Migrations
 {
     [DbContext(typeof(AppDbContext))]
     partial class AppDbContextModelSnapshot : ModelSnapshot

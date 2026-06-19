@@ -1,12 +1,12 @@
 using Microsoft.AspNetCore.Http;
 using System.Net;
 using System.Text.Json;
-using TraineeManagement1.Services;
+using TraineeManagement.Api.Services;
 using MySql.Data.MySqlClient;
-using TraineeManagement1.DTOs;
+using TraineeManagement.Api.DTOs;
 using Google.Protobuf.WellKnownTypes;
 
-namespace TraineeManagement1.Middleware
+namespace TraineeManagement.Api.Middleware
 {
     public class GlobalExceptionMiddleware
     {
@@ -27,7 +27,7 @@ namespace TraineeManagement1.Middleware
             catch (NotFoundException ex)
             {
                 _logger.LogWarning("Not found: {Message}", ex.Message);
-                await WriteResponse(context, StatusCodes.Status404NotFound, ex.Message);
+                await WriteResponse(context, StatusCodes.Status404NotFound, ex.Message, true);
             }
             catch (UnauthorizedException ex)
             {
@@ -81,7 +81,7 @@ namespace TraineeManagement1.Middleware
                 {
                     _logger.LogError(ex, "Unhandled exception on {Method} {Path}",
                         context.Request.Method, context.Request.Path);
-                    await WriteResponse(context, StatusCodes.Status500InternalServerError, "Something Went Wrong, Please Try Again");
+                    await WriteResponse(context, StatusCodes.Status500InternalServerError, "An unexpected error occurred. Please try again later.");
                 }
 
             }
@@ -97,11 +97,11 @@ namespace TraineeManagement1.Middleware
             };
             return context.Response.WriteAsync(JsonSerializer.Serialize(response));
         }
-        private static async Task WriteResponse(HttpContext context, int statusCode, string message)
+        private static async Task WriteResponse(HttpContext context, int statusCode, string message, bool? success = false)
         {
             context.Response.StatusCode = statusCode;
             context.Response.ContentType = "application/json";
-                await context.Response.WriteAsJsonAsync(new {Message=message,Data=new List<String>{},Success=false});
+                await context.Response.WriteAsJsonAsync(new {Message=message,Data=new List<String>{},Success=success});
             
         }
     }

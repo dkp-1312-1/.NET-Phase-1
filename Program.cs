@@ -1,7 +1,7 @@
 using System.Reflection.Metadata;
-using TraineeManagement1.Services;
-using TraineeManagement1.Data;
-using TraineeManagement1.Middleware;
+using TraineeManagement.Api.Services;
+using TraineeManagement.Api.Data;
+using TraineeManagement.Api.Middleware;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;

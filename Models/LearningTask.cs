@@ -1,12 +1,6 @@
-
-namespace TraineeManagement1.Models
+using TraineeManagement.Api.Enums;
+namespace TraineeManagement.Api.Models
 {
-    public enum LTStatusType
-    {
-        Draft,
-        Published,
-        Closed
-    }
     public class LearningTask
     {
         public required int Id { get; set; }

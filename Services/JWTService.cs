@@ -3,9 +3,9 @@ using System.Security.Claims;
 using Microsoft.EntityFrameworkCore;
 using System.Text;
 using Microsoft.IdentityModel.Tokens;
-using TraineeManagement1.DTOs;
-using TraineeManagement1.Data;
-namespace TraineeManagement1.Services
+using TraineeManagement.Api.DTOs;
+using TraineeManagement.Api.Data;
+namespace TraineeManagement.Api.Services
 {
     public class JWTService : IJWTService
     {
@@ -39,7 +39,7 @@ namespace TraineeManagement1.Services
                 Config.SecurityKey,
                 SecurityAlgorithms.HmacSha256
             );
-            var expiryMinutes = Convert.ToInt32(Config.ExpiryMinutes);
+            var expiryMinutes = Config.ExpiryMinutes;
 
             var token = new JwtSecurityToken(
                 issuer: Config.Issuer,

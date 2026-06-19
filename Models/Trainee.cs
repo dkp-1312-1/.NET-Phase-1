@@ -1,11 +1,7 @@
 using System.ComponentModel.DataAnnotations;
-namespace TraineeManagement1.Models
+using TraineeManagement.Api.Enums;
+namespace TraineeManagement.Api.Models
 {
-    public enum TraineeStatusType
-    {
-        Active,
-        Inactive,
-    }
     public class Trainee
     {
         public required int Id { get; set; }

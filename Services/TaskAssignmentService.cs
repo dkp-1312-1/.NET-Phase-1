@@ -1,9 +1,10 @@
 using Microsoft.EntityFrameworkCore;
-using TraineeManagement1.Data;
-using TraineeManagement1.DTOs;
-using TraineeManagement1.Models;
+using TraineeManagement.Api.Data;
+using TraineeManagement.Api.DTOs;
+using TraineeManagement.Api.Models;
+using TraineeManagement.Api.Enums;
  
-namespace TraineeManagement1.Services
+namespace TraineeManagement.Api.Services
 {
     public class TaskAssignmentService : ITaskAssignmentService
     {

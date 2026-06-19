@@ -1,5 +1,5 @@
 using System.ComponentModel.DataAnnotations;
-namespace TraineeManagement1.DTOs
+namespace TraineeManagement.Api.DTOs
 {
     public class UpdateMentorRequestDTO : CreateMentorRequestDTO
     {

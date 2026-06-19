@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
-using TraineeManagement1.DTOs;
-namespace TraineeManagement1.DTOs
+using TraineeManagement.Api.DTOs;
+namespace TraineeManagement.Api.DTOs
 {
     public class CreateUserRequestDTO :UserRequest
     {

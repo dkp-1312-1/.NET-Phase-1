@@ -1,13 +1,6 @@
-namespace TraineeManagement1.Models
+using TraineeManagement.Api.Enums;
+namespace TraineeManagement.Api.Models
 {
-    public enum TAType
-    {
-        Assigned,
-        Inprogress,
-        Submitted,
-        Reviewed,
-        Completed
-    }
     public class TaskAssignment
     {
         public int Id { get; set; }

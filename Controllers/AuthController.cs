@@ -1,19 +1,19 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Text.Json;
-using TraineeManagement1.DTOs;
-using TraineeManagement1.Models;
-using TraineeManagement1.Services;
+using TraineeManagement.Api.DTOs;
+using TraineeManagement.Api.Models;
+using TraineeManagement.Api.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using TraineeManagement1.Data;
+using TraineeManagement.Api.Data;
 using BCrypt.Net;
 using Microsoft.Extensions.Localization;
-using TraineeManagement1.Resources;
+using TraineeManagement.Api.Resources;
 
-namespace TraineeManagement1.Controllers
+namespace TraineeManagement.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
