@@ -45,17 +45,11 @@ namespace TraineeManagement1.Services
         public async Task<TaskAssignmentResponseDTO> Create(CreateTaskAssignmentRequestDTO request)
         {
             if (request.DueDate < DateTime.UtcNow)
-                throw new ArgumentException("DueDate should not be before AssignedDate.");
+                throw new BadRequestException("DueDate should not be before AssignedDate.");
             
-            var traineeExists = await _context.Trainees.AnyAsync(t => t.Id == request.TraineeId);
-            var mentorExists = await _context.Mentors.AnyAsync(m => m.Id == request.MentorId);
-            var taskExists = await _context.LearningTasks.AnyAsync(l => l.Id == request.LearningTaskId);
- 
-            if (!traineeExists || !mentorExists || !taskExists)
-                throw new ArgumentException("TraineeId, MentorId, or LearningTaskId does not exist.");
- 
             var newAssignment = new TaskAssignment
             {
+                Id = _context.TaskAssignments.Any() ? _context.TaskAssignments.Max(t => t.Id) + 1 : 1,
                 TraineeId = request.TraineeId,
                 MentorId = request.MentorId,
                 LearningTaskId = request.LearningTaskId,

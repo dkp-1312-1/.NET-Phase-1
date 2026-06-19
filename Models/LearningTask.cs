@@ -3,7 +3,7 @@ namespace TraineeManagement1.Models
 {
     public enum LTStatusType
     {
-    Draft,
+        Draft,
         Published,
         Closed
     }

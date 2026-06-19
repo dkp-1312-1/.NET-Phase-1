@@ -35,6 +35,11 @@ namespace TraineeManagement1.Services
 
         public async Task<SubmissionResponseDTO> Create(CreateSubmissionRequestDTO request)
         {
+            var subExists = await _context.Submissions.AnyAsync(t => t.TaskAssignmentId == request.TaskAssignmentId);
+ 
+            if (subExists)
+                request.Status=SubType.Resubmitted;
+ 
             var newSub = new Submission
             {
                 Id = _context.Submissions.Any() ? _context.Submissions.Max(t => t.Id) + 1 : 1,

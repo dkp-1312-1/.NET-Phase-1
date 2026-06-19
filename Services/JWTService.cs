@@ -56,7 +56,7 @@ namespace TraineeManagement1.Services
             return new LoginResponseDTO
             {
                 Token = tokenString,
-                ExpiresIn = expiryMinutes,
+                ExpiresInMinutes = expiryMinutes,
                 User = info
             };
         }

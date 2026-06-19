@@ -101,14 +101,7 @@ namespace TraineeManagement1.Middleware
         {
             context.Response.StatusCode = statusCode;
             context.Response.ContentType = "application/json";
-            if(statusCode==404)
-            {
                 await context.Response.WriteAsJsonAsync(new {Message=message,Data=new List<String>{},Success=false});
-            }
-            else
-            {
-                await context.Response.WriteAsJsonAsync(new { Message = message });
-            }
             
         }
     }
