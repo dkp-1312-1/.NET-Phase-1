@@ -2,8 +2,8 @@ namespace TraineeManagement.Api.Enums
 {
     public enum LTStatusType
     {
-        Draft,
-        Published,
-        Closed
+        Draft=1,
+        Published=2,
+        Closed=3
     }
 }

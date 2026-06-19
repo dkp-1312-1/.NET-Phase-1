@@ -33,11 +33,11 @@ namespace TraineeManagement.Api.Controllers
         public async Task<IActionResult> GetMentorById(int Id)
         {
             var mentor = await _mentorServices.GetById(Id);
-            ApiResponseDTO<MentorResponseDTO> result = new ApiResponseDTO<MentorResponseDTO> { Data = mentor, Success = true };
             if (mentor == null)
             {
-                throw new NotFoundException(SharedResource.MentorNotFound(Id));
+                throw new NotFoundException(StringConstants.MentorNotFound(Id));
             }
+            ApiResponseDTO<MentorResponseDTO> result = new ApiResponseDTO<MentorResponseDTO> { Data = mentor, Success = true };
             return Ok(result);
         }
         [HttpPost]
@@ -59,11 +59,11 @@ namespace TraineeManagement.Api.Controllers
             int Id, [FromBody] UpdateMentorRequestDTO mentor)
         {
             var updatedMentor = await _mentorServices.Update(Id, mentor);
-            ApiResponseDTO<MentorResponseDTO> result = new ApiResponseDTO<MentorResponseDTO> { Data = updatedMentor, Success = true };
             if (updatedMentor == null)
             {
-                throw new NotFoundException(SharedResource.MentorNotFound(Id));
+                throw new NotFoundException(StringConstants.MentorNotFound(Id));
             }
+            ApiResponseDTO<MentorResponseDTO> result = new ApiResponseDTO<MentorResponseDTO> { Data = updatedMentor, Success = true };
             _logger.LogInformation("Mentor updated successfully with ID {Id}", updatedMentor.Id);
             return Ok(result);
 
@@ -71,14 +71,9 @@ namespace TraineeManagement.Api.Controllers
         [HttpDelete("{Id}")]
         public async Task<IActionResult> DeleteMentor(int Id)
         {
-
             var isDeleted = await _mentorServices.Delete(Id);
-            if (!isDeleted)
-            {
-                throw new NotFoundException(SharedResource.MentorNotFound(Id));
-            }
             _logger.LogInformation("Mentor Deleted successfully with ID {Id}", Id);
-            return Ok(isDeleted);
+            return Ok(new{Success=isDeleted});
         }
     }
 }

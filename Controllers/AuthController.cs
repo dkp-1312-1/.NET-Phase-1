@@ -33,7 +33,7 @@ namespace TraineeManagement.Api.Controllers
             LoginResponseDTO result = await _jwtService.GenerateToken(loginRequest);
             if (result == null)
             {
-                throw new UnauthorizedException(SharedResource.Unauthorized);
+                throw new UnauthorizedException(StringConstants.Unauthorized);
             }
             _logger.LogInformation("Successful login for username: {Username}", loginRequest.Username);
             return Ok(result);

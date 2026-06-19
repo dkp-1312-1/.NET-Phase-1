@@ -35,7 +35,7 @@ namespace TraineeManagement.Api.Controllers
             var result = await _service.GetById(id);
             if (result == null)
             {
-                throw new NotFoundException(SharedResource.ReviewNotFound(id));
+                throw new NotFoundException(StringConstants.ReviewNotFound(id));
             }
             return Ok(new ApiResponseDTO<ReviewResponseDTO>
             {
@@ -48,11 +48,9 @@ namespace TraineeManagement.Api.Controllers
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateReviewRequestDTO request)
         {
-
             var result = await _service.Create(request);
             _logger.LogInformation("Assignment created: {Id}", result.Id);
             return CreatedAtAction(nameof(GetById), new { id = result.Id }, new ApiResponseDTO<ReviewResponseDTO> { Data = result, Success = true });
-
         }
     }
 }

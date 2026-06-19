@@ -2,7 +2,7 @@ namespace TraineeManagement.Api.Enums
 {
     public enum SubType
     {
-        Submitted,
-        Resubmitted
+        Submitted=1,
+        Resubmitted=2
     }
 }

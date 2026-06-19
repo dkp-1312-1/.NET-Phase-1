@@ -2,8 +2,8 @@ namespace TraineeManagement.Api.Enums
 {
     public enum RSType
     {
-        Accepted,
-        ChangesRequired,
-        Rejected
+        Accepted=1,
+        ChangesRequired=2,
+        Rejected=3
     }
 }

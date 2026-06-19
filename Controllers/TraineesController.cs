@@ -36,11 +36,11 @@ namespace TraineeManagement.Api.Controllers
     public async Task<IActionResult> GetTraineeById(int Id)
     {
       var trainee = await _traineeServices.GetById(Id);
-      ApiResponseDTO<TraineeResponseDTO> result = new ApiResponseDTO<TraineeResponseDTO> { Data = trainee, Success = true };
       if (trainee == null)
       {
-        throw new NotFoundException(SharedResource.TraineeNotFound(Id));
+        throw new NotFoundException(StringConstants.TraineeNotFound(Id));
       }
+      ApiResponseDTO<TraineeResponseDTO> result = new ApiResponseDTO<TraineeResponseDTO> { Data = trainee, Success = true };
       return Ok(result);
     }
 
@@ -57,30 +57,24 @@ namespace TraineeManagement.Api.Controllers
          result);
     }
 
-
     [HttpPut("{Id}")]
     [ValidateModel]
     public async Task<IActionResult> UpdateTrainee(
         int Id, [FromBody] UpdateTraineeRequestDTO trainee)
     {
       var updatedTrainee = await _traineeServices.Update(Id, trainee);
-      ApiResponseDTO<TraineeResponseDTO> result = new ApiResponseDTO<TraineeResponseDTO> { Data = updatedTrainee, Success = true };
       if (updatedTrainee == null)
       {
-         throw new NotFoundException(SharedResource.TraineeNotFound(Id));
+        throw new NotFoundException(StringConstants.TraineeNotFound(Id));
       }
+      ApiResponseDTO<TraineeResponseDTO> result = new ApiResponseDTO<TraineeResponseDTO> { Data = updatedTrainee, Success = true };
       _logger.LogInformation("Trainee updated successfully with ID {Id}", updatedTrainee.Id);
       return Ok(result);
-
     }
     [HttpDelete("{Id}")]
     public async Task<IActionResult> DeleteTrainee(int Id)
     {
       var isDeleted = await _traineeServices.Delete(Id);
-      if (!isDeleted)
-      {
-        throw new NotFoundException(SharedResource.TraineeNotFound(Id));
-      }
       _logger.LogInformation("Trainee Deleted successfully with ID {Id}", Id);
       return Ok(isDeleted);
     }

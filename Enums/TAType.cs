@@ -2,10 +2,10 @@ namespace TraineeManagement.Api.Enums
 {
     public enum TAType
     {
-        Assigned,
-        Inprogress,
-        Submitted,
-        Reviewed,
-        Completed
+        Assigned=1,
+        Inprogress=2,
+        Submitted=3,
+        Reviewed=4,
+        Completed=5
     }
 }

@@ -34,7 +34,7 @@ namespace TraineeManagement.Api.Controllers
             var result = await _service.GetById(id);
             if (result == null)
             {
-                 throw new NotFoundException(SharedResource.AssignmentNotFound(id));
+                 throw new NotFoundException(StringConstants.AssignmentNotFound(id));
             }
             return Ok(new ApiResponseDTO<TaskAssignmentResponseDTO>
             {
@@ -50,7 +50,6 @@ namespace TraineeManagement.Api.Controllers
             var result = await _service.Create(request);
             _logger.LogInformation("Assignment created: {Id}", result.Id);
             return CreatedAtAction(nameof(GetById), new { id = result.Id }, new ApiResponseDTO<TaskAssignmentResponseDTO> { Data = result, Success = true });
-
         }
 
         [HttpPut("{id}/status")]
@@ -59,7 +58,7 @@ namespace TraineeManagement.Api.Controllers
 
             var result = await _service.UpdateStatus(id, request.Status);
             if (result == null)
-                throw new NotFoundException(SharedResource.AssignmentNotFound(id));
+                throw new NotFoundException(StringConstants.AssignmentNotFound(id));
             return Ok(new ApiResponseDTO<TaskAssignmentResponseDTO> { Data = result, Success = true });
         }
     }

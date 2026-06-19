@@ -2,7 +2,7 @@ namespace TraineeManagement.Api.Enums
 {
     public enum MentorStatusType
     {
-        Active,
-        Inactive
+        Active=1,
+        Inactive=2
     }
 }

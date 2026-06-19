@@ -2,8 +2,8 @@ namespace TraineeManagement.Api.Enums
 {
     public enum RoleType
     {
-        Admin,
-        Mentor,
-        Trainee
+        Admi=1,
+        Mentor=2,
+        Trainee=3
     }
 }

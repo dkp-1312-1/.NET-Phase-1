@@ -2,6 +2,7 @@ using System.Reflection.Metadata;
 using TraineeManagement.Api.Services;
 using TraineeManagement.Api.Data;
 using TraineeManagement.Api.Middleware;
+using TraineeManagement.Api.Resources;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -35,11 +36,19 @@ builder.Services.AddAuthentication(options =>
         ValidateIssuer = true,
         ValidateAudience = true,
         ValidateLifetime = true,
+        ClockSkew = TimeSpan.Zero,
         ValidateIssuerSigningKey = true,
         ValidIssuer = Config.Issuer,
         ValidAudience = Config.Audience,
         IssuerSigningKey =Config.SecurityKey
     };
+    options.Events = new JwtBearerEvents
+        {
+            OnChallenge=async context =>
+            {
+                throw new UnauthorizedException(StringConstants.JWTUnauthorized);
+            }
+        };
 });
 builder.Services.AddAuthorization();
 

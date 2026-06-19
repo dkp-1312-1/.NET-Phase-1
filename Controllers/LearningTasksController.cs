@@ -35,11 +35,11 @@ namespace TraineeManagement.Api.Controllers
         {
 
             var task = await _learningTaskService.GetById(Id);
-            ApiResponseDTO<LearningTaskResponseDTO> result = new ApiResponseDTO<LearningTaskResponseDTO> { Data = task, Success = true };
             if (task == null)
             {
-                throw new NotFoundException(SharedResource.TaskNotFound(Id));
+                throw new NotFoundException(StringConstants.TaskNotFound(Id));
             }
+            ApiResponseDTO<LearningTaskResponseDTO> result = new ApiResponseDTO<LearningTaskResponseDTO> { Data = task, Success = true };
 
             return Ok(task);
         }
@@ -62,11 +62,11 @@ namespace TraineeManagement.Api.Controllers
         public async Task<IActionResult> UpdateLearningTask(int Id, [FromBody] UpdateLearningTaskRequestDTO request)
         {
             var updatedTask = await _learningTaskService.Update(Id, request);
-            ApiResponseDTO<LearningTaskResponseDTO> result = new ApiResponseDTO<LearningTaskResponseDTO> { Data = updatedTask, Success = true };
             if (updatedTask == null)
             {
-                throw new NotFoundException(SharedResource.TaskNotFound(Id));
+                throw new NotFoundException(StringConstants.TaskNotFound(Id));
             }
+            ApiResponseDTO<LearningTaskResponseDTO> result = new ApiResponseDTO<LearningTaskResponseDTO> { Data = updatedTask, Success = true };
             _logger.LogInformation("Task updated successfully with ID {Id}", updatedTask.Id);
             return Ok(result);
         }
@@ -75,12 +75,8 @@ namespace TraineeManagement.Api.Controllers
         public async Task<IActionResult> DeleteLearningTask(int Id)
         {
             var isDeleted = await _learningTaskService.Delete(Id);
-            if (!isDeleted)
-            {
-               throw new NotFoundException(SharedResource.TaskNotFound(Id));
-            }
             _logger.LogInformation("Task Deleted successfully with ID {Id}", Id);
-            return Ok(isDeleted);
+            return Ok(new{Success=isDeleted});
         }
     }
 }

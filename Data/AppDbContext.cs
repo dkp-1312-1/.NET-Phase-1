@@ -21,6 +21,18 @@ namespace TraineeManagement.Api.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+            
+            UserSeeding(modelBuilder);
+            TaskAssignmentConstraint(modelBuilder);
+            SubmissionConstraint(modelBuilder);
+            ReviewConstraint(modelBuilder);
+            TraineeEmailConstraint(modelBuilder);
+            MentorEmailConstraint(modelBuilder);
+            UserEmailConstraint(modelBuilder);
+        }
+
+        private void UserSeeding(ModelBuilder modelBuilder)
+        {
             modelBuilder.Entity<User>().HasData(
                new User()
                {
@@ -33,7 +45,9 @@ namespace TraineeManagement.Api.Data
                    UpdatedDate = DateTime.UtcNow
                }
                );
-
+        }
+        private void TaskAssignmentConstraint(ModelBuilder modelBuilder)
+        {
             modelBuilder.Entity<TaskAssignment>()
                 .HasOne(ta => ta.Trainee)
                 .WithMany(t => t.TaskAssignments)
@@ -51,13 +65,17 @@ namespace TraineeManagement.Api.Data
                 .WithMany(lt => lt.TaskAssignments)
                 .HasForeignKey(ta => ta.LearningTaskId)
                 .OnDelete(DeleteBehavior.Restrict);
-
+        }
+        private void SubmissionConstraint(ModelBuilder modelBuilder)
+        {
             modelBuilder.Entity<Submission>()
                 .HasOne(s => s.TaskAssignment)
                 .WithMany(ta => ta.Submissions)
                 .HasForeignKey(s => s.TaskAssignmentId)
                 .OnDelete(DeleteBehavior.Cascade);
-
+        }
+        private void ReviewConstraint(ModelBuilder modelBuilder)
+        {
             modelBuilder.Entity<Review>()
                 .HasOne(r => r.Submission)
                 .WithMany(s => s.Reviews)
@@ -69,18 +87,25 @@ namespace TraineeManagement.Api.Data
                 .WithMany(m => m.Reviews)
                 .HasForeignKey(r => r.MentorId)
                 .OnDelete(DeleteBehavior.Restrict);
-
+        }
+        private void TraineeEmailConstraint(ModelBuilder modelBuilder)
+        {
             modelBuilder.Entity<Trainee>()
             .HasIndex(u => u.Email)
             .IsUnique();
-
+        }
+        private void MentorEmailConstraint(ModelBuilder modelBuilder)
+        {
             modelBuilder.Entity<Mentor>()
             .HasIndex(u => u.Email)
             .IsUnique();
-
+        }
+        private void UserEmailConstraint(ModelBuilder modelBuilder)
+        {
             modelBuilder.Entity<User>()
             .HasIndex(u => u.Email)
             .IsUnique();
         }
+
     }
 }

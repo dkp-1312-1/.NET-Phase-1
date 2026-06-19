@@ -50,7 +50,7 @@ user=admin
 password=password
 
 # JWT usage instructions
-In .env File, You can change JWT variables like Key,Issuer,Audience,ExpiryMinutes
+In .env File, You can change JWT variables like Key,Issuer,Audience,ExpiryIn
 
 # API List =
 GET /api/health

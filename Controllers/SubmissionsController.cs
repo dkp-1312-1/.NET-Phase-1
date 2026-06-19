@@ -34,7 +34,7 @@ namespace TraineeManagement.Api.Controllers
             var result = await _service.GetById(id);
             if (result == null)
             {
-                throw new NotFoundException(SharedResource.SubmissionNotFound(id));
+                throw new NotFoundException(StringConstants.SubmissionNotFound(id));
             }
             return Ok(new ApiResponseDTO<SubmissionResponseDTO>
             {

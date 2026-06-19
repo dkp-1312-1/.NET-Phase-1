@@ -4,7 +4,10 @@ using System.Text.Json;
 using TraineeManagement.Api.Services;
 using MySql.Data.MySqlClient;
 using TraineeManagement.Api.DTOs;
+using TraineeManagement.Api.Resources;
 using Google.Protobuf.WellKnownTypes;
+using Microsoft.AspNetCore.Cors.Infrastructure;
+using Microsoft.VisualBasic;
 
 namespace TraineeManagement.Api.Middleware
 {
@@ -39,25 +42,20 @@ namespace TraineeManagement.Api.Middleware
                 _logger.LogWarning("Bad request: {Message}", ex.Message);
                 await WriteResponse(context, StatusCodes.Status400BadRequest, ex.Message);
             }
-            catch (JwtOperationException ex)
-            {
-                _logger.LogError(ex, "Invalid operation: {Message}", ex.Message);
-                await WriteResponse(context, StatusCodes.Status500InternalServerError, "An unexpected error occurred while processing authentication please retry");
-            }
             catch (Exception ex)
             {
                 if (ex.InnerException is MySqlException mysqlEx)
                 {
-                    _logger.LogError($"ERROR CODE::::{mysqlEx.Number}::::::::::");
+                    _logger.LogError($"{mysqlEx.Number}");
                     if (mysqlEx.Number == 1451)
                     {
                         _logger.LogWarning("Foreign key constraint failure on Delete: {Message}", mysqlEx.Message);
-                        await WriteResponse(context, StatusCodes.Status400BadRequest, "Cannot delete or update because of related data. Please remove related data first or change reference");
+                        await WriteResponse(context, StatusCodes.Status400BadRequest, StringConstants.mysql1451);
                     }
                     if (mysqlEx.Number == 1452) 
                     {
                         _logger.LogWarning("Foreign key constraint failure on Insert or Update: {Message}", mysqlEx.Message);
-                        await WriteResponse(context, StatusCodes.Status400BadRequest, "Related data not found, Please ensure referenced data exists..");
+                        await WriteResponse(context, StatusCodes.Status400BadRequest, StringConstants.mysql1452);
                     }
                     if (mysqlEx.Number == 1062) 
                     {
@@ -65,15 +63,15 @@ namespace TraineeManagement.Api.Middleware
 
                         if (mysqlEx.Message.Contains("Email"))
                         {
-                            await WriteResponse(context, StatusCodes.Status409Conflict, "This email address is already registered.");
+                            await WriteResponse(context, StatusCodes.Status409Conflict, StringConstants.mysqlEmail);
                         }
                         else if (mysqlEx.Message.Contains("Username"))
                         {
-                            await WriteResponse(context, StatusCodes.Status409Conflict, "Username already exists.");
+                            await WriteResponse(context, StatusCodes.Status409Conflict,StringConstants.mysqlUsername);
                         }
                         else
                         {
-                            await WriteResponse(context, StatusCodes.Status409Conflict, "A record with these details already exists.");
+                            await WriteResponse(context, StatusCodes.Status409Conflict, StringConstants.mysqlDuplicate);
                         }
                     }
                 }
@@ -81,28 +79,17 @@ namespace TraineeManagement.Api.Middleware
                 {
                     _logger.LogError(ex, "Unhandled exception on {Method} {Path}",
                         context.Request.Method, context.Request.Path);
-                    await WriteResponse(context, StatusCodes.Status500InternalServerError, "An unexpected error occurred. Please try again later.");
+                    await WriteResponse(context, StatusCodes.Status500InternalServerError, StringConstants.InternalError);
                 }
 
             }
         }
-        private static Task HandleExceptionAsync(HttpContext context)
-        {
-            context.Response.ContentType = "application/json";
-            context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
-
-            var response = new
-            {
-                message = "An error occurred while processing your request."
-            };
-            return context.Response.WriteAsync(JsonSerializer.Serialize(response));
-        }
+        
         private static async Task WriteResponse(HttpContext context, int statusCode, string message, bool? success = false)
         {
             context.Response.StatusCode = statusCode;
             context.Response.ContentType = "application/json";
                 await context.Response.WriteAsJsonAsync(new {Message=message,Data=new List<String>{},Success=success});
-            
         }
     }
 }

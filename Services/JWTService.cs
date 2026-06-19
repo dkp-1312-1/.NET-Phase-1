@@ -39,24 +39,24 @@ namespace TraineeManagement.Api.Services
                 Config.SecurityKey,
                 SecurityAlgorithms.HmacSha256
             );
-            var expiryMinutes = Config.ExpiryMinutes;
+            var ExpiryIn = Config.ExpiryIn;
 
             var token = new JwtSecurityToken(
                 issuer: Config.Issuer,
                 audience: Config.Audience,
                 claims: claims,
-                expires: DateTime.UtcNow.AddMinutes(expiryMinutes),
+                expires: DateTime.UtcNow.AddMinutes(ExpiryIn),
                 signingCredentials: signingCredentials);
 
             var tokenString = new JwtSecurityTokenHandler().WriteToken(token);
-            return MapToResponse(tokenString,expiryMinutes,info);
+            return MapToResponse(tokenString,ExpiryIn,info);
         }
-        private LoginResponseDTO MapToResponse(string tokenString,int expiryMinutes,UserInfoDTO info)
+        private LoginResponseDTO MapToResponse(string tokenString,int ExpiryIn,UserInfoDTO info)
         {
             return new LoginResponseDTO
             {
                 Token = tokenString,
-                ExpiresInMinutes = expiryMinutes,
+                Expires = ExpiryIn,
                 User = info
             };
         }
