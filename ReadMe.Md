@@ -11,7 +11,7 @@ Technology Used =Asp.NET Web API, Service Layer, DTOs,JWT, EFCore.InMemory Datab
 
 >Packages:
 BCrypt.Net-Next
-DotNetEnv
+DotNetEnv   
 Microsoft.AspNetCore.Authentication.JwtBearer
 Microsoft.AspNetCore.OpenApi
 Microsoft.EntityFrameworkCore.Design
