@@ -1,24 +1,24 @@
-using Microsoft.EntityFrameworkCore;
-using TraineeManagement.Api.Data;
 using TraineeManagement.Api.DTOs;
 using TraineeManagement.Api.Models;
 using TraineeManagement.Api.Enums;
- 
+using TraineeManagement.Api.Repositories;
+using System.Linq;
+
 namespace TraineeManagement.Api.Services
 {
     public class ReviewService : IReviewService
     {
-        private readonly AppDbContext _context;
- 
-        public ReviewService(AppDbContext context) { _context = context; }
- 
+        private readonly IReviewRepository _reviewRepository;
+
+        public ReviewService(IReviewRepository reviewRepository) 
+        { 
+            _reviewRepository = reviewRepository; 
+        }
+
         public async Task<PagedResponseDTO<ReviewResponseDTO>> GetAll(SearchDTO<RSType> search)
         {
-            var query = _context.Reviews.AsQueryable();
-            var totalRecords = await query.CountAsync();
-            var reviews = await query.Skip((search.PageNumber - 1) * search.PageSize)
-                                     .Take(search.PageSize).ToListAsync();
- 
+            var (reviews, totalRecords) = await _reviewRepository.GetReviewsAsync(search);
+
             return new PagedResponseDTO<ReviewResponseDTO>
             {
                 PageNumber = search.PageNumber,
@@ -27,28 +27,27 @@ namespace TraineeManagement.Api.Services
                 Data = reviews.Select(MapToResponse)
             };
         }
- 
+
         public async Task<ReviewResponseDTO> GetById(int id)
         {
-            var review = await _context.Reviews.FindAsync(id);
+            var review = await _reviewRepository.GetByIdAsync(id);
             return review != null ? MapToResponse(review) : null;
         }
- 
+
         public async Task<ReviewResponseDTO> Create(CreateReviewRequestDTO request)
         {
             var newReview = new Review
             {
-                Id = _context.Reviews.Any() ? _context.Reviews.Max(t => t.Id) + 1 : 1,
+                Id = await _reviewRepository.GetNextIdAsync(),
                 SubmissionId = request.SubmissionId, MentorId = request.MentorId,
                 Feedback = request.Feedback, Score = request.Score,
                 ReviewStatus = request.ReviewStatus, ReviewedDate = DateTime.UtcNow
             };
- 
-            await _context.Reviews.AddAsync(newReview);
-            await _context.SaveChangesAsync();
+
+            await _reviewRepository.AddAsync(newReview);
             return MapToResponse(newReview);
         }
- 
+
         private ReviewResponseDTO MapToResponse(Review review)
         {
             return new ReviewResponseDTO

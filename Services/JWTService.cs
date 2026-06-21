@@ -1,22 +1,24 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using Microsoft.EntityFrameworkCore;
 using System.Text;
 using Microsoft.IdentityModel.Tokens;
 using TraineeManagement.Api.DTOs;
-using TraineeManagement.Api.Data;
+using TraineeManagement.Api.Repositories;
+
 namespace TraineeManagement.Api.Services
 {
     public class JWTService : IJWTService
     {
-        private readonly AppDbContext _context;
-        public JWTService(AppDbContext context)
+        private readonly IUserRepository _userRepository;
+
+        public JWTService(IUserRepository userRepository)
         {
-            _context = context;
+            _userRepository = userRepository;
         }
+
         public async Task<LoginResponseDTO> GenerateToken(LoginRequestDTO loginRequest)
         {
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.Username == loginRequest.Username);
+            var user = await _userRepository.GetUserByUsernameAsync(loginRequest.Username);
             if (user == null || !BCrypt.Net.BCrypt.EnhancedVerify(loginRequest.Password, user.PasswordHash))
             {
                 return null;

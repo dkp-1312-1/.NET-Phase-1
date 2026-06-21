@@ -1,23 +1,23 @@
-using Microsoft.EntityFrameworkCore;
-using TraineeManagement.Api.Data;
 using TraineeManagement.Api.DTOs;
 using TraineeManagement.Api.Models;
 using TraineeManagement.Api.Enums;
+using TraineeManagement.Api.Repositories;
+using System.Linq;
 
 namespace TraineeManagement.Api.Services
 {
     public class SubmissionService : ISubmissionService
     {
-        private readonly AppDbContext _context;
+        private readonly ISubmissionRepository _submissionRepository;
 
-        public SubmissionService(AppDbContext context) { _context = context; }
+        public SubmissionService(ISubmissionRepository submissionRepository) 
+        { 
+            _submissionRepository = submissionRepository; 
+        }
 
         public async Task<PagedResponseDTO<SubmissionResponseDTO>> GetAll(SearchDTO<SubType> search)
         {
-            var query = _context.Submissions.AsQueryable();
-            var totalRecords = await query.CountAsync();
-            var submissions = await query.Skip((search.PageNumber - 1) * search.PageSize)
-                                         .Take(search.PageSize).ToListAsync();
+            var (submissions, totalRecords) = await _submissionRepository.GetSubmissionsAsync(search);
 
             return new PagedResponseDTO<SubmissionResponseDTO>
             {
@@ -30,20 +30,20 @@ namespace TraineeManagement.Api.Services
 
         public async Task<SubmissionResponseDTO> GetById(int id)
         {
-            var sub = await _context.Submissions.FindAsync(id);
+            var sub = await _submissionRepository.GetByIdAsync(id);
             return sub != null ? MapToResponse(sub) : null;
         }
 
         public async Task<SubmissionResponseDTO> Create(CreateSubmissionRequestDTO request)
         {
-            var subExists = await _context.Submissions.AnyAsync(t => t.TaskAssignmentId == request.TaskAssignmentId);
+            var subExists = await _submissionRepository.HasSubmissionForTaskAsync(request.TaskAssignmentId);
  
             if (subExists)
                 request.Status=SubType.Resubmitted;
  
             var newSub = new Submission
             {
-                Id = _context.Submissions.Any() ? _context.Submissions.Max(t => t.Id) + 1 : 1,
+                Id = await _submissionRepository.GetNextIdAsync(),
                 TaskAssignmentId = request.TaskAssignmentId,
                 SubmissionUrl = request.SubmissionUrl,
                 Notes = request.Notes,
@@ -51,8 +51,7 @@ namespace TraineeManagement.Api.Services
                 Status = request.Status
             };
 
-            await _context.Submissions.AddAsync(newSub);
-            await _context.SaveChangesAsync();
+            await _submissionRepository.AddAsync(newSub);
             return MapToResponse(newSub);
         }
 

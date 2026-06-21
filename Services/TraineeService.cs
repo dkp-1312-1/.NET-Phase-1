@@ -1,37 +1,24 @@
 using TraineeManagement.Api.DTOs;
-using Microsoft.EntityFrameworkCore;
 using TraineeManagement.Api.Models;
 using TraineeManagement.Api.Enums;
-using TraineeManagement.Api.Data;
-using TraineeManagement.Api.Enums;
-using System.Collections.Generic;
+using TraineeManagement.Api.Repositories;
 using System.Linq;
+
 namespace TraineeManagement.Api.Services
 {
     public class TraineeService : ITraineeService
     {
-        private readonly AppDbContext _context;
-        public TraineeService(AppDbContext context)
+        private readonly ITraineeRepository _traineeRepository;
+
+        public TraineeService(ITraineeRepository traineeRepository)
         {
-            _context = context;
+            _traineeRepository = traineeRepository;
         }
+
         public async Task<PagedResponseDTO<TraineeResponseDTO>> GetAll(SearchDTO<TraineeStatusType> trainee)
         {
-            IQueryable<Trainee> Query = _context.Trainees.AsQueryable();
-            if (trainee.Name != null)
-            {
-                var Name = trainee.Name.ToLower();
-                Query = Query.Where(t =>
-                t.FirstName.ToLower().Contains(Name) || t.LastName.ToLower().Contains(Name) || t.Email.ToLower().Contains(Name) || t.TechStack.ToLower().Contains(Name));
-            }
-            if (trainee.Status != null)
-            {
-                var Status = trainee.Status;
-                Query = Query.Where(t =>
-               t.Status == Status);
-            }
-            var totalRecords = await Query.CountAsync();
-            var trainees = await Query.Skip((trainee.PageNumber - 1) * trainee.PageSize).Take(trainee.PageSize).ToListAsync();
+            var (trainees, totalRecords) = await _traineeRepository.GetTraineesAsync(trainee);
+
             return new PagedResponseDTO<TraineeResponseDTO>
             {
                 PageNumber = trainee.PageNumber,
@@ -40,16 +27,18 @@ namespace TraineeManagement.Api.Services
                 Data = trainees.Select(MapToResponse)
             };
         }
+
         public async Task<TraineeResponseDTO> GetById(int Id)
         {
-            var trainee = await _context.Trainees.FindAsync(Id);
+            var trainee = await _traineeRepository.GetByIdAsync(Id);
             return trainee != null ? MapToResponse(trainee) : null;
         }
+
         public async Task<TraineeResponseDTO> Create(CreateTraineeRequestDTO trainee)
         {
             var newTrainee = new Trainee
             {
-                Id = _context.Trainees.Any() ? _context.Trainees.Max(t => t.Id) + 1 : 1,
+                Id = await _traineeRepository.GetNextIdAsync(),
                 FirstName = trainee.FirstName,
                 LastName = trainee.LastName,
                 Email = trainee.Email,
@@ -58,33 +47,38 @@ namespace TraineeManagement.Api.Services
                 CreatedDate = DateTime.UtcNow,
                 UpdatedDate = DateTime.UtcNow
             };
-            await _context.Trainees.AddAsync(newTrainee);
-            await _context.SaveChangesAsync();
+
+            await _traineeRepository.AddAsync(newTrainee);
             return MapToResponse(newTrainee);
         }
+
         public async Task<TraineeResponseDTO> Update(int Id, UpdateTraineeRequestDTO trainee)
         {
-            var updatedTrainee = await _context.Trainees.FindAsync(Id);
+            var updatedTrainee = await _traineeRepository.GetByIdAsync(Id);
             if (updatedTrainee == null)
                 return null;
+
             updatedTrainee.FirstName = trainee.FirstName;
             updatedTrainee.LastName = trainee.LastName;
             updatedTrainee.Email = trainee.Email;
             updatedTrainee.TechStack = trainee.TechStack;
             updatedTrainee.Status = trainee.Status;
             updatedTrainee.UpdatedDate = DateTime.UtcNow;
-            await _context.SaveChangesAsync();
+
+            await _traineeRepository.UpdateAsync(updatedTrainee);
             return MapToResponse(updatedTrainee);
         }
+
         public async Task<bool> Delete(int Id)
         {
-            var trainee = await _context.Trainees.FindAsync(Id);
+            var trainee = await _traineeRepository.GetByIdAsync(Id);
             if (trainee == null)
                 return false;
-            _context.Trainees.Remove(trainee);
-            await _context.SaveChangesAsync();
+
+            await _traineeRepository.DeleteAsync(trainee);
             return true;
         }
+
         private TraineeResponseDTO MapToResponse(Trainee trainee)
         {
             return new TraineeResponseDTO
@@ -101,3 +95,4 @@ namespace TraineeManagement.Api.Services
         }
     }
 }
+

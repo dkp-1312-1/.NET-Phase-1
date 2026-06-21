@@ -1,6 +1,7 @@
 using System.Reflection.Metadata;
 using TraineeManagement.Api.Services;
 using TraineeManagement.Api.Data;
+using TraineeManagement.Api.Repositories;
 using TraineeManagement.Api.Middleware;
 using TraineeManagement.Api.Resources;
 using Microsoft.EntityFrameworkCore;
@@ -65,7 +66,6 @@ builder.Services.AddOpenApi("v1", options =>
             In = Microsoft.OpenApi.Models.ParameterLocation.Header,
             Description = "Enter your JWT token directly"
         };
-
         document.Components ??= new Microsoft.OpenApi.Models.OpenApiComponents();
         document.Components.SecuritySchemes.Add("Bearer", scheme);
 
@@ -80,7 +80,6 @@ builder.Services.AddOpenApi("v1", options =>
                 }
             }] = Array.Empty<string>()
         });
-
         return Task.CompletedTask;
     });
 });
@@ -96,6 +95,14 @@ builder.Services.AddControllers(options =>
 builder.Services.AddOpenApi();
 // builder.Services.AddDbContext<AppDbContext>(options=>
 // options.UseInMemoryDatabase("TraineeManagementDb"));
+builder.Services.AddScoped<ITraineeRepository, TraineeRepository>();
+builder.Services.AddScoped<IMentorRepository, MentorRepository>();
+builder.Services.AddScoped<ILearningTaskRepository, LearningTaskRepository>();
+builder.Services.AddScoped<ITaskAssignmentRepository, TaskAssignmentRepository>();
+builder.Services.AddScoped<ISubmissionRepository, SubmissionRepository>();
+builder.Services.AddScoped<IReviewRepository, ReviewRepository>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+
 builder.Services.AddScoped<ITraineeService, TraineeService>();
 builder.Services.AddScoped<IJWTService, JWTService>();
 builder.Services.AddScoped<IMentorService, MentorService>();
@@ -106,9 +113,6 @@ builder.Services.AddScoped<IReviewService, ReviewService>();
 
 builder.Logging.ClearProviders();
 builder.Logging.AddConsole();
-
-
-
 
 
 

@@ -1,33 +1,24 @@
-using Microsoft.EntityFrameworkCore;
-using TraineeManagement.Api.Data;
 using TraineeManagement.Api.DTOs;
 using TraineeManagement.Api.Models;
 using TraineeManagement.Api.Enums;
- 
+using TraineeManagement.Api.Repositories;
+using System.Linq;
+
 namespace TraineeManagement.Api.Services
 {
     public class TaskAssignmentService : ITaskAssignmentService
     {
-        private readonly AppDbContext _context;
- 
-        public TaskAssignmentService(AppDbContext context)
+        private readonly ITaskAssignmentRepository _taskAssignmentRepository;
+
+        public TaskAssignmentService(ITaskAssignmentRepository taskAssignmentRepository)
         {
-            _context = context;
+            _taskAssignmentRepository = taskAssignmentRepository;
         }
- 
+
         public async Task<PagedResponseDTO<TaskAssignmentResponseDTO>> GetAll(SearchDTO<TAType> search)
         {
-            var query = _context.TaskAssignments.AsQueryable();
-            
-            if (search.Status!=null)
-            {
-                query = query.Where(t => t.Status == search.Status);
-            }
- 
-            var totalRecords = await query.CountAsync();
-            var assignments = await query.Skip((search.PageNumber - 1) * search.PageSize)
-                                         .Take(search.PageSize).ToListAsync();
- 
+            var (assignments, totalRecords) = await _taskAssignmentRepository.GetTaskAssignmentsAsync(search);
+
             return new PagedResponseDTO<TaskAssignmentResponseDTO>
             {
                 PageNumber = search.PageNumber,
@@ -36,21 +27,21 @@ namespace TraineeManagement.Api.Services
                 Data = assignments.Select(MapToResponse)
             };
         }
- 
+
         public async Task<TaskAssignmentResponseDTO> GetById(int id)
         {
-            var assignment = await _context.TaskAssignments.FindAsync(id);
+            var assignment = await _taskAssignmentRepository.GetByIdAsync(id);
             return assignment != null ? MapToResponse(assignment) : null;
         }
- 
+
         public async Task<TaskAssignmentResponseDTO> Create(CreateTaskAssignmentRequestDTO request)
         {
             if (request.DueDate < DateTime.UtcNow)
                 throw new BadRequestException("DueDate should not be before AssignedDate.");
-            
+
             var newAssignment = new TaskAssignment
             {
-                Id = _context.TaskAssignments.Any() ? _context.TaskAssignments.Max(t => t.Id) + 1 : 1,
+                Id = await _taskAssignmentRepository.GetNextIdAsync(),
                 TraineeId = request.TraineeId,
                 MentorId = request.MentorId,
                 LearningTaskId = request.LearningTaskId,
@@ -59,22 +50,21 @@ namespace TraineeManagement.Api.Services
                 Status = TAType.Assigned,
                 Remarks = request.Remarks
             };
- 
-            await _context.TaskAssignments.AddAsync(newAssignment);
-            await _context.SaveChangesAsync();
+
+            await _taskAssignmentRepository.AddAsync(newAssignment);
             return MapToResponse(newAssignment);
         }
- 
+
         public async Task<TaskAssignmentResponseDTO> UpdateStatus(int id, TAType status)
         {
-            var assignment = await _context.TaskAssignments.FindAsync(id);
+            var assignment = await _taskAssignmentRepository.GetByIdAsync(id);
             if (assignment == null) return null;
- 
+
             assignment.Status = status;
-            await _context.SaveChangesAsync();
+            await _taskAssignmentRepository.UpdateAsync(assignment);
             return MapToResponse(assignment);
         }
- 
+
         private TaskAssignmentResponseDTO MapToResponse(TaskAssignment assignment)
         {
             return new TaskAssignmentResponseDTO
