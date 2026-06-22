@@ -19,7 +19,7 @@ namespace TraineeManagement.Api.Controllers
             _fileStorageService = fileStorageService;
             _logger = logger;
         }
-        [HttpGet("{id}/download")]
+        [HttpGet("download/{id}")]
         public async Task<IActionResult> DownloadFile(int id)
         {
             

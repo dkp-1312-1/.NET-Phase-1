@@ -6,7 +6,7 @@ public class LocalFileStorageService : IFileStorageService
     private readonly string _storageRoot;
     public LocalFileStorageService(IConfiguration configuration)
     {
-        _storageRoot = configuration["FileStorage:RootPath"];
+        _storageRoot = Config.StorageRoot;
         if (!Directory.Exists(_storageRoot))
         {
             Directory.CreateDirectory(_storageRoot);
