@@ -41,7 +41,7 @@ namespace TraineeManagement.Api.Data
                    Id = 1,
                    Username = "admin",
                    Email = "admin@gmail.com",
-                   PasswordHash = BCrypt.Net.BCrypt.EnhancedHashPassword("password", workFactor: 12),
+                   PasswordHash = BCrypt.Net.BCrypt.EnhancedHashPassword("Admin@123", workFactor: 12),
                    Role = RoleType.Admin,
                    CreatedDate = DateTime.UtcNow,
                    UpdatedDate = DateTime.UtcNow

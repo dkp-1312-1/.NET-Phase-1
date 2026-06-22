@@ -42,6 +42,11 @@ namespace TraineeManagement.Api.Middleware
                 _logger.LogWarning("Bad request: {Message}", ex.Message);
                 await WriteResponse(context, StatusCodes.Status400BadRequest, ex.Message);
             }
+            catch (PayloadTooLargeException ex)
+            {
+                _logger.LogWarning("File Size Exceed: {Message}", ex.Message);
+                await WriteResponse(context, StatusCodes.Status413RequestEntityTooLarge, ex.Message);
+            }
             catch (Exception ex)
             {
                 if (ex.InnerException is MySqlException mysqlEx)
@@ -52,12 +57,12 @@ namespace TraineeManagement.Api.Middleware
                         _logger.LogWarning("Foreign key constraint failure on Delete: {Message}", mysqlEx.Message);
                         await WriteResponse(context, StatusCodes.Status400BadRequest, StringConstants.mysql1451);
                     }
-                    if (mysqlEx.Number == 1452) 
+                    if (mysqlEx.Number == 1452)
                     {
                         _logger.LogWarning("Foreign key constraint failure on Insert or Update: {Message}", mysqlEx.Message);
                         await WriteResponse(context, StatusCodes.Status400BadRequest, StringConstants.mysql1452);
                     }
-                    if (mysqlEx.Number == 1062) 
+                    if (mysqlEx.Number == 1062)
                     {
                         _logger.LogWarning("Duplicate entry constraint failure: {Message}", mysqlEx.Message);
 
@@ -67,7 +72,7 @@ namespace TraineeManagement.Api.Middleware
                         }
                         else if (mysqlEx.Message.Contains("Username"))
                         {
-                            await WriteResponse(context, StatusCodes.Status409Conflict,StringConstants.mysqlUsername);
+                            await WriteResponse(context, StatusCodes.Status409Conflict, StringConstants.mysqlUsername);
                         }
                         else
                         {
@@ -84,12 +89,12 @@ namespace TraineeManagement.Api.Middleware
 
             }
         }
-        
+
         private static async Task WriteResponse(HttpContext context, int statusCode, string message, bool? success = false)
         {
             context.Response.StatusCode = statusCode;
             context.Response.ContentType = "application/json";
-                await context.Response.WriteAsJsonAsync(new {Message=message,Data=new List<String>{},Success=success});
+            await context.Response.WriteAsJsonAsync(new { Message = message, Data = new List<String> { }, Success = success });
         }
     }
 }

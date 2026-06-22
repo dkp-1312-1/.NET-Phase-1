@@ -73,7 +73,7 @@ namespace TraineeManagement.Api.Services
         {
             var trainee = await _traineeRepository.GetByIdAsync(Id);
             if (trainee == null)
-                return false;
+                return true;
 
             await _traineeRepository.DeleteAsync(trainee);
             return true;
