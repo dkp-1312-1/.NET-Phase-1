@@ -102,6 +102,7 @@ builder.Services.AddScoped<ITaskAssignmentRepository, TaskAssignmentRepository>(
 builder.Services.AddScoped<ISubmissionRepository, SubmissionRepository>();
 builder.Services.AddScoped<IReviewRepository, ReviewRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<ISubmissionFileRepository, SubmissionFileRepository>();
 
 builder.Services.AddScoped<ITraineeService, TraineeService>();
 builder.Services.AddScoped<IJWTService, JWTService>();
