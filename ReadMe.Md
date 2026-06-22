@@ -143,9 +143,7 @@ GET /api/reviews
 GET /api/reviews/{id}
 
 # Known Limitations
--It currently uses In Memory database which holds data temporarily. It lacks real Sql/No Sql database connection.
--Absence of authentication and authorisation
-
+-Authorization for role based
 
 # Security Checklist:
 
