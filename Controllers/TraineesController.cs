@@ -76,7 +76,7 @@ namespace TraineeManagement.Api.Controllers
     {
       var isDeleted = await _traineeServices.Delete(Id);
       _logger.LogInformation("Trainee Deleted successfully with ID {Id}", Id);
-      return Ok(isDeleted);
+      return Ok(new {Success=isDeleted});
     }
   }
 }
