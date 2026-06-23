@@ -111,6 +111,8 @@ builder.Services.AddScoped<ILearningTaskService, LearningTaskService>();
 builder.Services.AddScoped<ITaskAssignmentService, TaskAssignmentService>();
 builder.Services.AddScoped<ISubmissionService, SubmissionService>();
 builder.Services.AddScoped<IReviewService, ReviewService>();
+builder.Services.AddScoped<IFileStorageService,LocalFileStorageService>();
+// builder.Services.AddScoped<ICacheService, CacheService>();
 
 builder.Logging.ClearProviders();
 builder.Logging.AddConsole();
@@ -120,6 +122,12 @@ builder.Logging.AddConsole();
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<AppDbContext>(options =>
        options.UseMySQL(connectionString));
+
+builder.Services.AddStackExchangeRedisCache(options =>
+{
+    options.Configuration = builder.Configuration.GetConnectionString("RedisConnection");
+    options.InstanceName = "TraineeManagement";
+});
 
 var app = builder.Build();
 

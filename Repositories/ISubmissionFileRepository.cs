@@ -7,6 +7,7 @@ namespace TraineeManagement.Api.Repositories
         Task AddAsync(SubmissionFile file);
         Task DeleteAsync(SubmissionFile file);
         Task SaveChangesAsync();
+         Task<int> GetNextIdAsync();
 
     }
 }

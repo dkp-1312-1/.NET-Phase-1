@@ -2,6 +2,7 @@ using System.Runtime.CompilerServices;
 using System.Security.Permissions;
 using TraineeManagement.Api.Data;
 using TraineeManagement.Api.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace TraineeManagement.Api.Repositories
 {
@@ -28,6 +29,10 @@ namespace TraineeManagement.Api.Repositories
         public async Task SaveChangesAsync()
         {
             await _context.SaveChangesAsync();
+        }
+        public async Task<int> GetNextIdAsync()
+        {
+            return await _context.SubmissionFiles.AnyAsync() ? await _context.SubmissionFiles.MaxAsync(t => t.Id) + 1 : 1;
         }
     }
 }

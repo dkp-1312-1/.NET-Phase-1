@@ -5,6 +5,7 @@ using TraineeManagement.Api.Models;
 using System.Security.Cryptography;
 using System.Text;
 using System.Security.Claims;
+using TraineeManagement.Api.DTOs;
 public class LocalFileStorageService : IFileStorageService
 {
     private readonly ISubmissionFileRepository _submissionFileRepository;
@@ -15,7 +16,7 @@ public class LocalFileStorageService : IFileStorageService
         _storageRoot = Config.StorageRoot;
         _submissionFileRepository = submissionFileRepository;
     }
-    public async Task<SubmissionFile> SaveAsync(Stream content, string extension, int submissionId, IFormFile file,int userId)
+    public async Task<SubmissionFileResponseDTO> SaveAsync(Stream content, string extension, int submissionId, IFormFile file,int userId)
     {
         string checksum;
         using (var sha256 = SHA256.Create())
@@ -32,6 +33,7 @@ public class LocalFileStorageService : IFileStorageService
 
         var metadata = new SubmissionFile
         {
+            Id=await _submissionFileRepository.GetNextIdAsync(),
             SubmissionId = submissionId,
             OriginalFileName = file.FileName,
             StorageFileName = storageName,
@@ -43,7 +45,8 @@ public class LocalFileStorageService : IFileStorageService
         };
         await _submissionFileRepository.AddAsync(metadata);
         await _submissionFileRepository.SaveChangesAsync();
-        return metadata;
+
+        return MaptoResponse(metadata);
     }
     
     public Task<Stream> OpenReadAsync(string storageName)
@@ -77,5 +80,20 @@ public class LocalFileStorageService : IFileStorageService
     {
         var file=await _submissionFileRepository.GetByIdAsync(id);
         return file;
+    }
+    private SubmissionFileResponseDTO MaptoResponse(SubmissionFile file)
+    {
+        return new SubmissionFileResponseDTO
+        {
+            Id=file.Id,
+            SubmissionId = file.SubmissionId,
+            OriginalFileName = file.OriginalFileName,
+            StorageFileName = file.StorageFileName,
+            ContentType = file.ContentType,
+            SizeBytes = file.SizeBytes,
+            UploadedDate = file.UploadedDate,
+            CheckSum = file.CheckSum,
+            UploadedByUserId = file.UploadedByUserId
+        };
     }
 }

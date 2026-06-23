@@ -29,9 +29,9 @@ namespace TraineeManagement.Api.Controllers
             {
                 throw new BadRequestException(StringConstants.fileEmpty);
             }
-            if (file.Length > 20 * 1024 * 1024)
+            if (file.Length > IntConstants.FileSizeLimit * 1024 * 1024)
             {
-                throw new PayloadTooLargeException(StringConstants.fileSizeExceed(10));
+                throw new PayloadTooLargeException(StringConstants.fileSizeExceed(IntConstants.FileSizeLimit ));
             }
             var extension = Path.GetExtension(file.FileName).ToLower();
             var allowExtensions = new[] { ".pdf", ".zip", "docx" };
