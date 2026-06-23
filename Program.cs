@@ -112,7 +112,7 @@ builder.Services.AddScoped<ITaskAssignmentService, TaskAssignmentService>();
 builder.Services.AddScoped<ISubmissionService, SubmissionService>();
 builder.Services.AddScoped<IReviewService, ReviewService>();
 builder.Services.AddScoped<IFileStorageService,LocalFileStorageService>();
-// builder.Services.AddScoped<ICacheService, CacheService>();
+builder.Services.AddScoped<ICacheService, CacheService>();
 
 builder.Logging.ClearProviders();
 builder.Logging.AddConsole();

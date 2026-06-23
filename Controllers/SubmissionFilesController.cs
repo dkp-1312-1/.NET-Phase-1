@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using TraineeManagement.Api.Services;
 using TraineeManagement.Api.Resources;
 using System.Security.Claims;
+using TraineeManagement.Api.Enums;
 namespace TraineeManagement.Api.Controllers
 {
     [Route("api/[controller]")]
@@ -52,7 +53,16 @@ namespace TraineeManagement.Api.Controllers
             var fileRecord = await _fileStorageService.FindRecord(id);
             if (fileRecord == null)
                 throw new NotFoundException(StringConstants.SubmissionFileNotFound(id));
+            var userIdString = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var userRole =User.FindFirst(ClaimTypes.Role)?.Value;
 
+            if (int.TryParse(userIdString, out int userId))
+            {
+                if (!(fileRecord.UploadedByUserId == userId || userRole == RoleType.Admin.ToString()||userRole == RoleType.Mentor.ToString()))
+                {
+                    throw new UnauthorizedException(StringConstants.noAccessDownload);
+                }
+            }
             var fileExists = await _fileStorageService.ExistsAsync(fileRecord.StorageFileName);
             if (!fileExists)
                 throw new NotFoundException(StringConstants.fileNotFound);
@@ -70,7 +80,7 @@ namespace TraineeManagement.Api.Controllers
 
             if (int.TryParse(userIdString, out int userId))
             {
-                if (!(fileRecord.UploadedByUserId == userId || userRole == "Admin"))
+                if (!(fileRecord.UploadedByUserId == userId || userRole == RoleType.Admin.ToString()))
                 {
                     throw new UnauthorizedException(StringConstants.noAccessDownload);
                 }

@@ -19,6 +19,7 @@ namespace TraineeManagement.Api.Controllers
   {
     private readonly ITraineeService _traineeServices;
     private readonly ILogger<TraineesController> _logger;
+   
 
     public TraineesController(ITraineeService traineeService, ILogger<TraineesController> logger)
     {
