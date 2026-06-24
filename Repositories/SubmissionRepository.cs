@@ -35,11 +35,6 @@ namespace TraineeManagement.Api.Repositories
             return await _context.Submissions.AnyAsync(t => t.TaskAssignmentId == taskAssignmentId);
         }
 
-        public async Task<int> GetNextIdAsync()
-        {
-            return await _context.Submissions.AnyAsync() ? await _context.Submissions.MaxAsync(t => t.Id) + 1 : 1;
-        }
-
         public async Task AddAsync(Submission submission)
         {
             await _context.Submissions.AddAsync(submission);

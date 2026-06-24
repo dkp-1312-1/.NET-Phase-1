@@ -46,10 +46,6 @@ namespace TraineeManagement.Api.Repositories
             return await _context.Trainees.FindAsync(id);
         }
 
-        public async Task<int> GetNextIdAsync()
-        {
-            return await _context.Trainees.AnyAsync() ? await _context.Trainees.MaxAsync(t => t.Id) + 1 : 1;
-        }
 
         public async Task AddAsync(Trainee trainee)
         {

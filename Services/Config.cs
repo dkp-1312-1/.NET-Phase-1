@@ -9,6 +9,13 @@ public static class Config
     public static int ExpiryIn = 60;
     public static string StorageRoot = string.Empty;
 
+    public static string RabbitHostName=string.Empty;
+    public static int RabbitPort;
+    public static string RabbitUserName=string.Empty;
+    public static string RabbitPassword=string.Empty;
+    public static string RabbitVirtualHost=string.Empty;
+
+
     public static void Initialize(IConfiguration configuration)
     {
         var section = configuration.GetSection("Jwt");
@@ -22,6 +29,13 @@ public static class Config
         {
             Directory.CreateDirectory(StorageRoot);
         }
+        var rabbitSection=configuration.GetSection("RabbitMQ");
+        RabbitHostName=rabbitSection["HostName"];
+        RabbitPort=int.Parse(rabbitSection["Port"]);
+        RabbitUserName=rabbitSection["UserName"];
+        RabbitPassword=rabbitSection["Password"];
+        RabbitVirtualHost=rabbitSection["VirtualHost"];
+
     }
 
 }

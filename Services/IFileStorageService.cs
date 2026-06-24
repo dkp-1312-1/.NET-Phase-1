@@ -4,7 +4,7 @@ namespace TraineeManagement.Api.Services
 {
     public interface IFileStorageService
     {
-        Task<SubmissionFileResponseDTO> SaveAsync(Stream content, string extension,int submissionId,IFormFile file,int userid);
+        Task<SubmissionProcessingRequestedDTO> SaveAsync(Stream content, string extension,int submissionId,IFormFile file,int userid);
         Task<Stream> OpenReadAsync(string storageName);
         Task<bool> ExistsAsync(string storageName);
         Task<bool> DeleteAsync(SubmissionFile file);

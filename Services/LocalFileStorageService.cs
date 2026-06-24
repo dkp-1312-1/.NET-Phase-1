@@ -9,14 +9,16 @@ using TraineeManagement.Api.DTOs;
 public class LocalFileStorageService : IFileStorageService
 {
     private readonly ISubmissionFileRepository _submissionFileRepository;
+    private readonly IPublishRabbitMQService _publishRabbitMQService;
     private readonly string _storageRoot;
 
-    public LocalFileStorageService(ISubmissionFileRepository submissionFileRepository)
+    public LocalFileStorageService(ISubmissionFileRepository submissionFileRepository,IPublishRabbitMQService publishRabbitMQService)
     {
         _storageRoot = Config.StorageRoot;
         _submissionFileRepository = submissionFileRepository;
+        _publishRabbitMQService=publishRabbitMQService;
     }
-    public async Task<SubmissionFileResponseDTO> SaveAsync(Stream content, string extension, int submissionId, IFormFile file,int userId)
+    public async Task<SubmissionProcessingRequestedDTO> SaveAsync(Stream content, string extension, int submissionId, IFormFile file, int userId)
     {
         string checksum;
         using (var sha256 = SHA256.Create())
@@ -33,7 +35,6 @@ public class LocalFileStorageService : IFileStorageService
 
         var metadata = new SubmissionFile
         {
-            Id=await _submissionFileRepository.GetNextIdAsync(),
             SubmissionId = submissionId,
             OriginalFileName = file.FileName,
             StorageFileName = storageName,
@@ -46,9 +47,22 @@ public class LocalFileStorageService : IFileStorageService
         await _submissionFileRepository.AddAsync(metadata);
         await _submissionFileRepository.SaveChangesAsync();
 
-        return MaptoResponse(metadata);
+        var correlationId = Guid.NewGuid().ToString();
+        var messageId = Guid.NewGuid().ToString();
+
+        var message = new SubmissionProcessingRequestedDTO
+        {
+            MessageId = messageId,
+            CorrelationId = correlationId,
+            SubmissionId = submissionId,
+            FileId = metadata.Id,
+            RequestedAt = DateTime.UtcNow
+        };
+        _publishRabbitMQService.PublishSubmission(message);
+
+        return message;
     }
-    
+
     public Task<Stream> OpenReadAsync(string storageName)
     {
         var fullPath = Path.Combine(_storageRoot, storageName);
@@ -58,7 +72,7 @@ public class LocalFileStorageService : IFileStorageService
         }
         Stream stream = new FileStream(fullPath, FileMode.Open, FileAccess.Read, FileShare.Read);
         return Task.FromResult(stream);
-    } 
+    }
     public Task<bool> ExistsAsync(string storageName)
     {
         var fullPath = Path.Combine(_storageRoot, storageName);
@@ -78,14 +92,14 @@ public class LocalFileStorageService : IFileStorageService
 
     public async Task<SubmissionFile> FindRecord(int id)
     {
-        var file=await _submissionFileRepository.GetByIdAsync(id);
+        var file = await _submissionFileRepository.GetByIdAsync(id);
         return file;
     }
     private SubmissionFileResponseDTO MaptoResponse(SubmissionFile file)
     {
         return new SubmissionFileResponseDTO
         {
-            Id=file.Id,
+            Id = file.Id,
             SubmissionId = file.SubmissionId,
             OriginalFileName = file.OriginalFileName,
             StorageFileName = file.StorageFileName,

@@ -8,7 +8,6 @@ namespace TraineeManagement.Api.Repositories
     {
         Task<(List<LearningTask> learningTasks, int totalRecords)> GetLearningTasksAsync(SearchDTO<LTStatusType> searchDTO);
         Task<LearningTask> GetByIdAsync(int id);
-        Task<int> GetNextIdAsync();
         Task AddAsync(LearningTask learningTask);
         Task UpdateAsync(LearningTask learningTask);
         Task DeleteAsync(LearningTask learningTask);

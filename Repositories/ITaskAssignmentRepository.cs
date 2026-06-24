@@ -8,7 +8,6 @@ namespace TraineeManagement.Api.Repositories
     {
         Task<(List<TaskAssignment> assignments, int totalRecords)> GetTaskAssignmentsAsync(SearchDTO<TAType> searchDTO);
         Task<TaskAssignment> GetByIdAsync(int id);
-        Task<int> GetNextIdAsync();
         Task AddAsync(TaskAssignment assignment);
         Task UpdateAsync(TaskAssignment assignment);
     }

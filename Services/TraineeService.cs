@@ -58,7 +58,6 @@ namespace TraineeManagement.Api.Services
             await _cacheService.RemoveAsync(cacheKey);
             var newTrainee = new Trainee
             {
-                Id = await _traineeRepository.GetNextIdAsync(),
                 FirstName = trainee.FirstName,
                 LastName = trainee.LastName,
                 Email = trainee.Email,

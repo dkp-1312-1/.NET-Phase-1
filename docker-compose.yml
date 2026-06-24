@@ -20,6 +20,21 @@ services:
     volumes:
       - mysql_data:/var/lib/mysql
   
+  rabbitmq:
+    image: docker-registry-002.zeuslearning.com/zeuslearning/rabbitmq:3-management
+    container_name: dotnetrabbitmq
+    restart: always
+    ports:
+      - "5672:5672"  
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+      RABBITMQ_DEFAULT_VHOST: mqhost
+    volumes:
+      - dotnetrabbitmq:/var/lib/rabbitmq
+    
 volumes:
   redis_data:
   mysql_data:
+  dotnetrabbitmq: 

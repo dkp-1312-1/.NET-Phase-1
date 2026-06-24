@@ -1,10 +1,14 @@
 using System.Security.Permissions;
 using TraineeManagement.Api.Enums;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 namespace TraineeManagement.Api.Models
 {
     public class Submission
     {
-        public required int Id { get; set; }
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int Id { get; set; }
         public int TaskAssignmentId { get; set; }
         public TaskAssignment TaskAssignment { get; set; }
         public string SubmissionUrl { get; set; }
@@ -12,6 +16,6 @@ namespace TraineeManagement.Api.Models
         public DateTime SubmittedDate { get; set; }
         public SubType Status { get; set; }
         public ICollection<Review> Reviews { get; set; }
-        public ICollection<SubmissionFile>SubmissionFiles{ get; set; }
+        public ICollection<SubmissionFile> SubmissionFiles { get; set; }
     }
 }

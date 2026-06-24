@@ -59,7 +59,6 @@ namespace TraineeManagement.Api.Services
                 throw new BadRequestException("DueDate should not be before AssignedDate.");
             var newAssignment = new TaskAssignment
             {
-                Id = await _taskAssignmentRepository.GetNextIdAsync(),
                 TraineeId = request.TraineeId,
                 MentorId = request.MentorId,
                 LearningTaskId = request.LearningTaskId,

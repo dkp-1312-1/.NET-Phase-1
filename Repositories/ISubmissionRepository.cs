@@ -9,7 +9,6 @@ namespace TraineeManagement.Api.Repositories
         Task<(List<Submission> submissions, int totalRecords)> GetSubmissionsAsync(SearchDTO<SubType> searchDTO);
         Task<Submission> GetByIdAsync(int id);
         Task<bool> HasSubmissionForTaskAsync(int taskAssignmentId);
-        Task<int> GetNextIdAsync();
         Task AddAsync(Submission submission);
     }
 }

@@ -5,6 +5,8 @@ using TraineeManagement.Api.Services;
 using TraineeManagement.Api.Resources;
 using System.Security.Claims;
 using TraineeManagement.Api.Enums;
+using TraineeManagement.Api.DTOs;
+using System.Data;
 namespace TraineeManagement.Api.Controllers
 {
     [Route("api/[controller]")]
@@ -32,7 +34,7 @@ namespace TraineeManagement.Api.Controllers
             }
             if (file.Length > IntConstants.FileSizeLimit * 1024 * 1024)
             {
-                throw new PayloadTooLargeException(StringConstants.fileSizeExceed(IntConstants.FileSizeLimit ));
+                throw new PayloadTooLargeException(StringConstants.fileSizeExceed(IntConstants.FileSizeLimit));
             }
             var extension = Path.GetExtension(file.FileName).ToLower();
             var allowExtensions = new[] { ".pdf", ".zip", "docx" };
@@ -43,8 +45,18 @@ namespace TraineeManagement.Api.Controllers
             using var stream = file.OpenReadStream();
             var userIdString = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             int userId = int.Parse(userIdString);
-            var metadata = await _fileStorageService.SaveAsync(stream, extension, submissionId, file, userId);
-            return Created($"/api/submission-files/{metadata.Id}", metadata);
+            var message = await _fileStorageService.SaveAsync(stream, extension, submissionId, file, userId);
+
+            _logger.LogInformation($"File submitted. MessageId={message.MessageId}, CorrelationId={message.CorrelationId}, SubmissionId={submissionId}, FileId={message.FileId}");
+
+            return Accepted(new
+            {
+                TrackingId =message.MessageId,
+                CorrelationId = message.CorrelationId,
+                SubmissionId = submissionId,
+                FileId = message.FileId,
+                Status = SubType.Submitted
+            });
         }
 
         [HttpGet("download/{id}")]
@@ -54,11 +66,11 @@ namespace TraineeManagement.Api.Controllers
             if (fileRecord == null)
                 throw new NotFoundException(StringConstants.SubmissionFileNotFound(id));
             var userIdString = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            var userRole =User.FindFirst(ClaimTypes.Role)?.Value;
+            var userRole = User.FindFirst(ClaimTypes.Role)?.Value;
 
             if (int.TryParse(userIdString, out int userId))
             {
-                if (!(fileRecord.UploadedByUserId == userId || userRole == RoleType.Admin.ToString()||userRole == RoleType.Mentor.ToString()))
+                if (!(fileRecord.UploadedByUserId == userId || userRole == RoleType.Admin.ToString() || userRole == RoleType.Mentor.ToString()))
                 {
                     throw new UnauthorizedException(StringConstants.noAccessDownload);
                 }
@@ -87,14 +99,14 @@ namespace TraineeManagement.Api.Controllers
             }
             try
             {
-                var isDeleted= await _fileStorageService.DeleteAsync(fileRecord);
+                var isDeleted = await _fileStorageService.DeleteAsync(fileRecord);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Failed to delete physical file.");
                 throw new Exception(StringConstants.deleteFileError);
             }
-            return Ok(new{Success=true});
+            return Ok(new { Success = true });
         }
     }
 }

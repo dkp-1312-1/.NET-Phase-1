@@ -38,7 +38,6 @@ namespace TraineeManagement.Api.Services
         {
             var newMentor = new Mentor
             {
-                Id = await _mentorRepository.GetNextIdAsync(),
                 FirstName = mentor.FirstName,
                 LastName = mentor.LastName,
                 Email = mentor.Email,

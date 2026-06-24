@@ -62,7 +62,6 @@ namespace TraineeManagement.Api.Services
 
             var newSub = new Submission
             {
-                Id = await _submissionRepository.GetNextIdAsync(),
                 TaskAssignmentId = request.TaskAssignmentId,
                 SubmissionUrl = request.SubmissionUrl,
                 Notes = request.Notes,

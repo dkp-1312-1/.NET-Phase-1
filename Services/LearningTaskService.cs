@@ -38,7 +38,6 @@ namespace TraineeManagement.Api.Services
         {
             var newTask = new LearningTask
             {
-                Id = await _learningTaskRepository.GetNextIdAsync(),
                 Title = request.Title,
                 Description = request.Description,
                 ExpectedTechStack = request.ExpectedTechStack,

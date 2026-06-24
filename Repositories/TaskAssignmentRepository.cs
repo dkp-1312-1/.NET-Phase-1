@@ -36,11 +36,6 @@ namespace TraineeManagement.Api.Repositories
             return await _context.TaskAssignments.FindAsync(id);
         }
 
-        public async Task<int> GetNextIdAsync()
-        {
-            return await _context.TaskAssignments.AnyAsync() ? await _context.TaskAssignments.MaxAsync(t => t.Id) + 1 : 1;
-        }
-
         public async Task AddAsync(TaskAssignment assignment)
         {
             await _context.TaskAssignments.AddAsync(assignment);

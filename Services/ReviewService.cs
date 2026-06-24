@@ -38,7 +38,6 @@ namespace TraineeManagement.Api.Services
         {
             var newReview = new Review
             {
-                Id = await _reviewRepository.GetNextIdAsync(),
                 SubmissionId = request.SubmissionId, MentorId = request.MentorId,
                 Feedback = request.Feedback, Score = request.Score,
                 ReviewStatus = request.ReviewStatus, ReviewedDate = DateTime.UtcNow

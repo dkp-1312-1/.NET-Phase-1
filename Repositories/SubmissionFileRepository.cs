@@ -30,9 +30,5 @@ namespace TraineeManagement.Api.Repositories
         {
             await _context.SaveChangesAsync();
         }
-        public async Task<int> GetNextIdAsync()
-        {
-            return await _context.SubmissionFiles.AnyAsync() ? await _context.SubmissionFiles.MaxAsync(t => t.Id) + 1 : 1;
-        }
     }
 }

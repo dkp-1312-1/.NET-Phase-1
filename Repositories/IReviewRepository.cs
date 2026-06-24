@@ -8,7 +8,6 @@ namespace TraineeManagement.Api.Repositories
     {
         Task<(List<Review> reviews, int totalRecords)> GetReviewsAsync(SearchDTO<RSType> searchDTO);
         Task<Review> GetByIdAsync(int id);
-        Task<int> GetNextIdAsync();
         Task AddAsync(Review review);
     }
 }

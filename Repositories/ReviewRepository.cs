@@ -30,11 +30,6 @@ namespace TraineeManagement.Api.Repositories
             return await _context.Reviews.FindAsync(id);
         }
 
-        public async Task<int> GetNextIdAsync()
-        {
-            return await _context.Reviews.AnyAsync() ? await _context.Reviews.MaxAsync(t => t.Id) + 1 : 1;
-        }
-
         public async Task AddAsync(Review review)
         {
             await _context.Reviews.AddAsync(review);
