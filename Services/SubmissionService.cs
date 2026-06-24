@@ -26,8 +26,9 @@ namespace TraineeManagement.Api.Services
             if (submissions == null)
             {
                 (submissions, totalRecords) = await _submissionRepository.GetSubmissionsAsync(search);
+                await _cacheService.SetAsync(cacheKey, submissions, TimeSpan.FromMinutes(IntConstants.CacheTimeLimit));
             }
-            await _cacheService.SetAsync(cacheKey, submissions, TimeSpan.FromMinutes(IntConstants.CacheTimeLimit));
+            
             return new PagedResponseDTO<SubmissionResponseDTO>
             {
                 PageNumber = search.PageNumber,

@@ -27,6 +27,7 @@ namespace TraineeManagement.Api.Services
             if (trainees == null)
             {
                 (trainees, totalRecords) = await _traineeRepository.GetTraineesAsync(trainee);
+                await _cacheService.SetAsync(cacheKey, trainees, TimeSpan.FromMinutes(IntConstants.CacheTimeLimit));
             }
             var result = new PagedResponseDTO<TraineeResponseDTO>
             {
@@ -35,8 +36,6 @@ namespace TraineeManagement.Api.Services
                 TotalRecords = totalRecords,
                 Data = trainees.Select(MapToResponse)
             };
-            await _cacheService.SetAsync(cacheKey, trainees, TimeSpan.FromMinutes(IntConstants.CacheTimeLimit));
-
             return result;
         }
 

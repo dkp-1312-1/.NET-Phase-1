@@ -26,8 +26,9 @@ namespace TraineeManagement.Api.Services
             if (assignments == null)
             {
                 (assignments, totalRecords) = await _taskAssignmentRepository.GetTaskAssignmentsAsync(search);
+                await _cacheService.SetAsync(cacheKey, assignments, TimeSpan.FromMinutes(IntConstants.CacheTimeLimit));
             }
-            await _cacheService.SetAsync(cacheKey, assignments, TimeSpan.FromMinutes(IntConstants.CacheTimeLimit));
+            
             return new PagedResponseDTO<TaskAssignmentResponseDTO>
             {
                 PageNumber = search.PageNumber,
