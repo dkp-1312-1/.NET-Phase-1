@@ -38,7 +38,7 @@ public class LocalFileStorageService : IFileStorageService
         using FileStream fileStream = new FileStream(fullPath, FileMode.Create);
         await content.CopyToAsync(fileStream);
 
-        var metadata = new SubmissionFile
+        SubmissionFile metadata = new SubmissionFile
         {
             SubmissionId = request.SubmissionId,
             OriginalFileName = request.File.FileName,
@@ -52,7 +52,7 @@ public class LocalFileStorageService : IFileStorageService
         await _submissionFileRepository.AddAsync(metadata);
         await _submissionFileRepository.SaveChangesAsync();
 
-        var message = new SubmissionProcessingRequestedDTO
+        SubmissionProcessingRequestedDTO message = new SubmissionProcessingRequestedDTO
         {
             MessageId = Guid.NewGuid().ToString(),
             CorrelationId = Guid.NewGuid().ToString(),

@@ -42,14 +42,14 @@ namespace TraineeManagement.Api.Controllers
 
             int userId = int.Parse(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
 
-            var request = new FileUploadRequestDTO
+            FileUploadRequestDTO request = new FileUploadRequestDTO
             {
                 SubmissionId = submissionId,
                 File = file,
                 UserId = userId
             };
 
-            var message = await _fileStorageService.SaveAsync(request);
+            SubmissionProcessingRequestedDTO message = await _fileStorageService.SaveAsync(request);
 
             _logger.LogInformation("File submitted. MessageId={messageId}, CorrelationId={correlationId}, SubmissionId={subId}, FileId={fileId}",
                 message.MessageId, message.CorrelationId, submissionId, message.FileId);
