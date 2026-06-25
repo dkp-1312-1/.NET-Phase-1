@@ -41,11 +41,11 @@ namespace TraineeManagement.Api.Services
                 Config.SecurityKey,
                 SecurityAlgorithms.HmacSha256
             );
-            var ExpiryIn = Config.ExpiryIn;
+            var ExpiryIn = Config.JWTExpiryInMinutes;
 
             var token = new JwtSecurityToken(
-                issuer: Config.Issuer,
-                audience: Config.Audience,
+                issuer: Config.JWTIssuer,
+                audience: Config.JWTAudience,
                 claims: claims,
                 expires: DateTime.UtcNow.AddMinutes(ExpiryIn),
                 signingCredentials: signingCredentials);

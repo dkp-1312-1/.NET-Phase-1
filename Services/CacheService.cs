@@ -25,7 +25,7 @@ namespace TraineeManagement.Api.Services
             }
             catch (Exception ex)
             {
-                _logger.LogWarning(ex, "Redis Cache failure on GET for key: {Key}", key);
+                _logger.LogError(ex, "Redis Cache failure on GET for key: {Key}", key);
                 return default;
             }
         }
@@ -43,7 +43,7 @@ namespace TraineeManagement.Api.Services
             }
             catch(Exception ex)
             {
-                _logger.LogWarning(ex, "Redis Cache failure on SET for key: {Key}", key);
+                _logger.LogError(ex, "Redis Cache failure on SET for key: {Key}", key);
             }
         }
 
@@ -56,7 +56,7 @@ namespace TraineeManagement.Api.Services
             }
             catch(Exception ex)
             {
-                  _logger.LogWarning(ex, "Redis Cache failure on REMOVE for key: {Key}", key);
+                  _logger.LogError(ex, "Redis Cache failure on REMOVE for key: {Key}", key);
             }
         }
     }

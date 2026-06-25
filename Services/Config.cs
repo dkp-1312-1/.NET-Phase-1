@@ -19,9 +19,9 @@ public static class Config
     public static void Initialize(IConfiguration configuration)
     {
         var section = configuration.GetSection("Jwt");
-        Issuer = section["Issuer"];
-        Audience = section["Audience"];
-        ExpiryIn = int.Parse(section["ExpiryIn"]) * 60;
+        JWTIssuer = section["Issuer"];
+        JWTAudience = section["Audience"];
+        JWTExpiryInMinutes = int.Parse(section["ExpiryIn"]) * 60;
         SecurityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(section["Key"]));
         var fileSection = configuration.GetSection("FileStorage");
         StorageRoot = fileSection["RootPath"];
