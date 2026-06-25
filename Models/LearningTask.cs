@@ -17,7 +17,7 @@ namespace TraineeManagement.Api.Models
         public DateTime CreatedDate { get; set; }
         public DateTime UpdatedDate { get; set; }
         public ICollection<TaskAssignment>? TaskAssignments { get; set; }
-
+        public LearningTask(){}
         public LearningTask(CreateLearningTaskRequestDTO request)
         {
             Title = request.Title;

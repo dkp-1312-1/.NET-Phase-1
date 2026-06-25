@@ -20,6 +20,8 @@ namespace TraineeManagement.Api.Resources
         public const string fileNotFound = "The physical file could not be found.";
         public const string deleteFileError = "Error deleting the file from storage.";
 
+        public const string dueDateError="DueDate should not be before AssignedDate.";
+
         public static string TraineeNotFound(int id) => $"Trainee with id {id} was not be found.";
         public static string MentorNotFound(int id) => $"Mentor with id {id} was not found.";
         public static string AssignmentNotFound(int id) => $"Task Assignment with id {id} was not found.";

@@ -19,6 +19,7 @@ namespace TraineeManagement.Api.Models
         public DateTime UpdatedDate { get; set; }
         public ICollection<TaskAssignment>? TaskAssignments { get; set; }
         public ICollection<Review>? Reviews { get; set; }
+        public Mentor(){}
         public Mentor(CreateMentorRequestDTO mentor)
         {
             FirstName = mentor.FirstName;

@@ -20,6 +20,7 @@ namespace TraineeManagement.Api.Models
         public RSType ReviewStatus { get; set; }
         public DateTime ReviewedDate { get; set; }
 
+        public Review(){}
         public Review(CreateReviewRequestDTO request)
         {
             SubmissionId = request.SubmissionId;

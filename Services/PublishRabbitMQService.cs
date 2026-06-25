@@ -35,7 +35,7 @@ namespace TraineeManagement.Api.Services
                 );
             string json = JsonSerializer.Serialize(message);
             byte[] body = Encoding.UTF8.GetBytes(json);
-            BasicProperties properties = new BasicProperties
+            var properties = new BasicProperties
             {
                 Persistent = true
             };

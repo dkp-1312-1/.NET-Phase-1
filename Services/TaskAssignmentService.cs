@@ -49,7 +49,7 @@ namespace TraineeManagement.Api.Services
         public async Task<TaskAssignmentResponseDTO> Create(CreateTaskAssignmentRequestDTO request)
         {
             if (request.DueDate < DateTime.UtcNow)
-                throw new BadRequestException("DueDate should not be before AssignedDate.");
+                throw new BadRequestException(StringConstants.dueDateError);
             TaskAssignment newAssignment = new TaskAssignment(request);
 
             await _taskAssignmentRepository.AddAsync(newAssignment);

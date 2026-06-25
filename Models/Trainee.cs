@@ -19,6 +19,7 @@ namespace TraineeManagement.Api.Models
         public DateTime UpdatedDate { get; set; }
         public ICollection<TaskAssignment>? TaskAssignments { get; set; }
 
+        public Trainee(){}
         public Trainee(CreateTraineeRequestDTO trainee)
         {
             FirstName = trainee.FirstName;

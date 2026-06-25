@@ -25,7 +25,7 @@ namespace TraineeManagement.Api.Models
         public string Remarks { get; set; }
         public ICollection<Submission>? Submissions { get; set; }
 
-
+        public TaskAssignment(){}
         public TaskAssignment(CreateTaskAssignmentRequestDTO request)
         {
             TraineeId = request.TraineeId;

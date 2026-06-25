@@ -2,6 +2,7 @@ using Org.BouncyCastle.Crypto.Prng;
 using TraineeManagement.Api.Services;
 using TraineeManagement.Api.Repositories;
 using TraineeManagement.Api.Models;
+using TraineeManagement.Api.Resources;
 using System.Security.Cryptography;
 using System.Text;
 using System.Security.Claims;
@@ -12,14 +13,17 @@ public class LocalFileStorageService : IFileStorageService
     private readonly IPublishRabbitMQService _publishRabbitMQService;
     private readonly string _storageRoot;
 
-    public LocalFileStorageService(ISubmissionFileRepository submissionFileRepository,IPublishRabbitMQService publishRabbitMQService)
+    public LocalFileStorageService(ISubmissionFileRepository submissionFileRepository, IPublishRabbitMQService publishRabbitMQService)
     {
         _storageRoot = Config.StorageRoot;
         _submissionFileRepository = submissionFileRepository;
-        _publishRabbitMQService=publishRabbitMQService;
+        _publishRabbitMQService = publishRabbitMQService;
     }
-    public async Task<SubmissionProcessingRequestedDTO> SaveAsync(Stream content, string extension, int submissionId, IFormFile file, int userId)
+    public async Task<SubmissionProcessingRequestedDTO> SaveAsync(FileUploadRequestDTO request)
     {
+        string extension = Path.GetExtension(request.File.FileName).ToLower();
+
+        using Stream content = request.File.OpenReadStream();
         string checksum;
         using (SHA256 sha256 = SHA256.Create())
         {
@@ -27,39 +31,37 @@ public class LocalFileStorageService : IFileStorageService
             checksum = BitConverter.ToString(hashBytes).Replace("-", "").ToLowerInvariant();
         }
         content.Position = 0;
+
         string storageName = $"{Guid.NewGuid()}{extension}";
         string fullPath = Path.Combine(_storageRoot, storageName);
 
         using FileStream fileStream = new FileStream(fullPath, FileMode.Create);
         await content.CopyToAsync(fileStream);
 
-        SubmissionFile metadata = new SubmissionFile
+        var metadata = new SubmissionFile
         {
-            SubmissionId = submissionId,
-            OriginalFileName = file.FileName,
+            SubmissionId = request.SubmissionId,
+            OriginalFileName = request.File.FileName,
             StorageFileName = storageName,
-            ContentType = file.ContentType,
-            SizeBytes = file.Length,
+            ContentType = request.File.ContentType,
+            SizeBytes = request.File.Length,
             UploadedDate = DateTime.UtcNow,
             CheckSum = checksum,
-            UploadedByUserId = userId
+            UploadedByUserId = request.UserId
         };
         await _submissionFileRepository.AddAsync(metadata);
         await _submissionFileRepository.SaveChangesAsync();
 
-        string correlationId = Guid.NewGuid().ToString();
-        string messageId = Guid.NewGuid().ToString();
-
-        SubmissionProcessingRequestedDTO message = new SubmissionProcessingRequestedDTO
+        var message = new SubmissionProcessingRequestedDTO
         {
-            MessageId = messageId,
-            CorrelationId = correlationId,
-            SubmissionId = submissionId,
+            MessageId = Guid.NewGuid().ToString(),
+            CorrelationId = Guid.NewGuid().ToString(),
+            SubmissionId = request.SubmissionId,
             FileId = metadata.Id,
             RequestedAt = DateTime.UtcNow
         };
-        _publishRabbitMQService.PublishSubmission(message);
 
+        _publishRabbitMQService.PublishSubmission(message);
         return message;
     }
 
@@ -68,7 +70,7 @@ public class LocalFileStorageService : IFileStorageService
         string fullPath = Path.Combine(_storageRoot, storageName);
         if (!File.Exists(fullPath))
         {
-            throw new FileNotFoundException($"File with storage name {storageName} not found.");
+            throw new NotFoundException(StringConstants.fileNotFound);
         }
         Stream stream = new FileStream(fullPath, FileMode.Open, FileAccess.Read, FileShare.Read);
         return Task.FromResult(stream);

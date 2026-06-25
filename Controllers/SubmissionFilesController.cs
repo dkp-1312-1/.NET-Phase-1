@@ -30,35 +30,40 @@ namespace TraineeManagement.Api.Controllers
         public async Task<IActionResult> UploadFile(int submissionId, IFormFile file)
         {
             if (file == null || file.Length == 0)
-            {
                 throw new BadRequestException(StringConstants.fileEmpty);
-            }
-            if (file.Length > Config.RedisFileSizeLimit * 1024 * 1024)
-            {
-                throw new PayloadTooLargeException(StringConstants.fileSizeExceed(Config.RedisFileSizeLimit));
-            }
-            string extension = Path.GetExtension(file.FileName).ToLower();
-            string[] allowExtensions = new[] { ".pdf", ".zip", "docx" };
-            if (!allowExtensions.Contains(extension))
-            {
-                throw new BadRequestException(StringConstants.InvalidFileType);
-            }
-            using Stream stream = file.OpenReadStream();
-            string userIdString = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            int userId = int.Parse(userIdString);
-            SubmissionProcessingRequestedDTO message = await _fileStorageService.SaveAsync(stream, extension, submissionId, file, userId);
 
-            _logger.LogInformation($"File submitted. MessageId={message.MessageId}, CorrelationId={message.CorrelationId}, SubmissionId={submissionId}, FileId={message.FileId}");
+            if (file.Length > Config.RedisFileSizeLimit * 1024 * 1024)
+                throw new PayloadTooLargeException(StringConstants.fileSizeExceed(Config.RedisFileSizeLimit));
+
+            string[] allowExtensions = new[] { ".pdf", ".zip", ".docx" };
+            string extension = Path.GetExtension(file.FileName).ToLower();
+            if (!allowExtensions.Contains(extension))
+                throw new BadRequestException(StringConstants.InvalidFileType);
+
+            int userId = int.Parse(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+
+            var request = new FileUploadRequestDTO
+            {
+                SubmissionId = submissionId,
+                File = file,
+                UserId = userId
+            };
+
+            var message = await _fileStorageService.SaveAsync(request);
+
+            _logger.LogInformation("File submitted. MessageId={messageId}, CorrelationId={correlationId}, SubmissionId={subId}, FileId={fileId}",
+                message.MessageId, message.CorrelationId, submissionId, message.FileId);
 
             return Accepted(new
             {
-                TrackingId =message.MessageId,
+                TrackingId = message.MessageId,
                 CorrelationId = message.CorrelationId,
                 SubmissionId = submissionId,
                 FileId = message.FileId,
                 Status = SubType.Submitted
             });
         }
+
 
         [HttpGet("download/{id}")]
         public async Task<IActionResult> DownloadFile(int id)
