@@ -41,7 +41,7 @@ builder.Services.AddAuthentication(options =>
         ValidateIssuerSigningKey = true,
         ValidIssuer = Config.JWTIssuer,
         ValidAudience = Config.JWTAudience,
-        IssuerSigningKey =Config.SecurityKey
+        IssuerSigningKey =Config.JWTSecurityKey
     };
     options.Events = new JwtBearerEvents
         {

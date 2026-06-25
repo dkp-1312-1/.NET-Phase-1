@@ -1,4 +1,5 @@
 using TraineeManagement.Api.Enums;
+using TraineeManagement.Api.DTOs;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 namespace TraineeManagement.Api.Models
@@ -18,5 +19,15 @@ namespace TraineeManagement.Api.Models
         public int? Score { get; set; }
         public RSType ReviewStatus { get; set; }
         public DateTime ReviewedDate { get; set; }
+
+        public Review(CreateReviewRequestDTO request)
+        {
+            SubmissionId = request.SubmissionId;
+            MentorId = request.MentorId;
+            Feedback = request.Feedback;
+            Score = request.Score;
+            ReviewStatus = request.ReviewStatus;
+            ReviewedDate = DateTime.UtcNow;
+        }
     }
 }

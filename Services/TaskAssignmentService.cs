@@ -20,14 +20,8 @@ namespace TraineeManagement.Api.Services
 
         public async Task<PagedResponseDTO<TaskAssignmentResponseDTO>> GetAll(SearchDTO<TAType> search)
         {
-            string cacheKey = StringConstants.taskAssignment(StringConstants.all);
-            var assignments = await _cacheService.GetAsync<List<TaskAssignment>>(cacheKey);
-            var totalRecords = assignments?.Count()??0;
-            if (assignments == null)
-            {
-                (assignments, totalRecords) = await _taskAssignmentRepository.GetTaskAssignmentsAsync(search);
-                await _cacheService.SetAsync(cacheKey, assignments, TimeSpan.FromMinutes(IntConstants.CacheTimeLimit));
-            }
+            
+            (List<TaskAssignment>? assignments, int totalRecords) = await _taskAssignmentRepository.GetTaskAssignmentsAsync(search);
             
             return new PagedResponseDTO<TaskAssignmentResponseDTO>
             {
@@ -41,32 +35,22 @@ namespace TraineeManagement.Api.Services
         public async Task<TaskAssignmentResponseDTO> GetById(int id)
         {
             string cacheKey = StringConstants.taskAssignment(id);
-            var cachedTask = await _cacheService.GetAsync<TaskAssignmentResponseDTO>(cacheKey);
+            TaskAssignmentResponseDTO cachedTask = await _cacheService.GetAsync<TaskAssignmentResponseDTO>(cacheKey);
             if (cachedTask != null)
             {
                 return cachedTask;
             }
-            var assignment = await _taskAssignmentRepository.GetByIdAsync(id);
-            await _cacheService.SetAsync(cacheKey, MapToResponse(assignment), TimeSpan.FromMinutes(IntConstants.CacheTimeLimit));
+            TaskAssignment? assignment = await _taskAssignmentRepository.GetByIdAsync(id);
+            if(assignment!=null)
+                await _cacheService.SetAsync(cacheKey, MapToResponse(assignment));
             return assignment != null ? MapToResponse(assignment) : null;
         }
 
         public async Task<TaskAssignmentResponseDTO> Create(CreateTaskAssignmentRequestDTO request)
         {
-            string cacheKey = StringConstants.taskAssignment(StringConstants.all);
-            await _cacheService.RemoveAsync(cacheKey);
             if (request.DueDate < DateTime.UtcNow)
                 throw new BadRequestException("DueDate should not be before AssignedDate.");
-            var newAssignment = new TaskAssignment
-            {
-                TraineeId = request.TraineeId,
-                MentorId = request.MentorId,
-                LearningTaskId = request.LearningTaskId,
-                AssignedDate = DateTime.UtcNow,
-                DueDate = request.DueDate,
-                Status = TAType.Assigned,
-                Remarks = request.Remarks
-            };
+            TaskAssignment newAssignment = new TaskAssignment(request);
 
             await _taskAssignmentRepository.AddAsync(newAssignment);
             return MapToResponse(newAssignment);
@@ -74,11 +58,9 @@ namespace TraineeManagement.Api.Services
 
         public async Task<TaskAssignmentResponseDTO> UpdateStatus(int id, TAType status)
         {
-            string cacheKey = StringConstants.taskAssignment(StringConstants.all);
-            await _cacheService.RemoveAsync(cacheKey);
             string cacheKeyId = StringConstants.taskAssignment(id);
             await _cacheService.RemoveAsync(cacheKeyId);
-            var assignment = await _taskAssignmentRepository.GetByIdAsync(id);
+            TaskAssignment assignment = await _taskAssignmentRepository.GetByIdAsync(id);
             if (assignment == null) return null;
 
             assignment.Status = status;

@@ -17,7 +17,7 @@ namespace TraineeManagement.Api.Services
 
         public async Task<PagedResponseDTO<ReviewResponseDTO>> GetAll(SearchDTO<RSType> search)
         {
-            var (reviews, totalRecords) = await _reviewRepository.GetReviewsAsync(search);
+            (List<Review>? reviews, int totalRecords) = await _reviewRepository.GetReviewsAsync(search);
 
             return new PagedResponseDTO<ReviewResponseDTO>
             {
@@ -30,18 +30,13 @@ namespace TraineeManagement.Api.Services
 
         public async Task<ReviewResponseDTO> GetById(int id)
         {
-            var review = await _reviewRepository.GetByIdAsync(id);
+            Review review = await _reviewRepository.GetByIdAsync(id);
             return review != null ? MapToResponse(review) : null;
         }
 
         public async Task<ReviewResponseDTO> Create(CreateReviewRequestDTO request)
         {
-            var newReview = new Review
-            {
-                SubmissionId = request.SubmissionId, MentorId = request.MentorId,
-                Feedback = request.Feedback, Score = request.Score,
-                ReviewStatus = request.ReviewStatus, ReviewedDate = DateTime.UtcNow
-            };
+            Review newReview = new Review(request);
 
             await _reviewRepository.AddAsync(newReview);
             return MapToResponse(newReview);

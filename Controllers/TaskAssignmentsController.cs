@@ -31,7 +31,7 @@ namespace TraineeManagement.Api.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
-            var result = await _service.GetById(id);
+            TaskAssignmentResponseDTO result = await _service.GetById(id);
             if (result == null)
             {
                  throw new NotFoundException(StringConstants.AssignmentNotFound(id));
@@ -47,7 +47,7 @@ namespace TraineeManagement.Api.Controllers
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateTaskAssignmentRequestDTO request)
         {
-            var result = await _service.Create(request);
+            TaskAssignmentResponseDTO result = await _service.Create(request);
             _logger.LogInformation("Assignment created: {Id}", result.Id);
             return CreatedAtAction(nameof(GetById), new { id = result.Id }, new ApiResponseDTO<TaskAssignmentResponseDTO> { Data = result, Success = true });
         }
@@ -55,8 +55,7 @@ namespace TraineeManagement.Api.Controllers
         [HttpPut("{id}/status")]
         public async Task<IActionResult> UpdateStatus(int id, [FromBody] UpdateAssignmentStatusRequestDTO request)
         {
-
-            var result = await _service.UpdateStatus(id, request.Status);
+            TaskAssignmentResponseDTO result = await _service.UpdateStatus(id, request.Status);
             if (result == null)
                 throw new NotFoundException(StringConstants.AssignmentNotFound(id));
             return Ok(new ApiResponseDTO<TaskAssignmentResponseDTO> { Data = result, Success = true });

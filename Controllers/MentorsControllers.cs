@@ -32,7 +32,7 @@ namespace TraineeManagement.Api.Controllers
         [HttpGet("{Id}")]
         public async Task<IActionResult> GetMentorById(int Id)
         {
-            var mentor = await _mentorServices.GetById(Id);
+            MentorResponseDTO mentor = await _mentorServices.GetById(Id);
             if (mentor == null)
             {
                 throw new NotFoundException(StringConstants.MentorNotFound(Id));
@@ -45,7 +45,7 @@ namespace TraineeManagement.Api.Controllers
         public async Task<IActionResult> CreateMentor([FromBody] CreateMentorRequestDTO newMentor)
         {
 
-            var mentor = await _mentorServices.Create(newMentor);
+            MentorResponseDTO mentor = await _mentorServices.Create(newMentor);
             ApiResponseDTO<MentorResponseDTO> result = new ApiResponseDTO<MentorResponseDTO> { Data = mentor, Success = true };
             _logger.LogInformation("Mentor created successfully with ID {Id}", mentor.Id);
             return CreatedAtAction(
@@ -58,7 +58,7 @@ namespace TraineeManagement.Api.Controllers
         public async Task<IActionResult> UpdateMentor(
             int Id, [FromBody] UpdateMentorRequestDTO mentor)
         {
-            var updatedMentor = await _mentorServices.Update(Id, mentor);
+            MentorResponseDTO updatedMentor = await _mentorServices.Update(Id, mentor);
             if (updatedMentor == null)
             {
                 throw new NotFoundException(StringConstants.MentorNotFound(Id));
@@ -71,7 +71,7 @@ namespace TraineeManagement.Api.Controllers
         [HttpDelete("{Id}")]
         public async Task<IActionResult> DeleteMentor(int Id)
         {
-            var isDeleted = await _mentorServices.Delete(Id);
+            bool isDeleted = await _mentorServices.Delete(Id);
             _logger.LogInformation("Mentor Deleted successfully with ID {Id}", Id);
             return Ok(new{Success=isDeleted});
         }

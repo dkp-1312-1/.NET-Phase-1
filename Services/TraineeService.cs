@@ -21,51 +21,33 @@ namespace TraineeManagement.Api.Services
 
         public async Task<PagedResponseDTO<TraineeResponseDTO>> GetAll(SearchDTO<TraineeStatusType> trainee)
         {
-            string cacheKey = StringConstants.trainee(StringConstants.all);
-            var trainees = await _cacheService.GetAsync<List<Trainee>>(cacheKey);
-            var totalRecords=trainees?.Count()??0;
-            if (trainees == null)
-            {
-                (trainees, totalRecords) = await _traineeRepository.GetTraineesAsync(trainee);
-                await _cacheService.SetAsync(cacheKey, trainees, TimeSpan.FromMinutes(IntConstants.CacheTimeLimit));
-            }
-            var result = new PagedResponseDTO<TraineeResponseDTO>
+            (List<Trainee>? trainees, int totalRecords) = await _traineeRepository.GetTraineesAsync(trainee);
+            return new PagedResponseDTO<TraineeResponseDTO>
             {
                 PageNumber = trainee.PageNumber,
                 PageSize = trainee.PageSize,
                 TotalRecords = totalRecords,
                 Data = trainees.Select(MapToResponse)
             };
-            return result;
         }
 
         public async Task<TraineeResponseDTO> GetById(int Id)
         {
             string cacheKey = StringConstants.trainee(Id);
-            var cachedTrainee = await _cacheService.GetAsync<TraineeResponseDTO>(cacheKey);
+            TraineeResponseDTO cachedTrainee = await _cacheService.GetAsync<TraineeResponseDTO>(cacheKey);
             if (cachedTrainee != null)
             {
                 return cachedTrainee;
             }
-            var trainee = await _traineeRepository.GetByIdAsync(Id);
-            await _cacheService.SetAsync(cacheKey, MapToResponse(trainee), TimeSpan.FromMinutes(IntConstants.CacheTimeLimit));
+            Trainee? trainee = await _traineeRepository.GetByIdAsync(Id);
+            if(trainee != null)
+                await _cacheService.SetAsync(cacheKey, MapToResponse(trainee));
             return trainee != null ? MapToResponse(trainee) : null;
         }
 
         public async Task<TraineeResponseDTO> Create(CreateTraineeRequestDTO trainee)
         {
-            string cacheKey = StringConstants.trainee(StringConstants.all);
-            await _cacheService.RemoveAsync(cacheKey);
-            var newTrainee = new Trainee
-            {
-                FirstName = trainee.FirstName,
-                LastName = trainee.LastName,
-                Email = trainee.Email,
-                TechStack = trainee.TechStack,
-                Status = trainee.Status,
-                CreatedDate = DateTime.UtcNow,
-                UpdatedDate = DateTime.UtcNow
-            };
+            Trainee newTrainee = new Trainee(trainee);
 
             await _traineeRepository.AddAsync(newTrainee);
             return MapToResponse(newTrainee);
@@ -73,11 +55,9 @@ namespace TraineeManagement.Api.Services
 
         public async Task<TraineeResponseDTO> Update(int Id, UpdateTraineeRequestDTO trainee)
         {
-            string cacheKey = StringConstants.trainee(StringConstants.all);
-            await _cacheService.RemoveAsync(cacheKey);
             string cacheKeyId = StringConstants.trainee(Id);
             await _cacheService.RemoveAsync(cacheKeyId);
-            var updatedTrainee = await _traineeRepository.GetByIdAsync(Id);
+            Trainee updatedTrainee = await _traineeRepository.GetByIdAsync(Id);
             if (updatedTrainee == null)
                 return null;
 
@@ -94,11 +74,9 @@ namespace TraineeManagement.Api.Services
 
         public async Task<bool> Delete(int Id)
         {
-            string cacheKey = StringConstants.trainee(StringConstants.all);
-            await _cacheService.RemoveAsync(cacheKey);
             string cacheKeyId = StringConstants.trainee(Id);
             await _cacheService.RemoveAsync(cacheKeyId);
-            var trainee = await _traineeRepository.GetByIdAsync(Id);
+            Trainee trainee = await _traineeRepository.GetByIdAsync(Id);
             if (trainee == null)
                 return true;
 

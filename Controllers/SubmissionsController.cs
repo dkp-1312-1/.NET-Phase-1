@@ -31,7 +31,7 @@ namespace TraineeManagement.Api.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
-            var result = await _service.GetById(id);
+            SubmissionResponseDTO result = await _service.GetById(id);
             if (result == null)
             {
                 throw new NotFoundException(StringConstants.SubmissionNotFound(id));
@@ -47,7 +47,7 @@ namespace TraineeManagement.Api.Controllers
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateSubmissionRequestDTO request)
         {
-            var result = await _service.Create(request);
+            SubmissionResponseDTO result = await _service.Create(request);
             _logger.LogInformation("Assignment created: {Id}", result.Id);
             return CreatedAtAction(nameof(GetById), new { id = result.Id }, new ApiResponseDTO<SubmissionResponseDTO> { Data = result, Success = true });
 

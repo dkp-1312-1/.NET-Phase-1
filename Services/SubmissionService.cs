@@ -20,14 +20,8 @@ namespace TraineeManagement.Api.Services
 
         public async Task<PagedResponseDTO<SubmissionResponseDTO>> GetAll(SearchDTO<SubType> search)
         {
-            string cacheKey = StringConstants.submission(StringConstants.all);
-            var submissions = await _cacheService.GetAsync<List<Submission>>(cacheKey);
-            var totalRecords = submissions?.Count()??0;
-            if (submissions == null)
-            {
-                (submissions, totalRecords) = await _submissionRepository.GetSubmissionsAsync(search);
-                await _cacheService.SetAsync(cacheKey, submissions, TimeSpan.FromMinutes(IntConstants.CacheTimeLimit));
-            }
+            
+            (List<Submission>? submissions, int totalRecords) = await _submissionRepository.GetSubmissionsAsync(search);
             
             return new PagedResponseDTO<SubmissionResponseDTO>
             {
@@ -41,34 +35,25 @@ namespace TraineeManagement.Api.Services
         public async Task<SubmissionResponseDTO> GetById(int id)
         {
             string cacheKey = StringConstants.submission(id);
-            var cachedSubmission = await _cacheService.GetAsync<SubmissionResponseDTO>(cacheKey);
+            SubmissionResponseDTO cachedSubmission = await _cacheService.GetAsync<SubmissionResponseDTO>(cacheKey);
             if (cachedSubmission != null)
             {
                 return cachedSubmission;
             }
-            var sub = await _submissionRepository.GetByIdAsync(id);
-            await _cacheService.SetAsync(cacheKey, MapToResponse(sub), TimeSpan.FromMinutes(IntConstants.CacheTimeLimit));
+            Submission? sub = await _submissionRepository.GetByIdAsync(id);
+            if(sub!=null)
+                await _cacheService.SetAsync(cacheKey, MapToResponse(sub));
             return sub != null ? MapToResponse(sub) : null;
         }
 
         public async Task<SubmissionResponseDTO> Create(CreateSubmissionRequestDTO request)
         {
-            string cacheKey = StringConstants.submission(StringConstants.all);
-            await _cacheService.RemoveAsync(cacheKey);
-            var subExists = await _submissionRepository.HasSubmissionForTaskAsync(request.TaskAssignmentId);
+            bool subExists = await _submissionRepository.HasSubmissionForTaskAsync(request.TaskAssignmentId);
 
             if (subExists)
                 request.Status = SubType.Resubmitted;
 
-            var newSub = new Submission
-            {
-                TaskAssignmentId = request.TaskAssignmentId,
-                SubmissionUrl = request.SubmissionUrl,
-                Notes = request.Notes,
-                SubmittedDate = DateTime.UtcNow,
-                Status = request.Status
-            };
-
+            Submission newSub = new Submission(request);
             await _submissionRepository.AddAsync(newSub);
             return MapToResponse(newSub);
         }

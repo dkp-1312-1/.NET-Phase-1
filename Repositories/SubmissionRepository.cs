@@ -17,9 +17,9 @@ namespace TraineeManagement.Api.Repositories
 
         public async Task<(List<Submission> submissions, int totalRecords)> GetSubmissionsAsync(SearchDTO<SubType> searchDTO)
         {
-            var query = _context.Submissions.AsQueryable();
-            var totalRecords = await query.CountAsync();
-            var submissions = await query.Skip((searchDTO.PageNumber - 1) * searchDTO.PageSize)
+            IQueryable<Submission> query = _context.Submissions.AsQueryable();
+            int totalRecords = await query.CountAsync();
+            List<Submission> submissions = await query.Skip((searchDTO.PageNumber - 1) * searchDTO.PageSize)
                                          .Take(searchDTO.PageSize).ToListAsync();
             
             return (submissions, totalRecords);

@@ -16,7 +16,7 @@ namespace TraineeManagement.Api.Services
         }
         public async void PublishSubmission(SubmissionProcessingRequestedDTO message)
         {
-            var factory = new ConnectionFactory
+            ConnectionFactory factory = new ConnectionFactory
             {
                 HostName = Config.RabbitHostName ?? "Hostname",
                 Port = Config.RabbitPort,
@@ -25,21 +25,22 @@ namespace TraineeManagement.Api.Services
                 VirtualHost = Config.RabbitVirtualHost
             };
 
-            await using var connection = await factory.CreateConnectionAsync();
-            await using var channel = await connection.CreateChannelAsync();
+            await using IConnection connection = await factory.CreateConnectionAsync();
+            await using IChannel channel = await connection.CreateChannelAsync();
             await channel.QueueDeclareAsync(queue: "submission-processing",
                 durable: true,
                 exclusive: false,
                 autoDelete: false,
                 arguments: null
                 );
-            var json = JsonSerializer.Serialize(message);
-            var body = Encoding.UTF8.GetBytes(json);
-            var properties = new BasicProperties
+            string json = JsonSerializer.Serialize(message);
+            byte[] body = Encoding.UTF8.GetBytes(json);
+            BasicProperties properties = new BasicProperties
             {
                 Persistent = true
             };
-            await channel.BasicPublishAsync(exchange: "",
+            await channel.BasicPublishAsync(
+                exchange: "",
                 routingKey: "submission-processing",
                 mandatory: false,
                 basicProperties: properties,

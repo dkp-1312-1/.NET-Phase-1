@@ -1,5 +1,5 @@
 using System.ComponentModel.DataAnnotations;
-using TraineeManagement.Api.Models;
+using TraineeManagement.Api.Enums;
 namespace TraineeManagement.Api.DTOs
 {
     public class UserRequest

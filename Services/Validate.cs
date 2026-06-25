@@ -9,7 +9,7 @@ using TraineeManagement.Api.DTOs;
     {
        if (!context.ModelState.IsValid)
         {
-           var errorDetails = context.ModelState
+            IEnumerable<Errors> errorDetails = context.ModelState
                 .Where(x => x.Value.Errors.Count > 0)
                 .Select(x => new Errors{ 
                     Field = x.Key, 

@@ -1,4 +1,5 @@
 using TraineeManagement.Api.Enums;
+using TraineeManagement.Api.DTOs;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 namespace TraineeManagement.Api.Models
@@ -18,10 +19,22 @@ namespace TraineeManagement.Api.Models
         public int LearningTaskId { get; set; }
         public LearningTask LearningTask { get; set; }
 
-        public DateTime AssignedDate { get; set; }
+        public DateTime AssignedDate { get; set; } = DateTime.UtcNow;
         public DateTime DueDate { get; set; }
-        public TAType Status { get; set; }
+        public TAType Status { get; set; } = TAType.Assigned;
         public string Remarks { get; set; }
         public ICollection<Submission>? Submissions { get; set; }
+
+
+        public TaskAssignment(CreateTaskAssignmentRequestDTO request)
+        {
+            TraineeId = request.TraineeId;
+            MentorId = request.MentorId;
+            LearningTaskId = request.LearningTaskId;
+            DueDate = request.DueDate;
+            Remarks = request.Remarks;
+            AssignedDate = DateTime.UtcNow;
+            Status = TAType.Assigned;
+        }
     }
 }

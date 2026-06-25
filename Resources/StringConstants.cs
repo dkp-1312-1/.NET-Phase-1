@@ -20,8 +20,6 @@ namespace TraineeManagement.Api.Resources
         public const string fileNotFound = "The physical file could not be found.";
         public const string deleteFileError = "Error deleting the file from storage.";
 
-        public const string all="All";
-
         public static string TraineeNotFound(int id) => $"Trainee with id {id} was not be found.";
         public static string MentorNotFound(int id) => $"Mentor with id {id} was not found.";
         public static string AssignmentNotFound(int id) => $"Task Assignment with id {id} was not found.";
@@ -31,10 +29,7 @@ namespace TraineeManagement.Api.Resources
         public static string SubmissionFileNotFound(int id) => $"File with id {id} was not found.";
         public static string fileSizeExceed(int size) => $"File exceeds the {size}MB limit.";
         public static string trainee(int id) => $"trainee:{id}";
-        public static string trainee(string all) => $"trainee:{all}";
         public static string taskAssignment(int id) => $"taskAssignment:{id}";
-        public static string taskAssignment(string all) => $"taskAssignment:{all}";
         public static string submission(int id) => $"submission:{id}";
-        public static string submission(string all) => $"submission:{all}";
     }
 }

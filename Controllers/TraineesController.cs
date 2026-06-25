@@ -19,7 +19,7 @@ namespace TraineeManagement.Api.Controllers
   {
     private readonly ITraineeService _traineeServices;
     private readonly ILogger<TraineesController> _logger;
-   
+
 
     public TraineesController(ITraineeService traineeService, ILogger<TraineesController> logger)
     {
@@ -36,7 +36,7 @@ namespace TraineeManagement.Api.Controllers
     [HttpGet("{Id}")]
     public async Task<IActionResult> GetTraineeById(int Id)
     {
-      var trainee = await _traineeServices.GetById(Id);
+      TraineeResponseDTO trainee = await _traineeServices.GetById(Id);
       if (trainee == null)
       {
         throw new NotFoundException(StringConstants.TraineeNotFound(Id));
@@ -50,7 +50,7 @@ namespace TraineeManagement.Api.Controllers
     public async Task<IActionResult> CreateTrainee(
         [FromBody] CreateTraineeRequestDTO newTrainee)
     {
-      var trainee = await _traineeServices.Create(newTrainee);
+      TraineeResponseDTO trainee = await _traineeServices.Create(newTrainee);
       ApiResponseDTO<TraineeResponseDTO> result = new ApiResponseDTO<TraineeResponseDTO> { Data = trainee, Success = true };
       _logger.LogInformation("Trainee created successfully with ID {Id}", trainee.Id);
       return CreatedAtAction(
@@ -63,7 +63,7 @@ namespace TraineeManagement.Api.Controllers
     public async Task<IActionResult> UpdateTrainee(
         int Id, [FromBody] UpdateTraineeRequestDTO trainee)
     {
-      var updatedTrainee = await _traineeServices.Update(Id, trainee);
+      TraineeResponseDTO updatedTrainee = await _traineeServices.Update(Id, trainee);
       if (updatedTrainee == null)
       {
         throw new NotFoundException(StringConstants.TraineeNotFound(Id));
@@ -75,9 +75,9 @@ namespace TraineeManagement.Api.Controllers
     [HttpDelete("{Id}")]
     public async Task<IActionResult> DeleteTrainee(int Id)
     {
-      var isDeleted = await _traineeServices.Delete(Id);
+      bool isDeleted = await _traineeServices.Delete(Id);
       _logger.LogInformation("Trainee Deleted successfully with ID {Id}", Id);
-      return Ok(new {Success=isDeleted});
+      return Ok(new { Success = isDeleted });
     }
   }
 }

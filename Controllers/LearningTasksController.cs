@@ -34,7 +34,7 @@ namespace TraineeManagement.Api.Controllers
         public async Task<IActionResult> GetLearningTaskById(int Id)
         {
 
-            var task = await _learningTaskService.GetById(Id);
+            LearningTaskResponseDTO task = await _learningTaskService.GetById(Id);
             if (task == null)
             {
                 throw new NotFoundException(StringConstants.TaskNotFound(Id));
@@ -49,7 +49,7 @@ namespace TraineeManagement.Api.Controllers
         public async Task<IActionResult> CreateLearningTask([FromBody] CreateLearningTaskRequestDTO request)
         {
 
-            var newTask = await _learningTaskService.Create(request);
+            LearningTaskResponseDTO newTask = await _learningTaskService.Create(request);
             ApiResponseDTO<LearningTaskResponseDTO> result = new ApiResponseDTO<LearningTaskResponseDTO> { Data = newTask, Success = true };
             _logger.LogInformation("Task created successfully with ID {Id}", newTask.Id);
             return CreatedAtAction(
@@ -61,7 +61,7 @@ namespace TraineeManagement.Api.Controllers
         [ValidateModel]
         public async Task<IActionResult> UpdateLearningTask(int Id, [FromBody] UpdateLearningTaskRequestDTO request)
         {
-            var updatedTask = await _learningTaskService.Update(Id, request);
+            LearningTaskResponseDTO updatedTask = await _learningTaskService.Update(Id, request);
             if (updatedTask == null)
             {
                 throw new NotFoundException(StringConstants.TaskNotFound(Id));
@@ -74,7 +74,7 @@ namespace TraineeManagement.Api.Controllers
         [HttpDelete("{Id}")]
         public async Task<IActionResult> DeleteLearningTask(int Id)
         {
-            var isDeleted = await _learningTaskService.Delete(Id);
+            bool isDeleted = await _learningTaskService.Delete(Id);
             _logger.LogInformation("Task Deleted successfully with ID {Id}", Id);
             return Ok(new{Success=isDeleted});
         }

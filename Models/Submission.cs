@@ -1,5 +1,6 @@
 using System.Security.Permissions;
 using TraineeManagement.Api.Enums;
+using TraineeManagement.Api.DTOs;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 namespace TraineeManagement.Api.Models
@@ -17,5 +18,14 @@ namespace TraineeManagement.Api.Models
         public SubType Status { get; set; }
         public ICollection<Review> Reviews { get; set; }
         public ICollection<SubmissionFile> SubmissionFiles { get; set; }
+
+        public Submission(CreateSubmissionRequestDTO request)
+        {
+            TaskAssignmentId = request.TaskAssignmentId;
+            SubmissionUrl = request.SubmissionUrl;
+            Notes = request.Notes;
+            SubmittedDate = DateTime.UtcNow;
+            Status = request.Status;
+        }
     }
 }

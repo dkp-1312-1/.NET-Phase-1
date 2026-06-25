@@ -1,12 +1,7 @@
 using System.ComponentModel.DataAnnotations; 
+using TraineeManagement.Api.Enums;
 namespace TraineeManagement.Api.Models
 {
-    public enum RoleType
-    {
-        Admin,
-        Mentor,
-        Trainee
-    }
     public class User
     {
         public int Id { get; set; }

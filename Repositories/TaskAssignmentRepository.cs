@@ -17,15 +17,15 @@ namespace TraineeManagement.Api.Repositories
 
         public async Task<(List<TaskAssignment> assignments, int totalRecords)> GetTaskAssignmentsAsync(SearchDTO<TAType> searchDTO)
         {
-            var query = _context.TaskAssignments.AsQueryable();
+            IQueryable<TaskAssignment> query = _context.TaskAssignments.AsQueryable();
             
             if (searchDTO.Status != null)
             {
                 query = query.Where(t => t.Status == searchDTO.Status);
             }
-            
-            var totalRecords = await query.CountAsync();
-            var assignments = await query.Skip((searchDTO.PageNumber - 1) * searchDTO.PageSize)
+
+            int totalRecords = await query.CountAsync();
+            List<TaskAssignment> assignments = await query.Skip((searchDTO.PageNumber - 1) * searchDTO.PageSize)
                                          .Take(searchDTO.PageSize).ToListAsync();
             
             return (assignments, totalRecords);

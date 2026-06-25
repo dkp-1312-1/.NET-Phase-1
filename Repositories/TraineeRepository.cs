@@ -21,7 +21,7 @@ namespace TraineeManagement.Api.Repositories
             
             if (searchDTO.Name != null)
             {
-                var Name = searchDTO.Name.ToLower();
+                string Name = searchDTO.Name.ToLower();
                 Query = Query.Where(t =>
                     t.FirstName.ToLower().Contains(Name) || 
                     t.LastName.ToLower().Contains(Name) || 
@@ -31,12 +31,12 @@ namespace TraineeManagement.Api.Repositories
             
             if (searchDTO.Status != null)
             {
-                var Status = searchDTO.Status;
+                TraineeStatusType Status = searchDTO.Status;
                 Query = Query.Where(t => t.Status == Status);
             }
-            
-            var totalRecords = await Query.CountAsync();
-            var trainees = await Query.Skip((searchDTO.PageNumber - 1) * searchDTO.PageSize).Take(searchDTO.PageSize).ToListAsync();
+
+            int totalRecords = await Query.CountAsync();
+            List<Trainee> trainees = await Query.Skip((searchDTO.PageNumber - 1) * searchDTO.PageSize).Take(searchDTO.PageSize).ToListAsync();
             
             return (trainees, totalRecords);
         }

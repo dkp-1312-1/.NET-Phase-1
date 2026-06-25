@@ -17,8 +17,8 @@ namespace TraineeManagement.Api.Services
         {
             try
             {
-                Console.WriteLine("Cache GetAsync");
-                var cachedData = await _cache.GetStringAsync(key);
+                _logger.LogInformation("Cache GetAsync");
+                string? cachedData = await _cache.GetStringAsync(key);
                 if (cachedData == null)
                     return default;
                 return JsonSerializer.Deserialize<T>(cachedData);
@@ -29,16 +29,16 @@ namespace TraineeManagement.Api.Services
                 return default;
             }
         }
-        public async Task SetAsync<T>(string key, T value, TimeSpan? absoluteExpireTime = null)
+        public async Task SetAsync<T>(string key, T value)
         {
             try
             {
-                var options=new DistributedCacheEntryOptions
+                DistributedCacheEntryOptions options =new DistributedCacheEntryOptions
                 {
-                    AbsoluteExpirationRelativeToNow=absoluteExpireTime??TimeSpan.FromMinutes(IntConstants.CacheTimeLimit)
+                    AbsoluteExpirationRelativeToNow=TimeSpan.FromMinutes(Config.RedisCacheTimeLimit)
                 };
-                var serializedData=JsonSerializer.Serialize(value);
-                Console.WriteLine("Cache SetAsync");
+                string serializedData =JsonSerializer.Serialize(value);
+                _logger.LogInformation("Cache SetAsync");
                 await _cache.SetStringAsync(key,serializedData,options);
             }
             catch(Exception ex)
@@ -51,7 +51,7 @@ namespace TraineeManagement.Api.Services
         {
             try
             {
-                Console.WriteLine("Cache RemoveAsync");
+                _logger.LogInformation("Cache RemoveAsync");
                 await _cache.RemoveAsync(key);
             }
             catch(Exception ex)

@@ -17,9 +17,9 @@ namespace TraineeManagement.Api.Repositories
 
         public async Task<(List<Review> reviews, int totalRecords)> GetReviewsAsync(SearchDTO<RSType> searchDTO)
         {
-            var query = _context.Reviews.AsQueryable();
-            var totalRecords = await query.CountAsync();
-            var reviews = await query.Skip((searchDTO.PageNumber - 1) * searchDTO.PageSize)
+            IQueryable<Review> query = _context.Reviews.AsQueryable();
+            int totalRecords = await query.CountAsync();
+            List<Review> reviews = await query.Skip((searchDTO.PageNumber - 1) * searchDTO.PageSize)
                                      .Take(searchDTO.PageSize).ToListAsync();
             
             return (reviews, totalRecords);

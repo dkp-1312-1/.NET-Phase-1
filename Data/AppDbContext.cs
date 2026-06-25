@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using TraineeManagement.Api.Models;
 using Microsoft.AspNetCore.Identity;
 using BCrypt.Net;
+using TraineeManagement.Api.Enums;
 
 namespace TraineeManagement.Api.Data
 {

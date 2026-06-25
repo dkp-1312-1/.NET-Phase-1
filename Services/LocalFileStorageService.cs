@@ -21,19 +21,19 @@ public class LocalFileStorageService : IFileStorageService
     public async Task<SubmissionProcessingRequestedDTO> SaveAsync(Stream content, string extension, int submissionId, IFormFile file, int userId)
     {
         string checksum;
-        using (var sha256 = SHA256.Create())
+        using (SHA256 sha256 = SHA256.Create())
         {
-            var hashBytes = await sha256.ComputeHashAsync(content);
+            byte[] hashBytes = await sha256.ComputeHashAsync(content);
             checksum = BitConverter.ToString(hashBytes).Replace("-", "").ToLowerInvariant();
         }
         content.Position = 0;
-        var storageName = $"{Guid.NewGuid()}{extension}";
-        var fullPath = Path.Combine(_storageRoot, storageName);
+        string storageName = $"{Guid.NewGuid()}{extension}";
+        string fullPath = Path.Combine(_storageRoot, storageName);
 
-        using var fileStream = new FileStream(fullPath, FileMode.Create);
+        using FileStream fileStream = new FileStream(fullPath, FileMode.Create);
         await content.CopyToAsync(fileStream);
 
-        var metadata = new SubmissionFile
+        SubmissionFile metadata = new SubmissionFile
         {
             SubmissionId = submissionId,
             OriginalFileName = file.FileName,
@@ -47,10 +47,10 @@ public class LocalFileStorageService : IFileStorageService
         await _submissionFileRepository.AddAsync(metadata);
         await _submissionFileRepository.SaveChangesAsync();
 
-        var correlationId = Guid.NewGuid().ToString();
-        var messageId = Guid.NewGuid().ToString();
+        string correlationId = Guid.NewGuid().ToString();
+        string messageId = Guid.NewGuid().ToString();
 
-        var message = new SubmissionProcessingRequestedDTO
+        SubmissionProcessingRequestedDTO message = new SubmissionProcessingRequestedDTO
         {
             MessageId = messageId,
             CorrelationId = correlationId,
@@ -65,7 +65,7 @@ public class LocalFileStorageService : IFileStorageService
 
     public Task<Stream> OpenReadAsync(string storageName)
     {
-        var fullPath = Path.Combine(_storageRoot, storageName);
+        string fullPath = Path.Combine(_storageRoot, storageName);
         if (!File.Exists(fullPath))
         {
             throw new FileNotFoundException($"File with storage name {storageName} not found.");
@@ -75,12 +75,12 @@ public class LocalFileStorageService : IFileStorageService
     }
     public Task<bool> ExistsAsync(string storageName)
     {
-        var fullPath = Path.Combine(_storageRoot, storageName);
+        string fullPath = Path.Combine(_storageRoot, storageName);
         return Task.FromResult(File.Exists(fullPath));
     }
     public async Task<bool> DeleteAsync(SubmissionFile file)
     {
-        var fullPath = Path.Combine(_storageRoot, file.StorageFileName);
+        string fullPath = Path.Combine(_storageRoot, file.StorageFileName);
         if (File.Exists(fullPath))
         {
             File.Delete(fullPath);
@@ -92,7 +92,7 @@ public class LocalFileStorageService : IFileStorageService
 
     public async Task<SubmissionFile> FindRecord(int id)
     {
-        var file = await _submissionFileRepository.GetByIdAsync(id);
+        SubmissionFile file = await _submissionFileRepository.GetByIdAsync(id);
         return file;
     }
     private SubmissionFileResponseDTO MaptoResponse(SubmissionFile file)

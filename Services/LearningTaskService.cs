@@ -17,7 +17,7 @@ namespace TraineeManagement.Api.Services
 
         public async Task<PagedResponseDTO<LearningTaskResponseDTO>> GetAll(SearchDTO<LTStatusType> searchDTO)
         {
-            var (learningTasks, totalRecords) = await _learningTaskRepository.GetLearningTasksAsync(searchDTO);
+            (List<LearningTask>? learningTasks, int totalRecords) = await _learningTaskRepository.GetLearningTasksAsync(searchDTO);
 
             return new PagedResponseDTO<LearningTaskResponseDTO>
             {
@@ -30,22 +30,13 @@ namespace TraineeManagement.Api.Services
 
         public async Task<LearningTaskResponseDTO> GetById(int id)
         {
-            var task = await _learningTaskRepository.GetByIdAsync(id);
+            LearningTask task = await _learningTaskRepository.GetByIdAsync(id);
             return task != null ? MapToResponse(task) : null;
         }
 
         public async Task<LearningTaskResponseDTO> Create(CreateLearningTaskRequestDTO request)
         {
-            var newTask = new LearningTask
-            {
-                Title = request.Title,
-                Description = request.Description,
-                ExpectedTechStack = request.ExpectedTechStack,
-                DueDate = request.DueDate,
-                Status = request.Status,
-                CreatedDate = DateTime.UtcNow,
-                UpdatedDate = DateTime.UtcNow
-            };
+            LearningTask newTask = new LearningTask(request);
 
             await _learningTaskRepository.AddAsync(newTask);
             return MapToResponse(newTask);
@@ -53,7 +44,7 @@ namespace TraineeManagement.Api.Services
 
         public async Task<LearningTaskResponseDTO> Update(int id, UpdateLearningTaskRequestDTO request)
         {
-            var task = await _learningTaskRepository.GetByIdAsync(id);
+            LearningTask task = await _learningTaskRepository.GetByIdAsync(id);
             if (task == null) return null;
 
             task.Title = request.Title;
@@ -69,7 +60,7 @@ namespace TraineeManagement.Api.Services
 
         public async Task<bool> Delete(int Id)
         {
-            var task = await _learningTaskRepository.GetByIdAsync(Id);
+            LearningTask task = await _learningTaskRepository.GetByIdAsync(Id);
             if (task == null) return false;
 
             await _learningTaskRepository.DeleteAsync(task);

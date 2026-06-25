@@ -17,7 +17,7 @@ namespace TraineeManagement.Api.Services
 
         public async Task<PagedResponseDTO<MentorResponseDTO>> GetAll(SearchDTO<MentorStatusType> mentor)
         {
-            var (mentors, totalRecords) = await _mentorRepository.GetMentorsAsync(mentor);
+            (List<Mentor>? mentors, int totalRecords) = await _mentorRepository.GetMentorsAsync(mentor);
 
             return new PagedResponseDTO<MentorResponseDTO>
             {
@@ -30,22 +30,13 @@ namespace TraineeManagement.Api.Services
 
         public async Task<MentorResponseDTO> GetById(int Id)
         {
-            var mentor = await _mentorRepository.GetByIdAsync(Id);
+            Mentor mentor = await _mentorRepository.GetByIdAsync(Id);
             return mentor != null ? MapToResponse(mentor) : null;
         }
 
         public async Task<MentorResponseDTO> Create(CreateMentorRequestDTO mentor)
         {
-            var newMentor = new Mentor
-            {
-                FirstName = mentor.FirstName,
-                LastName = mentor.LastName,
-                Email = mentor.Email,
-                Expertise = mentor.Expertise,
-                Status = mentor.Status,
-                CreatedDate = DateTime.UtcNow,
-                UpdatedDate = DateTime.UtcNow
-            };
+            Mentor newMentor = new Mentor(mentor);
 
             await _mentorRepository.AddAsync(newMentor);
             return MapToResponse(newMentor);
@@ -53,7 +44,7 @@ namespace TraineeManagement.Api.Services
 
         public async Task<MentorResponseDTO> Update(int Id, UpdateMentorRequestDTO mentor)
         {
-            var updatedMentor = await _mentorRepository.GetByIdAsync(Id);
+            Mentor updatedMentor = await _mentorRepository.GetByIdAsync(Id);
             if (updatedMentor == null)
                 return null;
 
@@ -70,7 +61,7 @@ namespace TraineeManagement.Api.Services
 
         public async Task<bool> Delete(int Id)
         {
-            var mentor = await _mentorRepository.GetByIdAsync(Id);
+            Mentor mentor = await _mentorRepository.GetByIdAsync(Id);
             if (mentor == null)
                 return false;
 
