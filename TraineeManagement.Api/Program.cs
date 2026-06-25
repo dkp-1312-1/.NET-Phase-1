@@ -103,6 +103,7 @@ builder.Services.AddScoped<ISubmissionRepository, SubmissionRepository>();
 builder.Services.AddScoped<IReviewRepository, ReviewRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<ISubmissionFileRepository, SubmissionFileRepository>();
+builder.Services.AddScoped<IProcessingJobRepository, ProcessingJobRepository>();
 
 builder.Services.AddScoped<ITraineeService, TraineeService>();
 builder.Services.AddScoped<IJWTService, JWTService>();
@@ -114,6 +115,7 @@ builder.Services.AddScoped<IReviewService, ReviewService>();
 builder.Services.AddScoped<IFileStorageService,LocalFileStorageService>();
 builder.Services.AddScoped<ICacheService, CacheService>();
 builder.Services.AddScoped<IPublishRabbitMQService, PublishRabbitMQService>();
+builder.Services.AddScoped<IProcessingJobService, ProcessingJobService>();
 
 
 builder.Logging.ClearProviders();

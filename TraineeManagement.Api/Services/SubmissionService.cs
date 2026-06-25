@@ -20,7 +20,6 @@ namespace TraineeManagement.Api.Services
 
         public async Task<PagedResponseDTO<SubmissionResponseDTO>> GetAll(SearchDTO<SubType> search)
         {
-            
             (List<Submission>? submissions, int totalRecords) = await _submissionRepository.GetSubmissionsAsync(search);
             
             return new PagedResponseDTO<SubmissionResponseDTO>

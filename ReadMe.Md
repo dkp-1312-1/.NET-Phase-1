@@ -5,7 +5,7 @@ dotnet add package NSwag.AspNetCore
 dotnet add package Microsoft.EntityFrameworkCore.InMemory
 dotnet add package Microsoft.AspNETCore
 
-# Project Name =TraineeManagement1
+# Project Name = TraineeManagement1
 Technology Used =Asp.NET Web API, Service Layer, DTOs,JWT, EFCore.InMemory Databases, MySql.EntityFrameworkCore,Microsoft.EntityFrameworkCore.Design, 
 
 

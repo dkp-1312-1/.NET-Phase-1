@@ -18,17 +18,19 @@ namespace TraineeManagement.Api.Data
         public DbSet<LearningTask> LearningTasks { get; set; }
         public DbSet<TaskAssignment> TaskAssignments { get; set; }
         public DbSet<Submission> Submissions { get; set; }
-        public DbSet<SubmissionFile>SubmissionFiles{ get; set; }
+        public DbSet<SubmissionFile> SubmissionFiles { get; set; }
         public DbSet<Review> Reviews { get; set; }
+        public DbSet<ProcessingJob> ProcessingJobs { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-            
+
             UserSeeding(modelBuilder);
             TaskAssignmentConstraint(modelBuilder);
             SubmissionConstraint(modelBuilder);
             ReviewConstraint(modelBuilder);
             SubmissionFileConstraint(modelBuilder);
+            ProcessingJobConstraint(modelBuilder);
             TraineeEmailConstraint(modelBuilder);
             MentorEmailConstraint(modelBuilder);
             UserEmailConstraint(modelBuilder);
@@ -97,6 +99,14 @@ namespace TraineeManagement.Api.Data
             .HasOne(r => r.Submission)
                 .WithMany(s => s.SubmissionFiles)
                 .HasForeignKey(r => r.SubmissionId)
+                .OnDelete(DeleteBehavior.Cascade);
+        }
+        private void ProcessingJobConstraint(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<ProcessingJob>()
+            .HasOne(p => p.Submission)
+                .WithMany(ps =>ps.ProcessingJobs)
+                .HasForeignKey(pj => pj.SubmissionId)
                 .OnDelete(DeleteBehavior.Cascade);
         }
         private void TraineeEmailConstraint(ModelBuilder modelBuilder)

@@ -3,18 +3,20 @@ using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.DependencyInjection;
  
 namespace SubmissionProcessor.Worker;
  
 public class Worker : BackgroundService
 {
     private readonly ILogger<Worker> _logger;
+    private readonly IServiceScopeFactory _scopeFactory;
     private IConnection? _connection;
-    private IChannel? _channel; // v7 uses IChannel instead of IModel
- 
-    public Worker(ILogger<Worker> logger)
+    private IChannel? _channel; 
+    public Worker(ILogger<Worker> logger,IServiceScopeFactory scopeFactory)
     {
         _logger = logger;
+        _scopeFactory=scopeFactory;
     }
  
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)

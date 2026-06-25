@@ -18,6 +18,7 @@ namespace TraineeManagement.Api.Models
         public SubType Status { get; set; }
         public ICollection<Review> Reviews { get; set; }
         public ICollection<SubmissionFile> SubmissionFiles { get; set; }
+        public ICollection<ProcessingJob> ProcessingJobs { get; set; }
 
         public Submission(){}
         public Submission(CreateSubmissionRequestDTO request)
