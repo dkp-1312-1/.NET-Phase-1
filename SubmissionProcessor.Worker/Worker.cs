@@ -26,14 +26,37 @@ public class Worker : BackgroundService
         
         _connection = await factory.CreateConnectionAsync(stoppingToken);
         _channel = await _connection.CreateChannelAsync(cancellationToken: stoppingToken);
- 
+
+        //  var queueArgs = new Dictionary<string, object?>
+        // {
+        //     { "x-dead-letter-exchange", "dead-letter-exchange" },
+        //     { "x-dead-letter-routing-key", "submission-failed" }
+        // };
+        // await _channel.ExchangeDeclareAsync(
+        //     exchange:"dead-letter-exchange",
+        //     type:"direct",
+        //     durable:true,
+        //     autoDelete:false,
+        //     arguments:null,
+        //     cancellationToken:stoppingToken
+        // );
         await _channel.QueueDeclareAsync(
             queue: "submission-processing", 
             durable: true, 
             exclusive: false, 
             autoDelete: false, 
             arguments: null,
-            cancellationToken: stoppingToken);
+            cancellationToken: stoppingToken
+        );
+
+        await _channel.QueueDeclareAsync(
+            queue: "submission-failed", 
+            durable: true, 
+            exclusive: false, 
+            autoDelete: false, 
+            arguments: null,
+            cancellationToken: stoppingToken
+        );
         
         await _channel.BasicQosAsync(prefetchSize: 0, prefetchCount: 1, global: false, cancellationToken: stoppingToken);
  
@@ -66,12 +89,17 @@ public class Worker : BackgroundService
             await Task.Delay(1000, stoppingToken);
         }
     }
- 
+    private async Task ProcessMessageAsync(object sender,BasicDeliverEventArgs ea)
+    {
+        return;
+    }
     public override async Task StopAsync(CancellationToken cancellationToken)
     {
         if (_channel is not null) await _channel.CloseAsync(cancellationToken);
         if (_connection is not null) await _connection.CloseAsync(cancellationToken);
         await base.StopAsync(cancellationToken);
     }
+
+    
 }
  

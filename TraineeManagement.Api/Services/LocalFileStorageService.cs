@@ -83,6 +83,7 @@ public class LocalFileStorageService : IFileStorageService
     public async Task<bool> DeleteAsync(SubmissionFile file)
     {
         string fullPath = Path.Combine(_storageRoot, file.StorageFileName);
+        Console.WriteLine(fullPath);
         if (File.Exists(fullPath))
         {
             File.Delete(fullPath);

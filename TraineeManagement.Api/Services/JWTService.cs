@@ -48,7 +48,7 @@ namespace TraineeManagement.Api.Services
                 issuer: Config.JWTIssuer,
                 audience: Config.JWTAudience,
                 claims: claims,
-                expires: DateTime.UtcNow.AddMinutes(expiryInSeconds),
+                expires: DateTime.UtcNow.AddSeconds(expiryInSeconds),
                 signingCredentials: signingCredentials);
 
             string tokenString = new JwtSecurityTokenHandler().WriteToken(token);
