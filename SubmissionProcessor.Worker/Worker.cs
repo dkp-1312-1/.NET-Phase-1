@@ -1,105 +1,198 @@
 using System.Text;
+using System.Text.Json;
+using System.Security.Cryptography;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.DependencyInjection;
- 
+using TraineeManagement.Api.DTOs;
+using TraineeManagement.Api.Models;
+using TraineeManagement.Api.Services;
+using TraineeManagement.Api.Data;
+using TraineeManagement.Api.Enums;
+using Microsoft.EntityFrameworkCore;
+
+
 namespace SubmissionProcessor.Worker;
- 
+
 public class Worker : BackgroundService
 {
     private readonly ILogger<Worker> _logger;
     private readonly IServiceScopeFactory _scopeFactory;
     private IConnection? _connection;
-    private IChannel? _channel; 
-    public Worker(ILogger<Worker> logger,IServiceScopeFactory scopeFactory)
+    private IChannel? _channel;
+    public Worker(ILogger<Worker> logger, IServiceScopeFactory scopeFactory)
     {
         _logger = logger;
-        _scopeFactory=scopeFactory;
+        _scopeFactory = scopeFactory;
     }
- 
+
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        var factory = new ConnectionFactory { HostName = "localhost" ,
-        VirtualHost = "mqhost" };
-        
+        var factory = new ConnectionFactory
+        {
+            HostName = "localhost",
+            VirtualHost = "mqhost"
+        };
+
         _connection = await factory.CreateConnectionAsync(stoppingToken);
         _channel = await _connection.CreateChannelAsync(cancellationToken: stoppingToken);
 
-        //  var queueArgs = new Dictionary<string, object?>
-        // {
-        //     { "x-dead-letter-exchange", "dead-letter-exchange" },
-        //     { "x-dead-letter-routing-key", "submission-failed" }
-        // };
-        // await _channel.ExchangeDeclareAsync(
-        //     exchange:"dead-letter-exchange",
-        //     type:"direct",
-        //     durable:true,
-        //     autoDelete:false,
-        //     arguments:null,
-        //     cancellationToken:stoppingToken
-        // );
+        
+        await _channel.ExchangeDeclareAsync(
+            exchange: "dead-letter-exchange",
+            type: "direct",
+            durable: true,
+            autoDelete: false,
+            arguments: null,
+            cancellationToken: stoppingToken
+        );
         await _channel.QueueDeclareAsync(
-            queue: "submission-processing", 
-            durable: true, 
-            exclusive: false, 
-            autoDelete: false, 
+            queue: "submission-failed",
+            durable: true,
+            exclusive: false,
+            autoDelete: false,
+            arguments: null,
+            cancellationToken: stoppingToken
+        );
+        await _channel.QueueBindAsync(
+            queue: "submission-failed",
+            exchange: "dead-letter-exchange",
+            routingKey: "submission-failed",
             arguments: null,
             cancellationToken: stoppingToken
         );
 
+        var queueArgs = new Dictionary<string, object?>
+        {
+            { "x-dead-letter-exchange", "dead-letter-exchange" },
+            { "x-dead-letter-routing-key", "submission-failed" }
+        };
         await _channel.QueueDeclareAsync(
-            queue: "submission-failed", 
-            durable: true, 
-            exclusive: false, 
-            autoDelete: false, 
-            arguments: null,
+            queue: "submission-processing",
+            durable: true,
+            exclusive: false,
+            autoDelete: false,
+            arguments: queueArgs,
             cancellationToken: stoppingToken
         );
-        
         await _channel.BasicQosAsync(prefetchSize: 0, prefetchCount: 1, global: false, cancellationToken: stoppingToken);
- 
+
         var consumer = new AsyncEventingBasicConsumer(_channel);
 
-        consumer.ReceivedAsync += async (model, ea) =>
-        {
-            try
-            {
-                var body = ea.Body.ToArray();
-                var message = Encoding.UTF8.GetString(body);
-                _logger.LogInformation("Received message: {Message}", message);
-                await _channel.BasicAckAsync(deliveryTag: ea.DeliveryTag, multiple: false, cancellationToken: stoppingToken);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error processing message.");
-                await _channel.BasicNackAsync(deliveryTag: ea.DeliveryTag, multiple: false, requeue: true, cancellationToken: stoppingToken);
-            }
-        };
- 
+        consumer.ReceivedAsync += ProcessMessageAsync;
+        // async (model, ea) =>
+        // {
+        //     try
+        //     {
+        //         var body = ea.Body.ToArray();
+        //         var message = Encoding.UTF8.GetString(body);
+        //         _logger.LogInformation("Received message: {Message}", message);
+        //         await _channel.BasicAckAsync(deliveryTag: ea.DeliveryTag, multiple: false, cancellationToken: stoppingToken);
+        //     }
+        //     catch (Exception ex)
+        //     {
+        //         _logger.LogError(ex, "Error processing message.");
+        //         await _channel.BasicNackAsync(deliveryTag: ea.DeliveryTag, multiple: false, requeue: true, cancellationToken: stoppingToken);
+        //     }
+        // };
+
         await _channel.BasicConsumeAsync(
-            queue: "submission-processing", 
-            autoAck: false, 
+            queue: "submission-processing",
+            autoAck: false,
             consumer: consumer,
             cancellationToken: stoppingToken);
- 
+
         while (!stoppingToken.IsCancellationRequested)
         {
             await Task.Delay(1000, stoppingToken);
         }
     }
-    private async Task ProcessMessageAsync(object sender,BasicDeliverEventArgs ea)
+    private async Task ProcessMessageAsync(object sender, BasicDeliverEventArgs ea)
     {
-        return;
+        
+        var body = ea.Body.ToArray();
+        var messageJson = Encoding.UTF8.GetString(body);
+        var request = JsonSerializer.Deserialize<SubmissionProcessingRequestedDTO>(messageJson);
+        if (request == null) 
+        {
+            _logger.LogError("Requst wasnot found.");
+            await _channel!.BasicNackAsync(ea.DeliveryTag, false, requeue: false);
+            return;
+        }
+        using var scope = _scopeFactory.CreateScope();
+        var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        var fileStorage = scope.ServiceProvider.GetRequiredService<IFileStorageService>();
+        var job = await dbContext.ProcessingJobs.FirstOrDefaultAsync(p => p.MessageId == request.MessageId);
+        if (job == null)
+        {
+            _logger.LogWarning("Job {MessageId} not found.", request.MessageId);
+            await _channel!.BasicAckAsync(ea.DeliveryTag, false);
+            return;
+        }
+        if (job.Status == ProcessingJobType.Completed || job.Status == ProcessingJobType.Failed)
+        {
+            _logger.LogInformation("Job {Id} already {Status}. Skipping...", job.Id, job.Status);
+            await _channel!.BasicAckAsync(ea.DeliveryTag, false);
+            return;
+        }
+        try
+        {
+            job.Status = ProcessingJobType.Processing;
+            job.StartedAt = DateTime.UtcNow;
+            job.Attempts += 1;
+            await dbContext.SaveChangesAsync();
+            _logger.LogInformation("Processing Job {Id}. Attempt {Attempt}", job.Id, job.Attempts);
+
+            var fileRecord = await dbContext.SubmissionFiles.FindAsync(request.FileId);
+            Console.WriteLine(fileRecord.StorageFileName);
+            await using var stream = await fileStorage.OpenReadAsync(fileRecord.StorageFileName);
+            using var sha256 = SHA256.Create();
+            var hashBytes = await sha256.ComputeHashAsync(stream);
+            var checksum = BitConverter.ToString(hashBytes).Replace("-", "").ToLowerInvariant();
+            fileRecord.CheckSum = checksum;
+
+            job.Status = ProcessingJobType.Completed;
+            job.CompletedAt = DateTime.UtcNow;
+            await dbContext.SaveChangesAsync();
+
+            await _channel!.BasicAckAsync(ea.DeliveryTag, false);
+            _logger.LogInformation("Job {Id} successfully completed with Checksum: {Checksum}", job.Id, checksum);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error processing Job {Id}");
+            if (job.Attempts >= 3)
+            {
+                job.Status = ProcessingJobType.Failed;
+                job.ErrorSummary = ex.Message;
+                job.CompletedAt = DateTime.UtcNow;
+                await dbContext.SaveChangesAsync();
+
+                await _channel.BasicNackAsync(ea.DeliveryTag, false, requeue: false);
+                _logger.LogError("Job {Id} exhausted retries.Moved to Dead Letter Queue.", job.Id);
+            }
+            else
+            {
+                job.Status = ProcessingJobType.Queued;
+                await dbContext.SaveChangesAsync();
+                await _channel.BasicNackAsync(ea.DeliveryTag, false, requeue: true);
+            }
+        }
     }
     public override async Task StopAsync(CancellationToken cancellationToken)
     {
-        if (_channel is not null) await _channel.CloseAsync(cancellationToken);
-        if (_connection is not null) await _connection.CloseAsync(cancellationToken);
-        await base.StopAsync(cancellationToken);
+         if (_channel is not null)
+    {
+        await _channel.CloseAsync(cancellationToken);
+        await _channel.DisposeAsync();
     }
-
-    
+    if (_connection is not null)
+    {
+        await _connection.CloseAsync(cancellationToken);
+        await _connection.DisposeAsync();   
+    }
+    await base.StopAsync(cancellationToken);
+    }
 }
- 

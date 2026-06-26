@@ -10,6 +10,6 @@ namespace TraineeManagement.Api.DTOs
         [Required(ErrorMessage = "LearningTaskId must exist")]
         public int LearningTaskId { get; set; }
         public DateTime DueDate { get; set; }
-        public string Remarks { get; set; }
+        public string? Remarks { get; set; }
     }
 }

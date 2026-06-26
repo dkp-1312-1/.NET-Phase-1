@@ -11,13 +11,15 @@ public class LocalFileStorageService : IFileStorageService
 {
     private readonly ISubmissionFileRepository _submissionFileRepository;
     private readonly IPublishRabbitMQService _publishRabbitMQService;
+    private readonly IProcessingJobRepository _processingJobRepository;
     private readonly string _storageRoot;
 
-    public LocalFileStorageService(ISubmissionFileRepository submissionFileRepository, IPublishRabbitMQService publishRabbitMQService)
+    public LocalFileStorageService(ISubmissionFileRepository submissionFileRepository, IPublishRabbitMQService publishRabbitMQService,IProcessingJobRepository processingJobRepository)
     {
         _storageRoot = Config.StorageRoot;
         _submissionFileRepository = submissionFileRepository;
         _publishRabbitMQService = publishRabbitMQService;
+        _processingJobRepository=processingJobRepository;
     }
     public async Task<SubmissionProcessingRequestedDTO> SaveAsync(FileUploadRequestDTO request)
     {
@@ -52,6 +54,7 @@ public class LocalFileStorageService : IFileStorageService
         await _submissionFileRepository.AddAsync(metadata);
         await _submissionFileRepository.SaveChangesAsync();
 
+
         SubmissionProcessingRequestedDTO message = new SubmissionProcessingRequestedDTO
         {
             MessageId = Guid.NewGuid().ToString(),
@@ -60,6 +63,8 @@ public class LocalFileStorageService : IFileStorageService
             FileId = metadata.Id,
             RequestedAt = DateTime.UtcNow
         };
+        var job=new ProcessingJob(message);
+        await _processingJobRepository.AddAsync(job);
 
         _publishRabbitMQService.PublishSubmission(message);
         return message;
@@ -67,7 +72,7 @@ public class LocalFileStorageService : IFileStorageService
 
     public Task<Stream> OpenReadAsync(string storageName)
     {
-        string fullPath = Path.Combine(_storageRoot, storageName);
+        string fullPath = Path.Combine(_storageRoot!=""?_storageRoot:"/mnt/d/Day2/123/Tasks/TraineeManagement.Api/TraineeSubmissionFile", storageName);
         if (!File.Exists(fullPath))
         {
             throw new NotFoundException(StringConstants.fileNotFound);

@@ -11,6 +11,6 @@ namespace TraineeManagement.Api.DTOs
         public DateTime AssignedDate { get; set; }
         public DateTime DueDate { get; set; }
         public TAType Status { get; set; }
-        public string Remarks { get; set; }
+        public string? Remarks { get; set; }
     }
 }

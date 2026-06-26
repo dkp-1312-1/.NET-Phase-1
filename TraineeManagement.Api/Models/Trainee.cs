@@ -1,7 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using TraineeManagement.Api.Enums;
 using TraineeManagement.Api.DTOs;
-using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 namespace TraineeManagement.Api.Models
 {

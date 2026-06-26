@@ -10,6 +10,11 @@ namespace TraineeManagement.Api.Repositories
         {
             _context = context;
         }
+        public async Task AddAsync(ProcessingJob job)
+        {
+            await _context.ProcessingJobs.AddAsync(job);
+            await _context.SaveChangesAsync();
+        }
 
         public async Task<ProcessingJob> GetByIdAsync(int id)
         {

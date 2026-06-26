@@ -9,7 +9,7 @@ namespace TraineeManagement.Api.DTOs
     }
     public class ApiErrorResponseDTO
     {
-        public IEnumerable<Errors> Errors { get; set; }
+        public IEnumerable<Errors>? Errors { get; set; }
         public bool Success {get;set;}
     }
 }

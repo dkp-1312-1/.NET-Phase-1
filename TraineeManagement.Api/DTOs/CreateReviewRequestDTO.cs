@@ -6,7 +6,7 @@ namespace TraineeManagement.Api.DTOs
     {
         public int SubmissionId { get; set; }
         public int MentorId { get; set; }
-        public string Feedback { get; set; }
+        public string? Feedback { get; set; }
         public int? Score { get; set; }
         public RSType ReviewStatus { get; set; }
     }

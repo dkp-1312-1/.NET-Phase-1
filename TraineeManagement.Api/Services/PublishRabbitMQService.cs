@@ -10,13 +10,11 @@ namespace TraineeManagement.Api.Services
     public class PublishRabbitMQService : IPublishRabbitMQService
     {
         private readonly ILogger<PublishRabbitMQService> _logger;
+        private readonly IConnectionFactory _factory;
         public PublishRabbitMQService(ILogger<PublishRabbitMQService> logger)
         {
             _logger = logger;
-        }
-        public async void PublishSubmission(SubmissionProcessingRequestedDTO message)
-        {
-            ConnectionFactory factory = new ConnectionFactory
+            _factory = new ConnectionFactory
             {
                 HostName = Config.RabbitHostName ?? "Hostname",
                 Port = Config.RabbitPort,
@@ -24,14 +22,21 @@ namespace TraineeManagement.Api.Services
                 Password = Config.RabbitPassword,
                 VirtualHost = Config.RabbitVirtualHost
             };
-
-            await using IConnection connection = await factory.CreateConnectionAsync();
+        }
+        public async void PublishSubmission(SubmissionProcessingRequestedDTO message)
+        {
+            await using IConnection connection = await _factory.CreateConnectionAsync();
             await using IChannel channel = await connection.CreateChannelAsync();
+            var queueArgs = new Dictionary<string, object?>
+        {
+            { "x-dead-letter-exchange", "dead-letter-exchange" },
+            { "x-dead-letter-routing-key", "submission-failed" }
+        };
             await channel.QueueDeclareAsync(queue: "submission-processing",
                 durable: true,
                 exclusive: false,
                 autoDelete: false,
-                arguments: null
+                arguments: queueArgs
                 );
             string json = JsonSerializer.Serialize(message);
             byte[] body = Encoding.UTF8.GetBytes(json);

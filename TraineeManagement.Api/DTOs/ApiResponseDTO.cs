@@ -4,7 +4,7 @@ namespace TraineeManagement.Api.DTOs
 {
     public class ApiResponseDTO<T>
     {
-        public T Data{get;set;}
+        public T? Data{get;set;}
         public bool Success {get;set;}
     }
 }

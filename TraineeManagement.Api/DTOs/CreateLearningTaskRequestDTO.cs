@@ -7,13 +7,13 @@ namespace TraineeManagement.Api.DTOs
     {
         [Required(ErrorMessage = "Title is required")]
         [StringLength(100, ErrorMessage = "Max 100 Characters")]
-        public string Title { get; set; }
+        public string? Title { get; set; }
  
         [Required(ErrorMessage = "Description is required")]
-        public string Description { get; set; }
+        public string? Description { get; set; }
  
         [Required(ErrorMessage = "Expected tech stack is required")]
-        public string ExpectedTechStack { get; set; }
+        public string? ExpectedTechStack { get; set; }
  
         [Required(ErrorMessage = "Due Date is required")]
         public DateTime DueDate { get; set; }
