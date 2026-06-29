@@ -14,7 +14,7 @@ public class DirectoryController : ControllerBase
     [HttpGet("trainees/{id}/profile")]
     public IActionResult GetTraineeProfile(int id)
     {
-        var correlationId = Request.Headers["X-Correlation-ID"].FirstOrDefault();
+        string? correlationId = Request.Headers["X-Correlation-ID"].FirstOrDefault();
         _logger.LogInformation("Fetching profile for Trainee {Id}. CorrelationId: {CorrelationId}", id, correlationId);
 
         if (new Random().Next(1, 10) <= 2) 

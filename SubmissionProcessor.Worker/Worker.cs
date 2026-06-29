@@ -30,7 +30,7 @@ public class Worker : BackgroundService
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        var factory = new ConnectionFactory
+        ConnectionFactory factory = new ConnectionFactory
         {
             HostName = "localhost",
             VirtualHost = "mqhost"
@@ -64,7 +64,7 @@ public class Worker : BackgroundService
             cancellationToken: stoppingToken
         );
 
-        var queueArgs = new Dictionary<string, object?>
+        Dictionary<string, object?> queueArgs = new Dictionary<string, object?>
         {
             { "x-dead-letter-exchange", "dead-letter-exchange" },
             { "x-dead-letter-routing-key", "submission-failed" }
@@ -79,7 +79,7 @@ public class Worker : BackgroundService
         );
         await _channel.BasicQosAsync(prefetchSize: 0, prefetchCount: 1, global: false, cancellationToken: stoppingToken);
 
-        var consumer = new AsyncEventingBasicConsumer(_channel);
+        AsyncEventingBasicConsumer consumer = new AsyncEventingBasicConsumer(_channel);
 
         consumer.ReceivedAsync += ProcessMessageAsync;
         // async (model, ea) =>
@@ -111,20 +111,20 @@ public class Worker : BackgroundService
     }
     private async Task ProcessMessageAsync(object sender, BasicDeliverEventArgs ea)
     {
-        var body = ea.Body.ToArray();
-        var messageJson = Encoding.UTF8.GetString(body);
-        var request = JsonSerializer.Deserialize<SubmissionProcessingRequestedDTO>(messageJson);
+        byte[] body = ea.Body.ToArray();
+        string messageJson = Encoding.UTF8.GetString(body);
+        SubmissionProcessingRequestedDTO? request = JsonSerializer.Deserialize<SubmissionProcessingRequestedDTO>(messageJson);
         if (request == null) 
         {
             _logger.LogError("Requst wasnot found.");
             await _channel!.BasicNackAsync(ea.DeliveryTag, false, requeue: false);
             return;
         }
-        using var scope = _scopeFactory.CreateScope();
-        var directoryClient = scope.ServiceProvider.GetRequiredService<TrainingDirectoryClient>();
-        var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-        var fileStorage = scope.ServiceProvider.GetRequiredService<IFileStorageService>();
-        var job = await dbContext.ProcessingJobs.FirstOrDefaultAsync(p => p.MessageId == request.MessageId);
+        using IServiceScope scope = _scopeFactory.CreateScope();
+        TrainingDirectoryClient directoryClient = scope.ServiceProvider.GetRequiredService<TrainingDirectoryClient>();
+        AppDbContext dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        IFileStorageService fileStorage = scope.ServiceProvider.GetRequiredService<IFileStorageService>();
+        ProcessingJob? job = await dbContext.ProcessingJobs.FirstOrDefaultAsync(p => p.MessageId == request.MessageId);
         if (job == null)
         {
             _logger.LogWarning("Job {MessageId} not found.", request.MessageId);
@@ -145,7 +145,7 @@ public class Worker : BackgroundService
             await dbContext.SaveChangesAsync();
             _logger.LogInformation("Processing Job {Id}. Attempt {Attempt}", job.Id, job.Attempts);
 
-            var traineeProfile = await directoryClient.GetTraineeProfileAsync(request.SubmissionId, request.CorrelationId, CancellationToken.None);
+            DirectoryProfile? traineeProfile = await directoryClient.GetTraineeProfileAsync(request.SubmissionId, request.CorrelationId, CancellationToken.None);
 
             if (traineeProfile != null)
             {
@@ -156,11 +156,11 @@ public class Worker : BackgroundService
                 _logger.LogWarning("Fallback activated: Processing file without Trainee Profile data.");
             }
 
-            var fileRecord = await dbContext.SubmissionFiles.FindAsync(request.FileId);
-            await using var stream = await fileStorage.OpenReadAsync(fileRecord.StorageFileName);
-            using var sha256 = SHA256.Create();
-            var hashBytes = await sha256.ComputeHashAsync(stream);
-            var checksum = BitConverter.ToString(hashBytes).Replace("-", "").ToLowerInvariant();
+            SubmissionFile? fileRecord = await dbContext.SubmissionFiles.FindAsync(request.FileId);
+            await using Stream stream = await fileStorage.OpenReadAsync(fileRecord.StorageFileName);
+            using SHA256 sha256 = SHA256.Create();
+            byte[] hashBytes = await sha256.ComputeHashAsync(stream);
+            string checksum = BitConverter.ToString(hashBytes).Replace("-", "").ToLowerInvariant();
             fileRecord.CheckSum = checksum;
 
             job.Status = ProcessingJobType.Completed;

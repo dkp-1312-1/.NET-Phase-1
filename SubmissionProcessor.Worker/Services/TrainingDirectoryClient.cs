@@ -23,7 +23,7 @@ public class TrainingDirectoryClient
 
     public async Task<DirectoryProfile?> GetTraineeProfileAsync(int traineeId, string? correlationId, CancellationToken cancellationToken)
     {
-        var request = new HttpRequestMessage(HttpMethod.Get, $"api/directory/trainees/{traineeId}/profile");
+        HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, $"api/directory/trainees/{traineeId}/profile");
         
         if (!string.IsNullOrEmpty(correlationId))
         {
@@ -32,7 +32,7 @@ public class TrainingDirectoryClient
 
         try
         {
-            var response = await _httpClient.SendAsync(request, cancellationToken);
+            HttpResponseMessage response = await _httpClient.SendAsync(request, cancellationToken);
             
             if (!response.IsSuccessStatusCode)
             {
@@ -40,7 +40,7 @@ public class TrainingDirectoryClient
                 return null; 
             }
 
-            var content = await response.Content.ReadAsStringAsync(cancellationToken);
+            string content = await response.Content.ReadAsStringAsync(cancellationToken);
             return JsonSerializer.Deserialize<DirectoryProfile>(content, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
         }
         catch (TaskCanceledException)

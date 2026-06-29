@@ -27,7 +27,7 @@ namespace TraineeManagement.Api.Utils
         {
             await using IConnection connection = await _factory.CreateConnectionAsync();
             await using IChannel channel = await connection.CreateChannelAsync();
-            var queueArgs = new Dictionary<string, object?>
+            Dictionary<string, object?> queueArgs = new Dictionary<string, object?>
         {
             { "x-dead-letter-exchange", "dead-letter-exchange" },
             { "x-dead-letter-routing-key", "submission-failed" }

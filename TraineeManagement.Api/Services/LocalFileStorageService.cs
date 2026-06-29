@@ -64,7 +64,7 @@ public class LocalFileStorageService : IFileStorageService
             FileId = metadata.Id,
             RequestedAt = DateTime.UtcNow
         };
-        var job=new ProcessingJob(message);
+        ProcessingJob job =new ProcessingJob(message);
         await _processingJobRepository.AddAsync(job);
 
         _publishRabbitMQService.PublishSubmission(message);
