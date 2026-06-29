@@ -59,7 +59,7 @@ public class LocalFileStorageService : IFileStorageService
         SubmissionProcessingRequestedDTO message = new SubmissionProcessingRequestedDTO
         {
             MessageId = Guid.NewGuid().ToString(),
-            CorrelationId = Guid.NewGuid().ToString(),
+            CorrelationId = request.CorrelationId,
             SubmissionId = request.SubmissionId,
             FileId = metadata.Id,
             RequestedAt = DateTime.UtcNow

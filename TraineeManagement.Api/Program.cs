@@ -11,7 +11,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using System.Text.Json;
 using Microsoft.OpenApi.Models;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
+using RabbitMQ.Client;
 var builder = WebApplication.CreateBuilder(args);
 
 Config.Initialize(builder.Configuration);
@@ -54,6 +57,11 @@ builder.Services.AddAuthentication(options =>
 });
 builder.Services.AddAuthorization();
 
+builder.Logging.ClearProviders();
+builder.Logging.AddSimpleConsole(options =>
+{
+    options.IncludeScopes = true; 
+});
 
 builder.Services.AddOpenApi("v1", options =>
 {
@@ -125,15 +133,24 @@ builder.Logging.AddConsole();
 
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+var redisString=builder.Configuration.GetConnectionString("RedisConnection");
 builder.Services.AddDbContext<AppDbContext>(options =>
        options.UseMySQL(connectionString));
 
 builder.Services.AddStackExchangeRedisCache(options =>
 {
-    options.Configuration = builder.Configuration.GetConnectionString("RedisConnection");
+    options.Configuration = redisString;
     options.InstanceName = "TraineeManagement";
 });
 
+builder.Services.AddHealthChecks()
+    .AddCheck("self", () => HealthCheckResult.Healthy()) 
+    .AddMySql(connectionString, name: "mysql", timeout: TimeSpan.FromSeconds(3))
+    .AddRedis(redisString, name: "redis", timeout: TimeSpan.FromSeconds(3))      
+    .AddRabbitMQ(sp => new ConnectionFactory
+        {
+            Uri = new Uri($"amqp://guest:guest@{Config.RabbitHostName}:5672/mqhost")
+        }.CreateConnectionAsync(), name: "rabbitmq", timeout: TimeSpan.FromSeconds(3));
 var app = builder.Build();
 
 app.UseMiddleware<GlobalExceptionMiddleware>();
@@ -146,11 +163,37 @@ if (app.Environment.IsDevelopment())
     });
 }
 
-
 app.UseCors("ReactClientPolicy");
 app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
+app.MapHealthChecks("/health/live", new Microsoft.AspNetCore.Diagnostics.HealthChecks.HealthCheckOptions
+{
+    Predicate = r => r.Name.Contains("self")
+});
+app.MapHealthChecks("/health/ready", new Microsoft.AspNetCore.Diagnostics.HealthChecks.HealthCheckOptions
+{
+    Predicate = _ => true,
+    ResponseWriter = async (context, report) =>
+    {
+        context.Response.ContentType = "application/json";
+
+        var response = new
+        {
+            status = report.Status.ToString(),
+            checks = report.Entries.Select(entry => new
+            {
+                name = entry.Key,
+                status = entry.Value.Status.ToString(),
+                description = entry.Value.Description,
+                duration = entry.Value.Duration.ToString(),
+                error = entry.Value.Exception?.Message
+            })
+        };
+
+        await context.Response.WriteAsync(JsonSerializer.Serialize(response));
+    }
+});
 
 app.Run();

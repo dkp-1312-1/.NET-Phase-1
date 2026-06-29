@@ -36,8 +36,11 @@ builder.Services.AddScoped<IFileStorageService, LocalFileStorageService>();
 builder.Services.AddScoped<IPublishRabbitMQService, PublishRabbitMQService>();
 builder.Services.AddScoped<ISubmissionFileRepository, SubmissionFileRepository>();
 builder.Services.AddScoped<IProcessingJobRepository, ProcessingJobRepository>();
-
-
+builder.Logging.ClearProviders();
+builder.Logging.AddSimpleConsole(options =>
+{
+    options.IncludeScopes = true; 
+});
 builder.Services.AddHostedService<Worker>();
 
 var host = builder.Build();

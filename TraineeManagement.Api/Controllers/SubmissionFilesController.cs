@@ -43,28 +43,33 @@ namespace TraineeManagement.Api.Controllers
 
             int userId = int.Parse(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
 
+            var correlationId = Guid.NewGuid().ToString();
             FileUploadRequestDTO request = new FileUploadRequestDTO
             {
                 SubmissionId = submissionId,
                 File = file,
-                UserId = userId
+                UserId = userId,
+                CorrelationId = correlationId
             };
-
-            SubmissionProcessingRequestedDTO message = await _fileStorageService.SaveAsync(request);
-
-            _logger.LogInformation("File submitted. MessageId={messageId}, CorrelationId={correlationId}, SubmissionId={subId}, FileId={fileId}",
-                message.MessageId, message.CorrelationId, submissionId, message.FileId);
-
-            return Accepted(new
+            using (_logger.BeginScope("=>=>CorrelationId<=<= {CorrelationId}", correlationId))
             {
-                TrackingId = message.MessageId,
-                CorrelationId = message.CorrelationId,
-                SubmissionId = submissionId,
-                FileId = message.FileId,
-                Status = SubType.Submitted
-            });
-        }
+                _logger.LogInformation("Starting file upload process for Submission {SubmissionId}", submissionId);
 
+                SubmissionProcessingRequestedDTO message = await _fileStorageService.SaveAsync(request);
+
+                _logger.LogInformation("File submitted. MessageId={messageId}, CorrelationId={correlationId}, SubmissionId={subId}, FileId={fileId}",
+                    message.MessageId, message.CorrelationId, submissionId, message.FileId);
+
+                return Accepted(new
+                {
+                    TrackingId = message.MessageId,
+                    CorrelationId = message.CorrelationId,
+                    SubmissionId = submissionId,
+                    FileId = message.FileId,
+                    Status = SubType.Submitted
+                });
+            }
+        }
 
         [HttpGet("download/{id}")]
         public async Task<IActionResult> DownloadFile(int id)
