@@ -13,6 +13,7 @@ using TraineeManagement.Api.Data;
 using TraineeManagement.Api.Enums;
 using Microsoft.EntityFrameworkCore;
 using SubmissionProcessor.Worker.Services;
+using SubmissionProcessor.Worker.Models;
 
 namespace SubmissionProcessor.Worker;
 

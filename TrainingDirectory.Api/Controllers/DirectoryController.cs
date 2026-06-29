@@ -25,8 +25,9 @@ public class DirectoryController : ControllerBase
         return Ok(new 
         { 
             TraineeId = id, 
-            Department = "Engineering", 
-            MentorName = "Jane Doe",
+            FirstName="Amit",
+            LastName="Sharma",
+            TechStack="HTML,CSS,JavaScript",
             IsActive = true
         });
     }
