@@ -13,17 +13,16 @@ using TraineeManagement.Api.Utils;
 var builder = Host.CreateApplicationBuilder(args);
 
 var retryPolicy = HttpPolicyExtensions
-    .HandleTransientHttpError() // Handles 5xx errors and network failures
-    .WaitAndRetryAsync(3, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)));
+    .HandleTransientHttpError() 
+    .WaitAndRetryAsync(3, retryAttempt => TimeSpan.FromSeconds(2));
 var circuitBreakerPolicy = HttpPolicyExtensions
     .HandleTransientHttpError()
     .CircuitBreakerAsync(5, TimeSpan.FromSeconds(30));
 
 builder.Services.AddHttpClient<TrainingDirectoryClient>(client =>
 {
-    // Centralized configuration (Task 3.18)
-    client.BaseAddress = new Uri("http://localhost:5000/"); // Update to match your Directory API port
-    client.Timeout = TimeSpan.FromSeconds(5); // Finite Timeout (Task 3.19)
+    client.BaseAddress = new Uri("http://localhost:5000/"); 
+    client.Timeout = TimeSpan.FromSeconds(5); 
 })
 .AddPolicyHandler(retryPolicy)
 .AddPolicyHandler(circuitBreakerPolicy);

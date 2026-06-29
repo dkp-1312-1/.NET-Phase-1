@@ -1,5 +1,5 @@
 using System.Text.Json;
-
+using SubmissionProcessor.Worker.Models;
 namespace SubmissionProcessor.Worker.Services;
 
 public class DirectoryProfile
@@ -15,7 +15,6 @@ public class TrainingDirectoryClient
     private readonly HttpClient _httpClient;
     private readonly ILogger<TrainingDirectoryClient> _logger;
 
-    // The HttpClient is injected automatically by the Factory
     public TrainingDirectoryClient(HttpClient httpClient, ILogger<TrainingDirectoryClient> logger)
     {
         _httpClient = httpClient;
@@ -24,10 +23,8 @@ public class TrainingDirectoryClient
 
     public async Task<DirectoryProfile?> GetTraineeProfileAsync(int traineeId, string? correlationId, CancellationToken cancellationToken)
     {
-        // 1. Create the request
         var request = new HttpRequestMessage(HttpMethod.Get, $"api/directory/trainees/{traineeId}/profile");
         
-        // 2. Propagate the Correlation ID (Task 3.18)
         if (!string.IsNullOrEmpty(correlationId))
         {
             request.Headers.Add("X-Correlation-ID", correlationId);
@@ -35,14 +32,12 @@ public class TrainingDirectoryClient
 
         try
         {
-            // 3. Send the request (Passing the cancellation token is critical!)
             var response = await _httpClient.SendAsync(request, cancellationToken);
             
-            // Handle non-success explicitly
             if (!response.IsSuccessStatusCode)
             {
                 _logger.LogWarning("Directory API returned {StatusCode} for Trainee {Id}", response.StatusCode, traineeId);
-                return null; // Fallback behavior
+                return null; 
             }
 
             var content = await response.Content.ReadAsStringAsync(cancellationToken);

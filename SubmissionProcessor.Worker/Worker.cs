@@ -111,7 +111,6 @@ public class Worker : BackgroundService
     }
     private async Task ProcessMessageAsync(object sender, BasicDeliverEventArgs ea)
     {
-        
         var body = ea.Body.ToArray();
         var messageJson = Encoding.UTF8.GetString(body);
         var request = JsonSerializer.Deserialize<SubmissionProcessingRequestedDTO>(messageJson);
@@ -151,7 +150,6 @@ public class Worker : BackgroundService
             if (traineeProfile != null)
             {
                 _logger.LogInformation("Successfully retrieved profile for processing: {Profile}", traineeProfile);
-                // You could append this data to the database job, or use it to generate the final file
             }
             else
             {
@@ -159,7 +157,6 @@ public class Worker : BackgroundService
             }
 
             var fileRecord = await dbContext.SubmissionFiles.FindAsync(request.FileId);
-            Console.WriteLine(fileRecord.StorageFileName);
             await using var stream = await fileStorage.OpenReadAsync(fileRecord.StorageFileName);
             using var sha256 = SHA256.Create();
             var hashBytes = await sha256.ComputeHashAsync(stream);

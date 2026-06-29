@@ -14,11 +14,9 @@ public class DirectoryController : ControllerBase
     [HttpGet("trainees/{id}/profile")]
     public IActionResult GetTraineeProfile(int id)
     {
-        // Log the Correlation ID so we can trace requests across services!
         var correlationId = Request.Headers["X-Correlation-ID"].FirstOrDefault();
         _logger.LogInformation("Fetching profile for Trainee {Id}. CorrelationId: {CorrelationId}", id, correlationId);
 
-        // Simulate a random failure to test our Circuit Breaker later
         if (new Random().Next(1, 10) <= 2) 
         {
             return StatusCode(500, "Internal Directory Error!");
