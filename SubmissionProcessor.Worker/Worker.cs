@@ -12,7 +12,7 @@ using TraineeManagement.Api.Services;
 using TraineeManagement.Api.Data;
 using TraineeManagement.Api.Enums;
 using Microsoft.EntityFrameworkCore;
-
+using SubmissionProcessor.Worker.Services;
 
 namespace SubmissionProcessor.Worker;
 
@@ -122,6 +122,7 @@ public class Worker : BackgroundService
             return;
         }
         using var scope = _scopeFactory.CreateScope();
+        var directoryClient = scope.ServiceProvider.GetRequiredService<TrainingDirectoryClient>();
         var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
         var fileStorage = scope.ServiceProvider.GetRequiredService<IFileStorageService>();
         var job = await dbContext.ProcessingJobs.FirstOrDefaultAsync(p => p.MessageId == request.MessageId);
@@ -144,6 +145,18 @@ public class Worker : BackgroundService
             job.Attempts += 1;
             await dbContext.SaveChangesAsync();
             _logger.LogInformation("Processing Job {Id}. Attempt {Attempt}", job.Id, job.Attempts);
+
+            var traineeProfile = await directoryClient.GetTraineeProfileAsync(request.SubmissionId, request.CorrelationId, CancellationToken.None);
+
+            if (traineeProfile != null)
+            {
+                _logger.LogInformation("Successfully retrieved profile for processing: {Profile}", traineeProfile);
+                // You could append this data to the database job, or use it to generate the final file
+            }
+            else
+            {
+                _logger.LogWarning("Fallback activated: Processing file without Trainee Profile data.");
+            }
 
             var fileRecord = await dbContext.SubmissionFiles.FindAsync(request.FileId);
             Console.WriteLine(fileRecord.StorageFileName);

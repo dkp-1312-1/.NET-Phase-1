@@ -5,7 +5,7 @@ using System.Text.Json;
 using TraineeManagement.Api.DTOs;
 using RabbitMQ.Client;
 
-namespace TraineeManagement.Api.Services
+namespace TraineeManagement.Api.Utils
 {
     public class PublishRabbitMQService : IPublishRabbitMQService
     {

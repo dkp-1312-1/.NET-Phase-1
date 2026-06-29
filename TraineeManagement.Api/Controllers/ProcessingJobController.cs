@@ -1,3 +1,4 @@
+using TraineeManagement.Api.Utils;
 using Microsoft.Extensions.Localization;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;

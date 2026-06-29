@@ -3,7 +3,11 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Filters;
 using System.Linq;
 using TraineeManagement.Api.DTOs;
- public class ValidateModelAttribute : ActionFilterAttribute
+
+namespace TraineeManagement.Api.Utils
+{
+
+public class ValidateModelAttribute : ActionFilterAttribute
 {
     public override void OnActionExecuting(ActionExecutingContext context)
     {
@@ -22,5 +26,6 @@ using TraineeManagement.Api.DTOs;
             context.Result=new BadRequestObjectResult(response);
            
     }
+}
 }
 }

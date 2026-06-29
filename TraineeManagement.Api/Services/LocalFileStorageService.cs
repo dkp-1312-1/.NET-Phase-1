@@ -1,3 +1,4 @@
+using TraineeManagement.Api.Utils;
 using Org.BouncyCastle.Crypto.Prng;
 using TraineeManagement.Api.Services;
 using TraineeManagement.Api.Repositories;

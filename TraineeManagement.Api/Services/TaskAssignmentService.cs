@@ -1,3 +1,4 @@
+using TraineeManagement.Api.Utils;
 using TraineeManagement.Api.DTOs;
 using TraineeManagement.Api.Models;
 using TraineeManagement.Api.Enums;

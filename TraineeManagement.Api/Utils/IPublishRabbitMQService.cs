@@ -1,5 +1,5 @@
 using TraineeManagement.Api.DTOs;
-namespace TraineeManagement.Api.Services
+namespace TraineeManagement.Api.Utils
 {
     public interface IPublishRabbitMQService
     {

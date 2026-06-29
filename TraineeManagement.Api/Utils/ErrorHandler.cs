@@ -1,5 +1,5 @@
 
-namespace TraineeManagement.Api.Services
+namespace TraineeManagement.Api.Utils
 {
     public class NotFoundException : Exception
     {

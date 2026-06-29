@@ -1,3 +1,4 @@
+using TraineeManagement.Api.Utils;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Text.Json;
@@ -81,4 +82,5 @@ namespace TraineeManagement.Api.Controllers
     }
   }
 }
+
 

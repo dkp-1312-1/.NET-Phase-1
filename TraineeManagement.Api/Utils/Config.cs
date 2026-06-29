@@ -1,6 +1,8 @@
 using System.Text;
 using Microsoft.IdentityModel.Tokens;
 
+namespace TraineeManagement.Api.Utils;
+
 public static class Config
 {
     public static SymmetricSecurityKey JWTSecurityKey = null!;

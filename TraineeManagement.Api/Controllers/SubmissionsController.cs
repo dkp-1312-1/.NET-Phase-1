@@ -1,3 +1,4 @@
+using TraineeManagement.Api.Utils;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TraineeManagement.Api.DTOs;
@@ -54,3 +55,4 @@ namespace TraineeManagement.Api.Controllers
         }
     }
 }
+

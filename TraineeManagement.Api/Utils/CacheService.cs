@@ -1,7 +1,7 @@
 using Microsoft.Extensions.Caching.Distributed;
 using System.Text.Json;
 using TraineeManagement.Api.Resources;
-namespace TraineeManagement.Api.Services
+namespace TraineeManagement.Api.Utils
 {
     public class CacheService : ICacheService
     {
