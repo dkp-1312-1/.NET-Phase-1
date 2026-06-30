@@ -21,7 +21,7 @@ var circuitBreakerPolicy = HttpPolicyExtensions
 
 builder.Services.AddHttpClient<TrainingDirectoryClient>(client =>
 {
-    client.BaseAddress = new Uri("http://localhost:5000/"); 
+    client.BaseAddress = new Uri("http://training_directory_api:8080/"); 
     client.Timeout = TimeSpan.FromSeconds(5); 
 })
 .AddPolicyHandler(retryPolicy)

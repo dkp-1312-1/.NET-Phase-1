@@ -29,5 +29,18 @@
     <PackageReference Include="NSwag.AspNetCore" Version="14.7.1" />
     <PackageReference Include="RabbitMQ.Client" Version="7.2.1" />
   </ItemGroup>
+   <ItemGroup>
+  <Content Include="../appsettings.json">
+    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    <CopyToPublishDirectory>Always</CopyToPublishDirectory>
+    <Link>appsettings.json</Link>
+  </Content>
+  <Content Include="../appsettings.Development.json">
+    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    <CopyToPublishDirectory>Always</CopyToPublishDirectory>
+    <Link>appsettings.Development.json</Link>
+  </Content>
+</ItemGroup>
+
 
 </Project>

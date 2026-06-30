@@ -23,24 +23,34 @@ public class Worker : BackgroundService
     private readonly IServiceScopeFactory _scopeFactory;
     private IConnection? _connection;
     private IChannel? _channel;
+    private ConnectionFactory _factory;
     public Worker(ILogger<Worker> logger, IServiceScopeFactory scopeFactory)
     {
         _logger = logger;
         _scopeFactory = scopeFactory;
+        ConnectionFactory factory = new ConnectionFactory
+        {
+            HostName = "localhost",
+            Port = 5672,
+            UserName = "guest",
+            Password = "guest",
+            VirtualHost = "mqhost"
+        };
+        _factory = factory;
+    }
+
+    public override async Task StartAsync(CancellationToken cancellationToken)
+    {
+        _connection = await _factory.CreateConnectionAsync(cancellationToken);
+        _channel = await _connection.CreateChannelAsync(cancellationToken: cancellationToken);
+
+        await _channel.BasicQosAsync(prefetchSize: 0, prefetchCount: 1, global: false, cancellationToken: cancellationToken);
+
+        await base.StartAsync(cancellationToken);
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        ConnectionFactory factory = new ConnectionFactory
-        {
-            HostName = "localhost",
-            VirtualHost = "mqhost"
-        };
-
-        _connection = await factory.CreateConnectionAsync(stoppingToken);
-        _channel = await _connection.CreateChannelAsync(cancellationToken: stoppingToken);
-
-
         await _channel.ExchangeDeclareAsync(
             exchange: "dead-letter-exchange",
             type: "direct",
@@ -97,17 +107,17 @@ public class Worker : BackgroundService
     }
     private async Task ProcessMessageAsync(object sender, BasicDeliverEventArgs ea)
     {
-        Task.Delay(TimeSpan.FromSeconds(5));
+        await Task.Delay(TimeSpan.FromSeconds(5));
         byte[] body = ea.Body.ToArray();
         string messageJson = Encoding.UTF8.GetString(body);
         SubmissionProcessingRequestedDTO? request = JsonSerializer.Deserialize<SubmissionProcessingRequestedDTO>(messageJson);
         if (request == null)
         {
-            _logger.LogError("Request wasnot found.");
+            _logger.LogError("Request was not found.");
             await _channel!.BasicNackAsync(ea.DeliveryTag, false, requeue: false);
             return;
         }
-        using (_logger.BeginScope("=>=>CorrelationId<=<= {CorrelationId}",request.CorrelationId))
+        using (_logger.BeginScope("=>=>CorrelationId<=<= {CorrelationId}", request.CorrelationId))
         {
             using IServiceScope scope = _scopeFactory.CreateScope();
             TrainingDirectoryClient directoryClient = scope.ServiceProvider.GetRequiredService<TrainingDirectoryClient>();
@@ -150,7 +160,7 @@ public class Worker : BackgroundService
                 using SHA256 sha256 = SHA256.Create();
                 byte[] hashBytes = await sha256.ComputeHashAsync(stream);
                 string checksum = BitConverter.ToString(hashBytes).Replace("-", "").ToLowerInvariant();
-                if(checksum!=fileRecord.CheckSum)
+                if (checksum != fileRecord.CheckSum)
                 {
                     _logger.LogError("Checksum not matched: Cannot Process File.");
                     await _channel.BasicNackAsync(ea.DeliveryTag, false, requeue: false);
@@ -169,7 +179,7 @@ public class Worker : BackgroundService
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error processing Job {Id}");
+                _logger.LogError(ex, "Error processing Job {Id}", job.Id);
                 if (job.Attempts > 3)
                 {
                     job.Status = ProcessingJobType.Failed;

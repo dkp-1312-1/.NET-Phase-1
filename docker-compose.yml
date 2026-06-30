@@ -1,0 +1,80 @@
+services:
+  redis:
+    image: docker-registry-002.zeuslearning.com/zeuslearning/redis
+    container_name: redis_server
+    ports:
+      - "6379:6379"
+    command: ["redis-server","--appendonly","yes"]
+    volumes:
+      - redis_data:/data
+
+  mysql:
+    image: docker-registry-002.zeuslearning.com/zeuslearning/mysql
+    container_name: mysql_server
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: "root"
+      MYSQL_DATABASE: "trainee_management_db"
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+  
+  rabbitmq:
+    image: docker-registry-002.zeuslearning.com/zeuslearning/rabbitmq:3-management
+    container_name: dotnetrabbitmq
+    restart: always
+    ports:
+      - "5672:5672"  
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+      RABBITMQ_DEFAULT_VHOST: mqhost
+    volumes:
+      - dotnetrabbitmq:/var/lib/rabbitmq
+
+  # --- .NET SERVICES ---
+  training_directory_api:
+    build:
+      context: .
+      dockerfile: TrainingDirectory.Api/Dockerfile
+    ports:
+      - "5000:8080"
+
+  trainee_management_api:
+    build:
+      context: .
+      dockerfile: TraineeManagement.Api/Dockerfile
+    ports:
+      - "5073:8080"
+    environment:
+      - ConnectionStrings__DefaultConnection=server=mysql;port=3306;database=trainee_management_db;user=root;password=root;
+      - ConnectionStrings__RedisConnection=redis:6379,abortConnect=false
+      - RabbitMq__HostName=rabbitmq
+    depends_on:
+      - mysql
+      - redis
+      - rabbitmq
+
+  submission_worker:
+    build:
+      context: .
+      dockerfile: SubmissionProcessor.Worker/Dockerfile
+    environment:
+      - ConnectionStrings__DefaultConnection=server=mysql;port=3306;database=trainee_management_db;user=root;password=root;
+      - DirectoryApi__BaseUrl=http://training_directory_api:8080/
+      - RabbitMQ__HostName=rabbitmq
+      - RabbitMQ__Port=5672
+      - RabbitMQ__UserName=guest
+      - RabbitMQ__Password=guest
+      - RabbitMQ__VirtualHost=mqhost
+
+    depends_on:
+      - trainee_management_api
+      - rabbitmq
+
+volumes:
+  redis_data:
+  mysql_data:
+  dotnetrabbitmq:

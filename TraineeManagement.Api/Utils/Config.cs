@@ -8,7 +8,7 @@ public static class Config
     public static SymmetricSecurityKey JWTSecurityKey = null!;
     public static string JWTIssuer = string.Empty;
     public static string JWTAudience = string.Empty;
-    public static int JWTExpiryInSeconds;
+    public static int JWTExpiryInSeconds=3600;
     public static string StorageRoot = string.Empty;
 
     public static int RedisFileSizeLimit;
@@ -26,7 +26,7 @@ public static class Config
         IConfigurationSection section = configuration.GetSection("Jwt");
         JWTIssuer = section["Issuer"];
         JWTAudience = section["Audience"];
-        JWTExpiryInSeconds = int.Parse(section["ExpiryMinutes"])*60;
+        JWTExpiryInSeconds = 3660;
         JWTSecurityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(section["Key"]));
         IConfigurationSection fileSection = configuration.GetSection("FileStorage");
         StorageRoot = fileSection["RootPath"];

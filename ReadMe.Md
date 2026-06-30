@@ -155,3 +155,5 @@ GET /api/reviews/{id}
 # Challenges:
 -
 -For referencing in worker project,we have to give default path for Getting Files for Submission Files 
+-builder.Logging.ClearProviders();builder.Logging.AddConsole(); Added This command to Enable it to work BeginScope
+-add "/vhostname" in rabiitmq Api name to add its virtualHostName 
