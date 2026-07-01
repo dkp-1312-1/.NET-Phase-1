@@ -41,18 +41,46 @@ public class Worker : BackgroundService
 
     public override async Task StartAsync(CancellationToken cancellationToken)
     {
-        _connection = await _factory.CreateConnectionAsync(cancellationToken);
-        _channel = await _connection.CreateChannelAsync(cancellationToken: cancellationToken);
+        int maxRetries = 10;
+        int currentAttempt = 0;
+        TimeSpan delay = TimeSpan.FromSeconds(5);
 
-        await _channel.BasicQosAsync(prefetchSize: 0, prefetchCount: 1, global: false, cancellationToken: cancellationToken);
+        while (currentAttempt < maxRetries)
+        {
+            try
+            {
+                currentAttempt++;
+                _logger.LogInformation("Attempting to connect to RabbitMQ (Attempt {Attempt}/{MaxRetries})...", currentAttempt, maxRetries);
 
+                _connection = await _factory.CreateConnectionAsync(cancellationToken);
+                _channel = await _connection.CreateChannelAsync(cancellationToken: cancellationToken);
+
+                await _channel.BasicQosAsync(prefetchSize: 0, prefetchCount: 1, global: false, cancellationToken: cancellationToken);
+
+                _logger.LogInformation("Successfully connected to RabbitMQ.");
+                break; 
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex, "Failed to connect to RabbitMQ on attempt {Attempt}.", currentAttempt);
+
+                if (currentAttempt >= maxRetries)
+                {
+                    _logger.LogError("Exhausted all {MaxRetries} attempts to connect to RabbitMQ. Throwing exception.", maxRetries);
+                    throw; 
+                }
+
+                _logger.LogInformation("Waiting {DelaySeconds} seconds before retrying...", delay.TotalSeconds);
+                await Task.Delay(delay, cancellationToken);
+            }
+        }
         await base.StartAsync(cancellationToken);
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         if (_channel == null) return;
-        
+
         await _channel.ExchangeDeclareAsync(
             exchange: "dead-letter-exchange",
             type: "direct",
@@ -93,7 +121,7 @@ public class Worker : BackgroundService
         await _channel.BasicQosAsync(prefetchSize: 0, prefetchCount: 1, global: false, cancellationToken: stoppingToken);
 
         AsyncEventingBasicConsumer consumer = new AsyncEventingBasicConsumer(_channel);
-
+        _logger.LogInformation("Going to Process Queue");
         consumer.ReceivedAsync += ProcessMessageAsync;
 
         await _channel.BasicConsumeAsync(
@@ -110,7 +138,6 @@ public class Worker : BackgroundService
     private async Task ProcessMessageAsync(object sender, BasicDeliverEventArgs ea)
     {
         if (_channel == null) return;
-        await Task.Delay(TimeSpan.FromSeconds(5));
         byte[] body = ea.Body.ToArray();
         string messageJson = Encoding.UTF8.GetString(body);
         SubmissionProcessingRequestedDTO? request = JsonSerializer.Deserialize<SubmissionProcessingRequestedDTO>(messageJson);
@@ -126,6 +153,7 @@ public class Worker : BackgroundService
             TrainingDirectoryClient directoryClient = scope.ServiceProvider.GetRequiredService<TrainingDirectoryClient>();
             AppDbContext dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
             IFileStorageService fileStorage = scope.ServiceProvider.GetRequiredService<IFileStorageService>();
+            var TaskAssignmentService=scope.ServiceProvider.GetRequiredService<ITaskAssignmentService>();
             ProcessingJob? job = await dbContext.ProcessingJobs.FirstOrDefaultAsync(p => p.MessageId == request.MessageId);
             if (job == null)
             {
@@ -165,7 +193,6 @@ public class Worker : BackgroundService
                     await _channel.BasicNackAsync(ea.DeliveryTag, false, requeue: false);
                     return;
                 }
-                
                 await using Stream stream = await fileStorage.OpenReadAsync(fileRecord.StorageFileName!);
                 using SHA256 sha256 = SHA256.Create();
                 byte[] hashBytes = await sha256.ComputeHashAsync(stream);
@@ -182,6 +209,8 @@ public class Worker : BackgroundService
                 }
                 job.Status = ProcessingJobType.Completed;
                 job.CompletedAt = DateTime.UtcNow;
+                var submission = await dbContext.Submissions.FindAsync(request.SubmissionId);
+                await TaskAssignmentService.UpdateStatus(submission.TaskAssignmentId,TAType.Submitted);
                 await dbContext.SaveChangesAsync();
 
                 await _channel!.BasicAckAsync(ea.DeliveryTag, false);

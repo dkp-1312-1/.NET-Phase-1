@@ -48,6 +48,8 @@ services:
       dockerfile: TraineeManagement.Api/Dockerfile
     ports:
       - "5073:8080"
+    volumes:
+      - shared_uploads:/app/uploads
     environment:
       - ConnectionStrings__DefaultConnection=server=mysql;port=3306;database=trainee_management_db;user=root;password=root;
       - ConnectionStrings__RedisConnection=redis:6379,abortConnect=false
@@ -61,9 +63,12 @@ services:
     build:
       context: .
       dockerfile: SubmissionProcessor.Worker/Dockerfile
+    volumes:
+      - shared_uploads:/app/uploads
     environment:
       - ConnectionStrings__DefaultConnection=server=mysql;port=3306;database=trainee_management_db;user=root;password=root;
       - DirectoryApi__BaseUrl=http://training_directory_api:8080/
+      - ConnectionStrings__RedisConnection=redis:6379,abortConnect=false
       - RabbitMQ__HostName=rabbitmq
       - RabbitMQ__Port=5672
       - RabbitMQ__UserName=guest
@@ -73,8 +78,10 @@ services:
     depends_on:
       - trainee_management_api
       - rabbitmq
+      - redis
 
 volumes:
   redis_data:
   mysql_data:
   dotnetrabbitmq:
+  shared_uploads:

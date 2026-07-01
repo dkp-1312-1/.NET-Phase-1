@@ -157,3 +157,7 @@ GET /api/reviews/{id}
 -For referencing in worker project,we have to give default path for Getting Files for Submission Files 
 -builder.Logging.ClearProviders();builder.Logging.AddConsole(); Added This command to Enable it to work BeginScope
 -add "/vhostname" in rabiitmq Api name to add its virtualHostName 
+-configure redis in Worker YML File
+-Port and HostName Differ in docker-conpose.yml and appSettting.json
+-give different name for storage Directory in appSetting.js and include same in docker-compose.yml file.
+-Configure connectionString in yml to override it from appSetting.json in Docker Container 

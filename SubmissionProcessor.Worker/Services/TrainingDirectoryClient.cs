@@ -1,21 +1,24 @@
 using System.Text.Json;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.DependencyInjection;
+using System.Net.Http;
 using SubmissionProcessor.Worker.Models;
 namespace SubmissionProcessor.Worker.Services
 {
     public class TrainingDirectoryClient
     {
-        private readonly HttpClient _httpClient;
         private readonly ILogger<TrainingDirectoryClient> _logger;
+        private readonly IHttpClientFactory _httpClientFactory;
 
-        public TrainingDirectoryClient(HttpClient httpClient, ILogger<TrainingDirectoryClient> logger)
+        public TrainingDirectoryClient(IHttpClientFactory httpClientFactory, ILogger<TrainingDirectoryClient> logger)
         {
-            _httpClient = httpClient;
+            _httpClientFactory = httpClientFactory;
             _logger = logger;
         }
 
         public async Task<DirectoryProfile?> GetTraineeProfileAsync(int traineeId, string? correlationId, CancellationToken cancellationToken)
         {
-            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, $"api/directory/trainees/{traineeId}/profile");
+            using HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, $"api/directory/trainees/{traineeId}/profile");
 
             if (!string.IsNullOrEmpty(correlationId))
             {
@@ -24,7 +27,8 @@ namespace SubmissionProcessor.Worker.Services
 
             try
             {
-                HttpResponseMessage response = await _httpClient.SendAsync(request, cancellationToken);
+                using HttpClient client = _httpClientFactory.CreateClient();
+                HttpResponseMessage response = await client.SendAsync(request, cancellationToken);
 
                 if (!response.IsSuccessStatusCode)
                 {

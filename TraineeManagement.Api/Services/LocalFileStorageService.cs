@@ -73,7 +73,7 @@ public class LocalFileStorageService : IFileStorageService
 
     public Task<Stream> OpenReadAsync(string storageName)
     {
-        string fullPath = Path.Combine(_storageRoot!=""?_storageRoot:"/mnt/d/Day2/123/Tasks/TraineeManagement.Api/TraineeSubmissionFile", storageName);
+        string fullPath = Path.Combine(_storageRoot!=""?_storageRoot:"/app/uploads", storageName);
         if (!File.Exists(fullPath))
         {
             throw new NotFoundException(StringConstants.fileNotFound);
