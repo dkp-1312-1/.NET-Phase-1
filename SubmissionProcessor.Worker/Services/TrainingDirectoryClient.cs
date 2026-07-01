@@ -4,17 +4,18 @@ namespace SubmissionProcessor.Worker.Services
 {
     public class TrainingDirectoryClient
     {
-        private readonly HttpClient _httpClient;
+        private readonly IHttpClientFactory _httpClientFactory;
         private readonly ILogger<TrainingDirectoryClient> _logger;
 
-        public TrainingDirectoryClient(HttpClient httpClient, ILogger<TrainingDirectoryClient> logger)
+        public TrainingDirectoryClient(IHttpClientFactory httpClientFactory, ILogger<TrainingDirectoryClient> logger)
         {
-            _httpClient = httpClient;
+            _httpClientFactory = httpClientFactory;
             _logger = logger;
         }
 
         public async Task<DirectoryProfile?> GetTraineeProfileAsync(int traineeId, string? correlationId, CancellationToken cancellationToken)
         {
+            var client =_httpClientFactory.CreateClient("DirectoryApi");
             HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, $"api/directory/trainees/{traineeId}/profile");
 
             if (!string.IsNullOrEmpty(correlationId))
@@ -24,7 +25,7 @@ namespace SubmissionProcessor.Worker.Services
 
             try
             {
-                HttpResponseMessage response = await _httpClient.SendAsync(request, cancellationToken);
+                HttpResponseMessage response = await client.SendAsync(request, cancellationToken);
 
                 if (!response.IsSuccessStatusCode)
                 {

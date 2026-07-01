@@ -3,6 +3,6 @@ namespace TraineeManagement.Api.Utils
 {
     public interface IPublishRabbitMQService
     {
-        void PublishSubmission(SubmissionProcessingRequestedDTO message);
+        Task<bool> PublishSubmission(SubmissionProcessingRequestedDTO message);
     }
 }

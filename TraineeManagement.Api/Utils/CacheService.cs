@@ -26,6 +26,7 @@ namespace TraineeManagement.Api.Utils
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Redis Cache failure on GET for key: {Key}", key);
+                _logger.LogError(ex,StringConstants.RedisUnavailable);
                 return default;
             }
         }
@@ -44,6 +45,7 @@ namespace TraineeManagement.Api.Utils
             catch(Exception ex)
             {
                 _logger.LogError(ex, "Redis Cache failure on SET for key: {Key}", key);
+                _logger.LogError(StringConstants.RedisUnavailable);
             }
         }
 
@@ -57,6 +59,7 @@ namespace TraineeManagement.Api.Utils
             catch(Exception ex)
             {
                   _logger.LogError(ex, "Redis Cache failure on REMOVE for key: {Key}", key);
+                  _logger.LogError(ex,StringConstants.RedisUnavailable);
             }
         }
     }

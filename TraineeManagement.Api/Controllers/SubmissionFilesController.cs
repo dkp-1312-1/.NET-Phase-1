@@ -57,6 +57,10 @@ namespace TraineeManagement.Api.Controllers
 
                 SubmissionProcessingRequestedDTO message = await _fileStorageService.SaveAsync(request);
 
+                if(message==null)
+                {
+                    throw new ServiceUnavailableException(StringConstants.RabbitUnavailable);
+                }
                 _logger.LogInformation("File submitted. MessageId={messageId}, CorrelationId={correlationId}, SubmissionId={subId}, FileId={fileId}",
                     message.MessageId, message.CorrelationId, submissionId, message.FileId);
 

@@ -25,4 +25,8 @@ namespace TraineeManagement.Api.Utils
     {
         public PayloadTooLargeException(string message) : base(message) { }
     }
+    public class ServiceUnavailableException : Exception
+    {
+        public ServiceUnavailableException(string message) : base(message) { }
+    }
 }

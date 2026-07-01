@@ -48,6 +48,11 @@ namespace TraineeManagement.Api.Middleware
                 _logger.LogWarning("File Size Exceed: {Message}", ex.Message);
                 await WriteResponse(context, StatusCodes.Status413RequestEntityTooLarge, ex.Message);
             }
+            catch(ServiceUnavailableException ex)
+            {
+                _logger.LogError("Service is not available", ex.Message);
+                await WriteResponse(context, StatusCodes.Status503ServiceUnavailable, ex.Message);
+            }
             catch (Exception ex)
             {
                 if (ex.InnerException is MySqlException mysqlEx)

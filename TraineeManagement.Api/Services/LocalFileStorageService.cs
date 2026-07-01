@@ -55,7 +55,6 @@ public class LocalFileStorageService : IFileStorageService
         await _submissionFileRepository.AddAsync(metadata);
         await _submissionFileRepository.SaveChangesAsync();
 
-
         SubmissionProcessingRequestedDTO message = new SubmissionProcessingRequestedDTO
         {
             MessageId = Guid.NewGuid().ToString(),
@@ -66,9 +65,8 @@ public class LocalFileStorageService : IFileStorageService
         };
         ProcessingJob job =new ProcessingJob(message);
         await _processingJobRepository.AddAsync(job);
-
-        _publishRabbitMQService.PublishSubmission(message);
-        return message;
+        bool response=await _publishRabbitMQService.PublishSubmission(message);
+        return response?message:null;
     }
 
     public Task<Stream> OpenReadAsync(string storageName)

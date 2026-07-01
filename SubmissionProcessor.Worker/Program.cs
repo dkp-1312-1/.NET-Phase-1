@@ -29,7 +29,7 @@ builder.Services.AddStackExchangeRedisCache(options =>
     options.Configuration = redisString;
     options.InstanceName = "TraineeManagement";
 });
-builder.Services.AddHttpClient<TrainingDirectoryClient>(client =>
+builder.Services.AddHttpClient("DirectoryApi",client =>
 {
     var directoryApiBaseUrl = builder.Configuration["DirectoryApi:BaseUrl"] ?? "http://training_directory_api:8080/";
     client.BaseAddress = new Uri(directoryApiBaseUrl); 
@@ -38,7 +38,7 @@ builder.Services.AddHttpClient<TrainingDirectoryClient>(client =>
 .AddPolicyHandler(retryPolicy)
 .AddPolicyHandler(circuitBreakerPolicy);
 
-
+builder.Services.AddScoped<TrainingDirectoryClient>();
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
     ?? throw new InvalidOperationException("DefaultConnection string not found.");
