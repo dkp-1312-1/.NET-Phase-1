@@ -17,6 +17,9 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 using RabbitMQ.Client;
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Configuration.AddJsonFile(Path.Combine(builder.Environment.ContentRootPath, "..", "appsettings.json"), optional: true, reloadOnChange: true);
+builder.Configuration.AddJsonFile(Path.Combine(builder.Environment.ContentRootPath, "..", $"appsettings.{builder.Environment.EnvironmentName}.json"), optional: true, reloadOnChange: true);
+
 Config.Initialize(builder.Configuration);
 
 builder.Services.AddCors(options =>
@@ -132,8 +135,10 @@ builder.Logging.AddConsole();
 
 
 
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-var redisString=builder.Configuration.GetConnectionString("RedisConnection");
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
+    ?? throw new InvalidOperationException("DefaultConnection string not found.");
+var redisString = builder.Configuration.GetConnectionString("RedisConnection")
+    ?? throw new InvalidOperationException("RedisConnection string not found.");
 builder.Services.AddDbContext<AppDbContext>(options =>
        options.UseMySQL(connectionString));
 
@@ -149,7 +154,11 @@ builder.Services.AddHealthChecks()
     .AddRedis(redisString, name: "redis", timeout: TimeSpan.FromSeconds(3))      
     .AddRabbitMQ(sp => new ConnectionFactory
         {
-            Uri = new Uri($"amqp://guest:guest@{Config.RabbitHostName}:5672/mqhost")
+            HostName = Config.RabbitHostName,
+            Port = Config.RabbitPort,
+            UserName = Config.RabbitUserName,
+            Password = Config.RabbitPassword,
+            VirtualHost = Config.RabbitVirtualHost
         }.CreateConnectionAsync(), name: "rabbitmq", timeout: TimeSpan.FromSeconds(3));
 var app = builder.Build();
 

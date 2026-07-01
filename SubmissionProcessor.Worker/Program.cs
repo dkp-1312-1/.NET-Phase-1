@@ -12,6 +12,9 @@ using TraineeManagement.Api.Utils;
 
 var builder = Host.CreateApplicationBuilder(args);
 
+builder.Configuration.AddJsonFile(Path.Combine(builder.Environment.ContentRootPath, "..", "appsettings.json"), optional: true, reloadOnChange: true);
+builder.Configuration.AddJsonFile(Path.Combine(builder.Environment.ContentRootPath, "..", $"appsettings.{builder.Environment.EnvironmentName}.json"), optional: true, reloadOnChange: true);
+
 var retryPolicy = HttpPolicyExtensions
     .HandleTransientHttpError() 
     .WaitAndRetryAsync(3, retryAttempt => TimeSpan.FromSeconds(2));
@@ -21,7 +24,8 @@ var circuitBreakerPolicy = HttpPolicyExtensions
 
 builder.Services.AddHttpClient<TrainingDirectoryClient>(client =>
 {
-    client.BaseAddress = new Uri("http://training_directory_api:8080/"); 
+    var directoryApiBaseUrl = builder.Configuration["DirectoryApi:BaseUrl"] ?? "http://training_directory_api:8080/";
+    client.BaseAddress = new Uri(directoryApiBaseUrl); 
     client.Timeout = TimeSpan.FromSeconds(5); 
 })
 .AddPolicyHandler(retryPolicy)
@@ -29,7 +33,8 @@ builder.Services.AddHttpClient<TrainingDirectoryClient>(client =>
 
 
 
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
+    ?? throw new InvalidOperationException("DefaultConnection string not found.");
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseMySQL(connectionString));
 builder.Services.AddScoped<IFileStorageService, LocalFileStorageService>();

@@ -24,17 +24,17 @@ public class Worker : BackgroundService
     private IConnection? _connection;
     private IChannel? _channel;
     private ConnectionFactory _factory;
-    public Worker(ILogger<Worker> logger, IServiceScopeFactory scopeFactory)
+    public Worker(ILogger<Worker> logger, IServiceScopeFactory scopeFactory, IConfiguration configuration)
     {
         _logger = logger;
         _scopeFactory = scopeFactory;
         ConnectionFactory factory = new ConnectionFactory
         {
-            HostName = "localhost",
-            Port = 5672,
-            UserName = "guest",
-            Password = "guest",
-            VirtualHost = "mqhost"
+            HostName = configuration["RabbitMQ:HostName"] ?? "localhost",
+            Port = int.TryParse(configuration["RabbitMQ:Port"], out var port) ? port : 5672,
+            UserName = configuration["RabbitMQ:UserName"] ?? "guest",
+            Password = configuration["RabbitMQ:Password"] ?? "guest",
+            VirtualHost = configuration["RabbitMQ:VirtualHost"] ?? "mqhost"
         };
         _factory = factory;
     }
@@ -51,6 +51,8 @@ public class Worker : BackgroundService
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
+        if (_channel == null) return;
+        
         await _channel.ExchangeDeclareAsync(
             exchange: "dead-letter-exchange",
             type: "direct",
@@ -107,6 +109,7 @@ public class Worker : BackgroundService
     }
     private async Task ProcessMessageAsync(object sender, BasicDeliverEventArgs ea)
     {
+        if (_channel == null) return;
         await Task.Delay(TimeSpan.FromSeconds(5));
         byte[] body = ea.Body.ToArray();
         string messageJson = Encoding.UTF8.GetString(body);
@@ -156,7 +159,14 @@ public class Worker : BackgroundService
                 }
 
                 SubmissionFile? fileRecord = await dbContext.SubmissionFiles.FindAsync(request.FileId);
-                await using Stream stream = await fileStorage.OpenReadAsync(fileRecord.StorageFileName);
+                if (fileRecord == null)
+                {
+                    _logger.LogError("File record not found.");
+                    await _channel.BasicNackAsync(ea.DeliveryTag, false, requeue: false);
+                    return;
+                }
+                
+                await using Stream stream = await fileStorage.OpenReadAsync(fileRecord.StorageFileName!);
                 using SHA256 sha256 = SHA256.Create();
                 byte[] hashBytes = await sha256.ComputeHashAsync(stream);
                 string checksum = BitConverter.ToString(hashBytes).Replace("-", "").ToLowerInvariant();
