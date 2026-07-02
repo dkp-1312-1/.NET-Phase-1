@@ -15,7 +15,8 @@ using System.Text.Json;
 using Microsoft.OpenApi.Models;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using RabbitMQ.Client;
-var builder = WebApplication.CreateBuilder(args);
+using Serilog;
+WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 builder.Configuration.AddJsonFile(Path.Combine(builder.Environment.ContentRootPath, "..", "appsettings.json"), optional: true, reloadOnChange: true);
 builder.Configuration.AddJsonFile(Path.Combine(builder.Environment.ContentRootPath, "..", $"appsettings.{builder.Environment.EnvironmentName}.json"), optional: true, reloadOnChange: true);
@@ -63,6 +64,21 @@ builder.Services.AddAuthentication(options =>
 builder.Services.AddAuthorization();
 
 builder.Logging.ClearProviders();
+Log.Logger = new LoggerConfiguration()
+    .MinimumLevel.Information()
+    .WriteTo.Console()
+    .WriteTo.Logger(lc => lc
+        .Filter.ByExcluding(logEvent =>
+            logEvent.Properties.TryGetValue("SourceContext", out var value) &&
+            (value.ToString().Contains("Microsoft") || value.ToString().Contains("System")))
+        .WriteTo.File(
+            path: "logs/app-.txt",
+            rollingInterval: RollingInterval.Day,
+            outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level:u3}] {Message:lj}{NewLine}"))        
+    .CreateLogger();
+ 
+ 
+builder.Host.UseSerilog();
 builder.Logging.AddSimpleConsole(options =>
 {
     options.IncludeScopes = true; 
@@ -72,7 +88,7 @@ builder.Services.AddOpenApi("v1", options =>
 {
     options.AddDocumentTransformer((document, context, cancellationToken) =>
     {
-        var scheme = new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+        OpenApiSecurityScheme scheme = new Microsoft.OpenApi.Models.OpenApiSecurityScheme
         {
             Type = Microsoft.OpenApi.Models.SecuritySchemeType.Http,
             Scheme = "bearer",
@@ -137,9 +153,9 @@ builder.Logging.AddConsole();
 
 
 
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
+string connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
     ?? throw new InvalidOperationException("DefaultConnection string not found.");
-var redisString = builder.Configuration.GetConnectionString("RedisConnection")
+string redisString = builder.Configuration.GetConnectionString("RedisConnection")
     ?? throw new InvalidOperationException("RedisConnection string not found.");
 builder.Services.AddDbContext<AppDbContext>(options =>
        options.UseMySQL(connectionString));
@@ -162,7 +178,7 @@ builder.Services.AddHealthChecks()
             Password = Config.RabbitPassword,
             VirtualHost = Config.RabbitVirtualHost
         }.CreateConnectionAsync(), name: "rabbitmq", timeout: TimeSpan.FromSeconds(3));
-var app = builder.Build();
+WebApplication app = builder.Build();
 
 app.UseMiddleware<GlobalExceptionMiddleware>();
 

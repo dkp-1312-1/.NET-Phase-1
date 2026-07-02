@@ -15,7 +15,7 @@ namespace SubmissionProcessor.Worker.Services
 
         public async Task<DirectoryProfile?> GetTraineeProfileAsync(int traineeId, string? correlationId, CancellationToken cancellationToken)
         {
-            var client =_httpClientFactory.CreateClient("DirectoryApi");
+            HttpClient client =_httpClientFactory.CreateClient("DirectoryApi");
             HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, $"api/directory/trainees/{traineeId}/profile");
 
             if (!string.IsNullOrEmpty(correlationId))

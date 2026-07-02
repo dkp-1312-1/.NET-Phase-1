@@ -18,9 +18,76 @@ Microsoft.EntityFrameworkCore.InMemory
 Microsoft.NETCore.App
 MySql.EntityFrameworkCore
 NSwag.AspNetCore
+RabbitMQ.Client
+MySqlConnector
+Microsoft.Extensions.Caching.StackExchangeRedis
+Microsoft.Extensions.Http.Resilience
 >How to Run =Install zip file ,install Packages given above ,
->Comand to Run: dotnet run --launch-profile https
+>Comand to Run: dotnet run --launch-profile https in local 
+>docker compose up --build
+>docker compose ps //To see working Container
+>docker compose down //To inactive Container
 
+# Configuration
+>./AppSetting.json File 
+{
+  "ConnectionStrings": {
+    "DefaultConnection": "server=mysql;port=3306;database=trainee_management_db;user=root;password=root;",
+    "LocalConnection": "server=localhost;port=3307;database=trainee_management_db;user=root;password=root;",
+    "RedisConnection": "localhost:6379,abortConnect=false"
+  },
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft.AspNetCore": "Warning"
+    }
+  },
+  "RabbitMQ": {
+    "HostName": "localhost",
+    "Port": 5672,
+    "UserName": "guest",
+    "Password": "guest",
+    "VirtualHost": "mqhost"
+  },
+  "AllowedHosts": "*",
+  "Jwt": {
+    "Key": "fdjf2nfnKFifFk3FNff5ifbu7d7dyndnDdJ4KENE5DEYekEB7kEBBE8BE9kjb",
+    "Issuer": "TraineeManagementApi1",
+    "Audience": "TraineeManagement1Client",
+    "ExpiryMinutes": 60
+  },
+  "FileStorage": {
+    "RootPath": "/app/uploads"
+  },
+  "Redis": {
+    "FileSizeLimit": 10,
+    "CacheTimeLimit": 30
+  }
+}
+
+# Design Decisions
+
+Cache (Redis)
+- Keys: trainee:{id}, submission:{id}, taskAssignment:{id}
+- Pattern: cache-aside — read tries Redis first, falls back to MySQL on a miss, then repopulates Redis.
+- TTL: 30 minutes, 
+- Invalidation: Update/Delete operations remove the cache key before writing to MySQL
+- Resilience: all cache operations (Get/Set/Remove) are logged and the API transparently falls back to MySQL 
+
+Queue Settings
+- Queue submission-processing: durable=true; 
+messages are published with Persistent=true 
+- Dead-lettering: the queue is declared with x-dead-letter-exchange / x-dead-letter-routing-key pointing at the dead-letter-exchange
+
+Retries & Idempotency
+- the worker retries the RabbitMQ connection up to 10 times with a fixed 5s delay before giving up.
+- After Attempts > 3: the job is marked Failed  
+- Idempotency key: If a message is redelivered, the worker looks : if it's already Completed or Failed, the worker Acks immediately without reprocessing.
+- File integrity: the SHA-256 checksum computed at upload time is recomputed by the worker before marking a job Completed
+
+Failure Behaviour
+- Redis down → API keeps serving from MySQL 
+- RabbitMQ publish failure → the upload API call returns 503 Service Unavailable to the client up front
 
 # MySql Database Setup Steps
 
@@ -45,8 +112,8 @@ dotnet ef migrations add InitialCreate
 dotnet ef database update 
  
 # Login credentials for testing
-user=admin
-password=password
+>user=admin
+>password=Admin@123
 
 # JWT usage instructions
 In .env File, You can change JWT variables like Key,Issuer,Audience,ExpiryIn
@@ -144,6 +211,8 @@ GET /api/reviews/{id}
 
 # Known Limitations
 -Authorization for role based
+-Status Changes of inactive or active or other types
+-Review of Submission must done by only mentor which was assigned
 
 # Security Checklist:
 

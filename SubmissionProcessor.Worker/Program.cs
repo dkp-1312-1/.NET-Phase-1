@@ -9,21 +9,23 @@ using Polly;
 using Polly.Extensions.Http;
 using SubmissionProcessor.Worker.Services;
 using TraineeManagement.Api.Utils;
+using Polly.Retry;
+using Polly.CircuitBreaker;
 
-var builder = Host.CreateApplicationBuilder(args);
+HostApplicationBuilder builder = Host.CreateApplicationBuilder(args);
 
 builder.Configuration.AddJsonFile(Path.Combine(builder.Environment.ContentRootPath, "..", "appsettings.json"), optional: true, reloadOnChange: true);
 builder.Configuration.AddJsonFile(Path.Combine(builder.Environment.ContentRootPath, "..", $"appsettings.{builder.Environment.EnvironmentName}.json"), optional: true, reloadOnChange: true);
 
 SubmissionProcessor.Worker.Utils.Config.Initialize(builder.Configuration);
 
-var retryPolicy = HttpPolicyExtensions
+AsyncRetryPolicy<HttpResponseMessage> retryPolicy = HttpPolicyExtensions
     .HandleTransientHttpError() 
     .WaitAndRetryAsync(3, retryAttempt => TimeSpan.FromSeconds(2));
-var circuitBreakerPolicy = HttpPolicyExtensions
+AsyncCircuitBreakerPolicy<HttpResponseMessage> circuitBreakerPolicy = HttpPolicyExtensions
     .HandleTransientHttpError()
     .CircuitBreakerAsync(5, TimeSpan.FromSeconds(30));
-var redisString = builder.Configuration.GetConnectionString("RedisConnection")
+string redisString = builder.Configuration.GetConnectionString("RedisConnection")
     ?? throw new InvalidOperationException("RedisConnection string not found.");
 
 builder.Services.AddStackExchangeRedisCache(options =>
@@ -41,7 +43,7 @@ builder.Services.AddHttpClient("DirectoryApi",client =>
 
 builder.Services.AddScoped<TrainingDirectoryClient>();
 
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
+string connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
     ?? throw new InvalidOperationException("DefaultConnection string not found.");
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseMySQL(connectionString));
@@ -59,5 +61,5 @@ builder.Logging.AddSimpleConsole(options =>
 });
 builder.Services.AddHostedService<Worker>();
 
-var host = builder.Build();
+IHost host = builder.Build();
 host.Run();

@@ -53,14 +53,15 @@ namespace TraineeManagement.Api.Utils
                     mandatory: false,
                     basicProperties: properties,
                     body: body);
+                _logger.LogInformation("Published Message {MessageId} for Submission {SubmissionId}. Correlation: {CorrelationId}", message.MessageId, message.SubmissionId, message.CorrelationId);
+                return true;
             }
             catch (Exception ex)
             {
-                _logger.LogError(StringConstants.RabbitUnavailable,ex);
+                _logger.LogError(StringConstants.RabbitUnavailable, ex);
                 return false;
             }
-            _logger.LogInformation("Published Message {MessageId} for Submission {SubmissionId}. Correlation: {CorrelationId}", message.MessageId, message.SubmissionId, message.CorrelationId);
-            return true;
+
         }
     }
 }

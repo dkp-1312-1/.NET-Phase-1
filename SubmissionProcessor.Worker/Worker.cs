@@ -155,7 +155,7 @@ public class Worker : BackgroundService
             TrainingDirectoryClient directoryClient = scope.ServiceProvider.GetRequiredService<TrainingDirectoryClient>();
             AppDbContext dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
             IFileStorageService fileStorage = scope.ServiceProvider.GetRequiredService<IFileStorageService>();
-            var TaskAssignmentService=scope.ServiceProvider.GetRequiredService<ITaskAssignmentService>();
+            ITaskAssignmentService TaskAssignmentService =scope.ServiceProvider.GetRequiredService<ITaskAssignmentService>();
             ProcessingJob? job = await dbContext.ProcessingJobs.FirstOrDefaultAsync(p => p.MessageId == request.MessageId);
             if (job == null)
             {
@@ -211,7 +211,7 @@ public class Worker : BackgroundService
                 }
                 job.Status = ProcessingJobType.Completed;
                 job.CompletedAt = DateTime.UtcNow;
-                var submission = await dbContext.Submissions.FindAsync(request.SubmissionId);
+                Submission? submission = await dbContext.Submissions.FindAsync(request.SubmissionId);
                 await TaskAssignmentService.UpdateStatus(submission.TaskAssignmentId,TAType.Submitted);
                 await dbContext.SaveChangesAsync();
 

@@ -43,7 +43,7 @@ namespace TraineeManagement.Api.Controllers
 
             int userId = int.Parse(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
 
-            var correlationId = Guid.NewGuid().ToString();
+            string correlationId = Guid.NewGuid().ToString();
             FileUploadRequestDTO request = new FileUploadRequestDTO
             {
                 SubmissionId = submissionId,

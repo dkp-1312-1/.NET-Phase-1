@@ -13,7 +13,7 @@ public static class Config
     {
         IConfigurationSection rabbitSection = configuration.GetSection("RabbitMQ");
         RabbitHostName = rabbitSection["HostName"] ?? "localhost";
-        RabbitPort = int.TryParse(rabbitSection["Port"], out var port) ? port : 5672;
+        RabbitPort = int.TryParse(rabbitSection["Port"], out int port) ? port : 5672;
         RabbitUserName = rabbitSection["UserName"] ?? "guest";
         RabbitPassword = rabbitSection["Password"] ?? "guest";
         RabbitVirtualHost = rabbitSection["VirtualHost"] ?? "mqhost";

@@ -19,11 +19,11 @@ namespace TraineeManagement.Api.Data
                 .AddJsonFile("appsettings.json")
                 .Build();
 
-            var connectionString = configuration.GetConnectionString(Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER") == "true"
+            string? connectionString = configuration.GetConnectionString(Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER") == "true"
         ? "DefaultConnection"
         : "LocalConnection");
 
-            var optionsBuilder = new DbContextOptionsBuilder<AppDbContext>();
+            DbContextOptionsBuilder<AppDbContext> optionsBuilder = new DbContextOptionsBuilder<AppDbContext>();
             optionsBuilder.UseMySQL(connectionString);
 
             return new AppDbContext(optionsBuilder.Options);
