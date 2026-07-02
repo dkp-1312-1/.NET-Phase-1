@@ -15,6 +15,8 @@ var builder = Host.CreateApplicationBuilder(args);
 builder.Configuration.AddJsonFile(Path.Combine(builder.Environment.ContentRootPath, "..", "appsettings.json"), optional: true, reloadOnChange: true);
 builder.Configuration.AddJsonFile(Path.Combine(builder.Environment.ContentRootPath, "..", $"appsettings.{builder.Environment.EnvironmentName}.json"), optional: true, reloadOnChange: true);
 
+SubmissionProcessor.Worker.Utils.Config.Initialize(builder.Configuration);
+
 var retryPolicy = HttpPolicyExtensions
     .HandleTransientHttpError() 
     .WaitAndRetryAsync(3, retryAttempt => TimeSpan.FromSeconds(2));
@@ -31,8 +33,7 @@ builder.Services.AddStackExchangeRedisCache(options =>
 });
 builder.Services.AddHttpClient("DirectoryApi",client =>
 {
-    var directoryApiBaseUrl = builder.Configuration["DirectoryApi:BaseUrl"] ?? "http://training_directory_api:8080/";
-    client.BaseAddress = new Uri(directoryApiBaseUrl); 
+    client.BaseAddress = new Uri(SubmissionProcessor.Worker.Utils.Config.DirectoryApiBaseUrl); 
     client.Timeout = TimeSpan.FromSeconds(5); 
 })
 .AddPolicyHandler(retryPolicy)

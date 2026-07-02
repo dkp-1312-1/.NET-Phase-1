@@ -14,6 +14,8 @@ using TraineeManagement.Api.Enums;
 using Microsoft.EntityFrameworkCore;
 using SubmissionProcessor.Worker.Services;
 using SubmissionProcessor.Worker.Models;
+using SubmissionProcessor.Worker.Resources;
+using SubmissionProcessor.Worker.Utils;
 
 namespace SubmissionProcessor.Worker;
 
@@ -30,11 +32,11 @@ public class Worker : BackgroundService
         _scopeFactory = scopeFactory;
         ConnectionFactory factory = new ConnectionFactory
         {
-            HostName = configuration["RabbitMQ:HostName"] ?? "localhost",
-            Port = int.TryParse(configuration["RabbitMQ:Port"], out var port) ? port : 5672,
-            UserName = configuration["RabbitMQ:UserName"] ?? "guest",
-            Password = configuration["RabbitMQ:Password"] ?? "guest",
-            VirtualHost = configuration["RabbitMQ:VirtualHost"] ?? "mqhost"
+            HostName = Config.RabbitHostName,
+            Port = Config.RabbitPort,
+            UserName = Config.RabbitUserName,
+            Password = Config.RabbitPassword,
+            VirtualHost = Config.RabbitVirtualHost
         };
         _factory = factory;
     }
@@ -50,27 +52,27 @@ public class Worker : BackgroundService
             try
             {
                 currentAttempt++;
-                _logger.LogInformation("Attempting to connect to RabbitMQ (Attempt {Attempt}/{MaxRetries})...", currentAttempt, maxRetries);
+                _logger.LogInformation(StringConstants.AttemptingConnect, currentAttempt, maxRetries);
 
                 _connection = await _factory.CreateConnectionAsync(cancellationToken);
                 _channel = await _connection.CreateChannelAsync(cancellationToken: cancellationToken);
 
                 await _channel.BasicQosAsync(prefetchSize: 0, prefetchCount: 1, global: false, cancellationToken: cancellationToken);
 
-                _logger.LogInformation("Successfully connected to RabbitMQ.");
+                _logger.LogInformation(StringConstants.SuccessfullyConnected);
                 break; 
             }
             catch (Exception ex)
             {
-                _logger.LogWarning(ex, "Failed to connect to RabbitMQ on attempt {Attempt}.", currentAttempt);
+                _logger.LogWarning(ex, StringConstants.FailedConnect, currentAttempt);
 
                 if (currentAttempt >= maxRetries)
                 {
-                    _logger.LogError("Exhausted all {MaxRetries} attempts to connect to RabbitMQ. Throwing exception.", maxRetries);
+                    _logger.LogError(StringConstants.ExhaustedAttempts, maxRetries);
                     throw; 
                 }
 
-                _logger.LogInformation("Waiting {DelaySeconds} seconds before retrying...", delay.TotalSeconds);
+                _logger.LogInformation(StringConstants.WaitingRetry, delay.TotalSeconds);
                 await Task.Delay(delay, cancellationToken);
             }
         }
@@ -82,7 +84,7 @@ public class Worker : BackgroundService
         if (_channel == null) return;
 
         await _channel.ExchangeDeclareAsync(
-            exchange: "dead-letter-exchange",
+            exchange: StringConstants.DeadLetterExchange,
             type: "direct",
             durable: true,
             autoDelete: false,
@@ -90,7 +92,7 @@ public class Worker : BackgroundService
             cancellationToken: stoppingToken
         );
         await _channel.QueueDeclareAsync(
-            queue: "submission-failed",
+            queue: StringConstants.SubmissionFailedQueue,
             durable: true,
             exclusive: false,
             autoDelete: false,
@@ -98,20 +100,20 @@ public class Worker : BackgroundService
             cancellationToken: stoppingToken
         );
         await _channel.QueueBindAsync(
-            queue: "submission-failed",
-            exchange: "dead-letter-exchange",
-            routingKey: "submission-failed",
+            queue: StringConstants.SubmissionFailedQueue,
+            exchange: StringConstants.DeadLetterExchange,
+            routingKey: StringConstants.SubmissionFailedRoutingKey,
             arguments: null,
             cancellationToken: stoppingToken
         );
 
         Dictionary<string, object?> queueArgs = new Dictionary<string, object?>
         {
-            { "x-dead-letter-exchange", "dead-letter-exchange" },
-            { "x-dead-letter-routing-key", "submission-failed" }
+            { "x-dead-letter-exchange", StringConstants.DeadLetterExchange },
+            { "x-dead-letter-routing-key", StringConstants.SubmissionFailedRoutingKey }
         };
         await _channel.QueueDeclareAsync(
-            queue: "submission-processing",
+            queue: StringConstants.SubmissionProcessingQueue,
             durable: true,
             exclusive: false,
             autoDelete: false,
@@ -121,11 +123,11 @@ public class Worker : BackgroundService
         await _channel.BasicQosAsync(prefetchSize: 0, prefetchCount: 1, global: false, cancellationToken: stoppingToken);
 
         AsyncEventingBasicConsumer consumer = new AsyncEventingBasicConsumer(_channel);
-        _logger.LogInformation("Going to Process Queue");
+        _logger.LogInformation(StringConstants.GoingToProcessQueue);
         consumer.ReceivedAsync += ProcessMessageAsync;
 
         await _channel.BasicConsumeAsync(
-            queue: "submission-processing",
+            queue: StringConstants.SubmissionProcessingQueue,
             autoAck: false,
             consumer: consumer,
             cancellationToken: stoppingToken);
@@ -143,7 +145,7 @@ public class Worker : BackgroundService
         SubmissionProcessingRequestedDTO? request = JsonSerializer.Deserialize<SubmissionProcessingRequestedDTO>(messageJson);
         if (request == null)
         {
-            _logger.LogError("Request was not found.");
+            _logger.LogError(StringConstants.RequestNotFound);
             await _channel!.BasicNackAsync(ea.DeliveryTag, false, requeue: false);
             return;
         }
@@ -157,13 +159,13 @@ public class Worker : BackgroundService
             ProcessingJob? job = await dbContext.ProcessingJobs.FirstOrDefaultAsync(p => p.MessageId == request.MessageId);
             if (job == null)
             {
-                _logger.LogWarning("Job {MessageId} not found.", request.MessageId);
+                _logger.LogWarning(StringConstants.JobNotFound, request.MessageId);
                 await _channel!.BasicAckAsync(ea.DeliveryTag, false);
                 return;
             }
             if (job.Status == ProcessingJobType.Completed || job.Status == ProcessingJobType.Failed)
             {
-                _logger.LogInformation("Job {Id} already {Status}. Skipping...", job.Id, job.Status);
+                _logger.LogInformation(StringConstants.JobAlreadyStatus, job.Id, job.Status);
                 await _channel!.BasicAckAsync(ea.DeliveryTag, false);
                 return;
             }
@@ -173,23 +175,23 @@ public class Worker : BackgroundService
                 job.StartedAt = DateTime.UtcNow;
                 job.Attempts += 1;
                 await dbContext.SaveChangesAsync();
-                _logger.LogInformation("Processing Job {Id}. Attempt {Attempt}", job.Id, job.Attempts);
+                _logger.LogInformation(StringConstants.ProcessingJob, job.Id, job.Attempts);
 
                 DirectoryProfile? traineeProfile = await directoryClient.GetTraineeProfileAsync(request.SubmissionId, request.CorrelationId, CancellationToken.None);
 
                 if (traineeProfile != null)
                 {
-                    _logger.LogInformation("Successfully retrieved profile for processing: {Profile}", traineeProfile);
+                    _logger.LogInformation(StringConstants.SuccessfullyRetrievedProfile, traineeProfile);
                 }
                 else
                 {
-                    _logger.LogWarning("Fallback activated: Processing file without Trainee Profile data.");
+                    _logger.LogWarning(StringConstants.FallbackActivated);
                 }
 
                 SubmissionFile? fileRecord = await dbContext.SubmissionFiles.FindAsync(request.FileId);
                 if (fileRecord == null)
                 {
-                    _logger.LogError("File record not found.");
+                    _logger.LogError(StringConstants.FileRecordNotFound);
                     await _channel.BasicNackAsync(ea.DeliveryTag, false, requeue: false);
                     return;
                 }
@@ -199,13 +201,13 @@ public class Worker : BackgroundService
                 string checksum = BitConverter.ToString(hashBytes).Replace("-", "").ToLowerInvariant();
                 if (checksum != fileRecord.CheckSum)
                 {
-                    _logger.LogError("Checksum not matched: Cannot Process File.");
+                    _logger.LogError(StringConstants.ChecksumNotMatched);
                     await _channel.BasicNackAsync(ea.DeliveryTag, false, requeue: false);
                     return;
                 }
                 else
                 {
-                    _logger.LogInformation("Checksum matched: Process File.");
+                    _logger.LogInformation(StringConstants.ChecksumMatched);
                 }
                 job.Status = ProcessingJobType.Completed;
                 job.CompletedAt = DateTime.UtcNow;
@@ -214,11 +216,11 @@ public class Worker : BackgroundService
                 await dbContext.SaveChangesAsync();
 
                 await _channel!.BasicAckAsync(ea.DeliveryTag, false);
-                _logger.LogInformation("Job {Id} successfully completed with Checksum: {Checksum}", job.Id, checksum);
+                _logger.LogInformation(StringConstants.JobSuccessfullyCompleted, job.Id, checksum);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error processing Job {Id}", job.Id);
+                _logger.LogError(ex, StringConstants.ErrorProcessingJob, job.Id);
                 if (job.Attempts > 3)
                 {
                     job.Status = ProcessingJobType.Failed;
@@ -227,7 +229,7 @@ public class Worker : BackgroundService
                     await dbContext.SaveChangesAsync();
 
                     await _channel.BasicNackAsync(ea.DeliveryTag, false, requeue: false);
-                    _logger.LogError("Job {Id} exhausted retries.Moved to Dead Letter Queue.", job.Id);
+                    _logger.LogError(StringConstants.JobExhaustedRetries, job.Id);
                 }
                 else
                 {
