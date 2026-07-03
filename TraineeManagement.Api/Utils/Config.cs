@@ -11,7 +11,7 @@ public static class Config
     public static int JWTExpiryInSeconds=3600;
     public static string StorageRoot = string.Empty;
 
-    public static int RedisFileSizeLimit;
+    public static int StorageFileSizeLimit;
     public static int RedisCacheTimeLimit;
 
     public static string RabbitHostName=string.Empty;
@@ -19,6 +19,7 @@ public static class Config
     public static string RabbitUserName=string.Empty;
     public static string RabbitPassword=string.Empty;
     public static string RabbitVirtualHost=string.Empty;
+    public static string[] StorageAllowedExtensions={};
 
 
     public static void Initialize(IConfiguration configuration)
@@ -27,10 +28,13 @@ public static class Config
         IConfigurationSection section = configuration.GetSection("Jwt");
         JWTIssuer = section["Issuer"];
         JWTAudience = section["Audience"];
-        JWTExpiryInSeconds = 3660;
+        JWTExpiryInSeconds = int.Parse(section["ExpiryMinutes"])*60;
         JWTSecurityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(section["Key"]));
         IConfigurationSection fileSection = configuration.GetSection("FileStorage");
         StorageRoot = fileSection["RootPath"];
+        StorageFileSizeLimit=int.Parse(fileSection["FileSizeLimit"]);
+        StorageAllowedExtensions=fileSection.GetSection("AllowedExtensions").Get<string[]>() ?? new string[0];
+
         if (!Directory.Exists(StorageRoot))
         {
             Directory.CreateDirectory(StorageRoot);
@@ -41,10 +45,9 @@ public static class Config
         RabbitUserName=rabbitSection["UserName"];
         RabbitPassword=rabbitSection["Password"];
         RabbitVirtualHost=rabbitSection["VirtualHost"];
-
+        
         IConfigurationSection redisSection =configuration.GetSection("Redis");
         RedisCacheTimeLimit=int.Parse(redisSection["CacheTimeLimit"]);
-        RedisFileSizeLimit=int.Parse(redisSection["FileSizeLimit"]);
     }
 
 }

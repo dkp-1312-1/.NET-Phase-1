@@ -33,10 +33,10 @@ namespace TraineeManagement.Api.Controllers
             if (file == null || file.Length == 0)
                 throw new BadRequestException(StringConstants.fileEmpty);
 
-            if (file.Length > Config.RedisFileSizeLimit * 1024 * 1024)
-                throw new PayloadTooLargeException(StringConstants.fileSizeExceed(Config.RedisFileSizeLimit));
+            if (file.Length > Config.StorageFileSizeLimit * 1024 * 1024)
+                throw new PayloadTooLargeException(StringConstants.fileSizeExceed(Config.StorageFileSizeLimit));
 
-            string[] allowExtensions = new[] { ".pdf", ".zip", ".docx" };
+            string[] allowExtensions = Config.StorageAllowedExtensions;
             string extension = Path.GetExtension(file.FileName).ToLower();
             if (!allowExtensions.Contains(extension))
                 throw new BadRequestException(StringConstants.InvalidFileType);

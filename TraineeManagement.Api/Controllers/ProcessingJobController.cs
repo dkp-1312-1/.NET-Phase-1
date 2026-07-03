@@ -20,7 +20,7 @@ namespace TraineeManagement.Api.Controllers
             _processingJobService=processingJobService;
         }
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetProcessingJob(int id)
+        public async Task<IActionResult> GetProcessingJob(string id)
         {
             ProcessingJobResponseDTO job =await _processingJobService.GetById(id);
             if(job==null)

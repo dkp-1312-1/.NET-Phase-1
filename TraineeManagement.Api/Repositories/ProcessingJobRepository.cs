@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using TraineeManagement.Api.Data;
 using TraineeManagement.Api.Models;
 namespace TraineeManagement.Api.Repositories
@@ -16,9 +17,9 @@ namespace TraineeManagement.Api.Repositories
             await _context.SaveChangesAsync();
         }
 
-        public async Task<ProcessingJob> GetByIdAsync(int id)
+        public async Task<ProcessingJob> GetByIdAsync(string id)
         {
-            return await _context.ProcessingJobs.FindAsync(id);
+            return await _context.ProcessingJobs.FirstOrDefaultAsync(pj=>pj.MessageId==id);
         }
     }
 }

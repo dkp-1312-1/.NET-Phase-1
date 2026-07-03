@@ -3,6 +3,6 @@ namespace TraineeManagement.Api.Services
 {
     public interface IProcessingJobService
     {
-        Task<ProcessingJobResponseDTO> GetById(int id);
+        Task<ProcessingJobResponseDTO> GetById(string id);
     }
 }

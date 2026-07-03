@@ -30,7 +30,7 @@ namespace TraineeManagement.Api.Resources
         public static string ReviewNotFound(int id) => $"Review with id {id} was not found.";
         public static string TaskNotFound(int id) => $"Learning Task with id {id} was not found.";
         public static string SubmissionFileNotFound(int id) => $"File with id {id} was not found.";
-        public static string JobNotFound(int id)=> $"Job with id {id} was not found.";
+        public static string JobNotFound(string id)=> $"Job with tracking id {id} was not found.";
         public static string fileSizeExceed(int size) => $"File exceeds the {size}MB limit.";
         public static string trainee(int id) => $"trainee:{id}";
         public static string taskAssignment(int id) => $"taskAssignment:{id}";

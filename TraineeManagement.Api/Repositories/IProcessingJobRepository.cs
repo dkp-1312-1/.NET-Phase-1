@@ -6,7 +6,7 @@ namespace TraineeManagement.Api.Repositories
 {
     public interface IProcessingJobRepository
     {
-        Task<ProcessingJob> GetByIdAsync(int id);
+        Task<ProcessingJob> GetByIdAsync(string id);
         Task AddAsync(ProcessingJob job);
     }
 }

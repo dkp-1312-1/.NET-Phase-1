@@ -6,26 +6,27 @@ using TraineeManagement.Api.DTOs;
 
 namespace TraineeManagement.Api.Utils
 {
-
-public class ValidateModelAttribute : ActionFilterAttribute
-{
-    public override void OnActionExecuting(ActionExecutingContext context)
+    public class ValidateModelAttribute : ActionFilterAttribute
     {
-       if (!context.ModelState.IsValid)
+        public override void OnActionExecuting(ActionExecutingContext context)
         {
-            IEnumerable<Errors> errorDetails = context.ModelState
-                .Where(x => x.Value.Errors.Count > 0)
-                .Select(x => new Errors{ 
-                    Field = x.Key, 
-                    Message = x.Value.Errors.First().ErrorMessage 
-                });
-            ApiErrorResponseDTO response=new ApiErrorResponseDTO{
-                Errors=errorDetails,
-                Success=true
-            };
-            context.Result=new BadRequestObjectResult(response);
-           
+            if (!context.ModelState.IsValid)
+            {
+                IEnumerable<Errors> errorDetails = context.ModelState
+                    .Where(x => x.Value.Errors.Count > 0)
+                    .Select(x => new Errors
+                    {
+                        Field = x.Key,
+                        Message = x.Value.Errors.First().ErrorMessage
+                    });
+                ApiErrorResponseDTO response = new ApiErrorResponseDTO
+                {
+                    Errors = errorDetails,
+                    Success = true
+                };
+                context.Result = new BadRequestObjectResult(response);
+
+            }
+        }
     }
-}
-}
 }

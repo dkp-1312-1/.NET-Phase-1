@@ -10,7 +10,7 @@ namespace TraineeManagement.Api.Services
         {
             _processingJobRepository = processingJobRepository;
         }
-        public async Task<ProcessingJobResponseDTO> GetById(int id)
+        public async Task<ProcessingJobResponseDTO> GetById(string id)
         {
             ProcessingJob processingJob = await _processingJobRepository.GetByIdAsync(id);
             return processingJob != null ? MapToResponse(processingJob) : null;
@@ -20,6 +20,7 @@ namespace TraineeManagement.Api.Services
             return new ProcessingJobResponseDTO
             {
                 Id = job.Id,
+                MessageId=job.MessageId,
                 CorrelationId = job.CorrelationId,
                 SubmissionId = job.SubmissionId,
                 Status = job.Status,
