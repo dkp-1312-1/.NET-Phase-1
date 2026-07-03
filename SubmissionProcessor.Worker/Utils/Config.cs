@@ -11,6 +11,7 @@ public static class Config
 
     public static void Initialize(IConfiguration configuration)
     {
+        DotNetEnv.Env.Load();
         IConfigurationSection rabbitSection = configuration.GetSection("RabbitMQ");
         RabbitHostName = rabbitSection["HostName"] ?? "localhost";
         RabbitPort = int.TryParse(rabbitSection["Port"], out int port) ? port : 5672;

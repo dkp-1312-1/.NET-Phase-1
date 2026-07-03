@@ -154,8 +154,6 @@ public class Worker : BackgroundService
             using IServiceScope scope = _scopeFactory.CreateScope();
             TrainingDirectoryClient directoryClient = scope.ServiceProvider.GetRequiredService<TrainingDirectoryClient>();
             AppDbContext dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-            IFileStorageService fileStorage = scope.ServiceProvider.GetRequiredService<IFileStorageService>();
-            ITaskAssignmentService TaskAssignmentService =scope.ServiceProvider.GetRequiredService<ITaskAssignmentService>();
             ProcessingJob? job = await dbContext.ProcessingJobs.FirstOrDefaultAsync(p => p.MessageId == request.MessageId);
             if (job == null)
             {
@@ -195,7 +193,15 @@ public class Worker : BackgroundService
                     await _channel.BasicNackAsync(ea.DeliveryTag, false, requeue: false);
                     return;
                 }
-                await using Stream stream = await fileStorage.OpenReadAsync(fileRecord.StorageFileName!);
+                string uploadsDir = "/app/uploads";
+                string fullPath = Path.Combine(uploadsDir, fileRecord.StorageFileName!);
+                if (!File.Exists(fullPath))
+                {
+                    _logger.LogError("File not found in storage: {FullPath}", fullPath);
+                    await _channel.BasicNackAsync(ea.DeliveryTag, false, requeue: false);
+                    return;
+                }
+                await using Stream stream = new FileStream(fullPath, FileMode.Open, FileAccess.Read, FileShare.Read);
                 using SHA256 sha256 = SHA256.Create();
                 byte[] hashBytes = await sha256.ComputeHashAsync(stream);
                 string checksum = BitConverter.ToString(hashBytes).Replace("-", "").ToLowerInvariant();
@@ -212,7 +218,14 @@ public class Worker : BackgroundService
                 job.Status = ProcessingJobType.Completed;
                 job.CompletedAt = DateTime.UtcNow;
                 Submission? submission = await dbContext.Submissions.FindAsync(request.SubmissionId);
-                await TaskAssignmentService.UpdateStatus(submission.TaskAssignmentId,TAType.Submitted);
+                if (submission != null)
+                {
+                    TaskAssignment? taskAssignment = await dbContext.TaskAssignments.FindAsync(submission.TaskAssignmentId);
+                    if (taskAssignment != null)
+                    {
+                        taskAssignment.Status = TAType.Submitted;
+                    }
+                }
                 await dbContext.SaveChangesAsync();
 
                 await _channel!.BasicAckAsync(ea.DeliveryTag, false);

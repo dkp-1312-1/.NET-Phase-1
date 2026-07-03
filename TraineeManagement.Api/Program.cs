@@ -79,10 +79,6 @@ Log.Logger = new LoggerConfiguration()
  
  
 builder.Host.UseSerilog();
-builder.Logging.AddSimpleConsole(options =>
-{
-    options.IncludeScopes = true; 
-});
 
 builder.Services.AddOpenApi("v1", options =>
 {
@@ -148,8 +144,6 @@ builder.Services.AddScoped<IPublishRabbitMQService, PublishRabbitMQService>();
 builder.Services.AddScoped<IProcessingJobService, ProcessingJobService>();
 
 
-builder.Logging.ClearProviders();
-builder.Logging.AddConsole();
 
 
 
@@ -214,7 +208,7 @@ app.MapHealthChecks("/health/ready", new Microsoft.AspNetCore.Diagnostics.Health
                 status = entry.Value.Status.ToString(),
                 description = entry.Value.Description,
                 duration = entry.Value.Duration.ToString(),
-                error = entry.Value.Exception?.Message
+                error = entry.Value.Exception != null ? "An error occurred while checking health status." : null
             })
         };
 

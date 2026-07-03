@@ -2,6 +2,12 @@ services:
   redis:
     image: docker-registry-002.zeuslearning.com/zeuslearning/redis
     container_name: redis_server
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     ports:
       - "6379:6379"
     command: ["redis-server","--appendonly","yes"]
@@ -12,6 +18,11 @@ services:
     image: docker-registry-002.zeuslearning.com/zeuslearning/mysql
     container_name: mysql_server
     restart: always
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     environment:
       MYSQL_ROOT_PASSWORD: "root"
       MYSQL_DATABASE: "trainee_management_db"
@@ -24,6 +35,11 @@ services:
     image: docker-registry-002.zeuslearning.com/zeuslearning/rabbitmq:3-management
     container_name: dotnetrabbitmq
     restart: always
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     ports:
       - "5672:5672"  
       - "15672:15672"
@@ -39,46 +55,53 @@ services:
     build:
       context: .
       dockerfile: TrainingDirectory.Api/Dockerfile
+    restart: unless-stopped
     ports:
       - "5000:8080"
+    env_file:
+      - TrainingDirectory.Api/.env
 
   trainee_management_api:
     build:
       context: .
       dockerfile: TraineeManagement.Api/Dockerfile
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health/live"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     ports:
       - "5073:8080"
     volumes:
       - shared_uploads:/app/uploads
-    environment:
-      - ConnectionStrings__DefaultConnection=server=mysql;port=3306;database=trainee_management_db;user=root;password=root;
-      - ConnectionStrings__RedisConnection=redis:6379,abortConnect=false
-      - RabbitMq__HostName=rabbitmq
+    env_file:
+      - TraineeManagement.Api/.env
     depends_on:
-      - mysql
-      - redis
-      - rabbitmq
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
 
   submission_worker:
     build:
       context: .
       dockerfile: SubmissionProcessor.Worker/Dockerfile
+    restart: unless-stopped
     volumes:
       - shared_uploads:/app/uploads
-    environment:
-      - ConnectionStrings__DefaultConnection=server=mysql;port=3306;database=trainee_management_db;user=root;password=root;
-      - DirectoryApi__BaseUrl=http://training_directory_api:8080/
-      - ConnectionStrings__RedisConnection=redis:6379,abortConnect=false
-      - RabbitMQ__HostName=rabbitmq
-      - RabbitMQ__Port=5672
-      - RabbitMQ__UserName=guest
-      - RabbitMQ__Password=guest
-      - RabbitMQ__VirtualHost=mqhost
+    env_file:
+      - SubmissionProcessor.Worker/.env
 
     depends_on:
-      - trainee_management_api
-      - rabbitmq
-      - redis
+      trainee_management_api:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
 
 volumes:
   redis_data:

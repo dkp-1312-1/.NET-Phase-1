@@ -11,6 +11,7 @@ using SubmissionProcessor.Worker.Services;
 using TraineeManagement.Api.Utils;
 using Polly.Retry;
 using Polly.CircuitBreaker;
+using Serilog;
 
 HostApplicationBuilder builder = Host.CreateApplicationBuilder(args);
 
@@ -47,18 +48,20 @@ string connectionString = builder.Configuration.GetConnectionString("DefaultConn
     ?? throw new InvalidOperationException("DefaultConnection string not found.");
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseMySQL(connectionString));
-builder.Services.AddScoped<IFileStorageService, LocalFileStorageService>();
-builder.Services.AddScoped<IPublishRabbitMQService, PublishRabbitMQService>();
-builder.Services.AddScoped<ISubmissionFileRepository, SubmissionFileRepository>();
-builder.Services.AddScoped<IProcessingJobRepository, ProcessingJobRepository>();
-builder.Services.AddScoped<ITaskAssignmentRepository, TaskAssignmentRepository>();
-builder.Services.AddScoped<ITaskAssignmentService, TaskAssignmentService>();
-builder.Services.AddScoped<ICacheService, CacheService>();
 builder.Logging.ClearProviders();
-builder.Logging.AddSimpleConsole(options =>
-{
-    options.IncludeScopes = true; 
-});
+Log.Logger = new LoggerConfiguration()
+    .MinimumLevel.Information()
+    .WriteTo.Console()
+    .WriteTo.Logger(lc => lc
+        .Filter.ByExcluding(logEvent =>
+            logEvent.Properties.TryGetValue("SourceContext", out var value) &&
+            (value.ToString().Contains("Microsoft") || value.ToString().Contains("System")))
+        .WriteTo.File(
+            path: "logs/worker-.txt",
+            rollingInterval: RollingInterval.Day,
+            outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level:u3}] {Message:lj}{NewLine}"))        
+    .CreateLogger();
+builder.Logging.AddSerilog(Log.Logger);
 builder.Services.AddHostedService<Worker>();
 
 IHost host = builder.Build();

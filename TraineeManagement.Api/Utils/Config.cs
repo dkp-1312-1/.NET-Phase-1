@@ -23,6 +23,7 @@ public static class Config
 
     public static void Initialize(IConfiguration configuration)
     {
+        DotNetEnv.Env.Load();
         IConfigurationSection section = configuration.GetSection("Jwt");
         JWTIssuer = section["Issuer"];
         JWTAudience = section["Audience"];
