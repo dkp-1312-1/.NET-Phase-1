@@ -70,6 +70,7 @@ services:
       - "5073:8080"
     volumes:
       - shared_uploads:/app/uploads
+      - ./logs:/app/logs 
     env_file:
       - TraineeManagement.Api/.env
     depends_on:
@@ -87,6 +88,7 @@ services:
     restart: unless-stopped
     volumes:
       - shared_uploads:/app/uploads
+      - ./logs:/app/logs 
     env_file:
       - SubmissionProcessor.Worker/.env
 

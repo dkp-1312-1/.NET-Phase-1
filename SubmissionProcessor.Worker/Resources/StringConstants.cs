@@ -47,7 +47,7 @@ public static class StringConstants
     public const string RedisInstanceName = "TraineeManagement";
     public const string DefaultConnectionKey = "DefaultConnection";
     public const string DefaultConnectionNotFound = "DefaultConnection string not found.";
-    public const string LogFilePath = "logs/app-.txt";
+    public const string LogFilePath = "/app/logs/app-.txt";
     public const string LogOutputTemplate = "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level:u3}] {Message:lj}{NewLine}";
 
     public const string RabbitMQSection = "RabbitMQ";
