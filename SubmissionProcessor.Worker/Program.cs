@@ -59,7 +59,6 @@ namespace SubmissionProcessor.Worker
             builder.Logging.ClearProviders();
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Information()
-                .WriteTo.Console()
                 .WriteTo.File(
                     path: StringConstants.LogFilePath,
                     rollingInterval: RollingInterval.Day,

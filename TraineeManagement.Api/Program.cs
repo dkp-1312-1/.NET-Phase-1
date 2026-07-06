@@ -73,7 +73,6 @@ namespace TraineeManagement.Api
             builder.Logging.ClearProviders();
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Information()
-                 .WriteTo.Console()
                 .WriteTo.File(
                     path: StringConstants.LogFilePath,
                     rollingInterval: RollingInterval.Day,
@@ -82,7 +81,7 @@ namespace TraineeManagement.Api
                 .CreateLogger();
 
 
-           builder.Logging.AddSerilog(Log.Logger);
+            builder.Logging.AddSerilog(Log.Logger);
 
             builder.Services.AddOpenApi("v1", options =>
             {
