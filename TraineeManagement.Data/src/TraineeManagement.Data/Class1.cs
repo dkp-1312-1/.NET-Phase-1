@@ -1,4 +1,4 @@
-﻿namespace TraineeManagement.Data;
+namespace TraineeManagement.Data;
 
 public class Class1
 {

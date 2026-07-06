@@ -1,12 +1,12 @@
 using TraineeManagement.Api.Utils;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using TraineeManagement.Api.DTOs;
+using TraineeManagement.Data.DTOs;
 using TraineeManagement.Api.Services;
 using Microsoft.Extensions.Localization;
 using TraineeManagement.Api.Resources;
-using TraineeManagement.Api.Models;
-using TraineeManagement.Api.Enums;
+using TraineeManagement.Data.Models;
+using TraineeManagement.Data.Enums;
 namespace TraineeManagement.Api.Controllers
 {
 

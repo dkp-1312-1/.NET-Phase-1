@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Text.Json;
 using TraineeManagement.Api.Services;
 using TraineeManagement.Api.Resources;
-using TraineeManagement.Api.DTOs;
+using TraineeManagement.Data.DTOs;
 namespace TraineeManagement.Api.Controllers
 {
     [Route("api/[controller]")]

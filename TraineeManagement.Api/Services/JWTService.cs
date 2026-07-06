@@ -3,8 +3,8 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using Microsoft.IdentityModel.Tokens;
-using TraineeManagement.Api.DTOs;
-using TraineeManagement.Api.Models;
+using TraineeManagement.Data.DTOs;
+using TraineeManagement.Data.Models;
 using TraineeManagement.Api.Repositories;
 
 namespace TraineeManagement.Api.Services

@@ -5,10 +5,10 @@ using Microsoft.AspNetCore.Mvc;
 using TraineeManagement.Api.Services;
 using TraineeManagement.Api.Resources;
 using System.Security.Claims;
-using TraineeManagement.Api.Enums;
-using TraineeManagement.Api.DTOs;
+using TraineeManagement.Data.Enums;
+using TraineeManagement.Data.DTOs;
 using System.Data;
-using TraineeManagement.Api.Models;
+using TraineeManagement.Data.Models;
 namespace TraineeManagement.Api.Controllers
 {
     [Route("api/[controller]")]

@@ -1,6 +1,6 @@
-using TraineeManagement.Api.DTOs;
-using TraineeManagement.Api.Models;
-using TraineeManagement.Api.Enums;
+using TraineeManagement.Data.DTOs;
+using TraineeManagement.Data.Models;
+using TraineeManagement.Data.Enums;
 
 namespace TraineeManagement.Api.Repositories
 {

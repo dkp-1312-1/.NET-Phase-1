@@ -1,4 +1,4 @@
-using TraineeManagement.Api.DTOs;
+using TraineeManagement.Data.DTOs;
 namespace TraineeManagement.Api.Utils
 {
     public interface IPublishRabbitMQService

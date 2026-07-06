@@ -1,5 +1,6 @@
 using System.Text.Json;
 using SubmissionProcessor.Worker.Models;
+using SubmissionProcessor.Worker.Resources;
 namespace SubmissionProcessor.Worker.Services
 {
     public class TrainingDirectoryClient
@@ -15,12 +16,12 @@ namespace SubmissionProcessor.Worker.Services
 
         public async Task<DirectoryProfile?> GetTraineeProfileAsync(int traineeId, string? correlationId, CancellationToken cancellationToken)
         {
-            HttpClient client =_httpClientFactory.CreateClient("DirectoryApi");
+            HttpClient client =_httpClientFactory.CreateClient(StringConstants.DirectoryApiClientName);
             HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, $"api/directory/trainees/{traineeId}/profile");
 
             if (!string.IsNullOrEmpty(correlationId))
             {
-                request.Headers.Add("X-Correlation-ID", correlationId);
+                request.Headers.Add(StringConstants.CorrelationIdHeader, correlationId);
             }
 
             try
@@ -29,7 +30,7 @@ namespace SubmissionProcessor.Worker.Services
 
                 if (!response.IsSuccessStatusCode)
                 {
-                    _logger.LogWarning("Directory API returned {StatusCode} for Trainee {Id}", response.StatusCode, traineeId);
+                    _logger.LogWarning(StringConstants.DirectoryApiReturnedError, response.StatusCode, traineeId);
                     return null;
                 }
 
@@ -38,12 +39,12 @@ namespace SubmissionProcessor.Worker.Services
             }
             catch (TaskCanceledException)
             {
-                _logger.LogError("Directory API request timed out for Trainee {Id}", traineeId);
+                _logger.LogError(StringConstants.DirectoryApiTimeout, traineeId);
                 return null;
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Failed to call Directory API.");
+                _logger.LogError(ex, StringConstants.DirectoryApiFailed);
                 return null;
             }
         }

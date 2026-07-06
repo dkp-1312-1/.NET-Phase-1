@@ -1,7 +1,7 @@
 using TraineeManagement.Api.Utils;
 using System.Reflection.Metadata;
 using TraineeManagement.Api.Services;
-using TraineeManagement.Api.Data;
+using TraineeManagement.Data.Data;
 using TraineeManagement.Api.Repositories;
 using TraineeManagement.Api.Middleware;
 using TraineeManagement.Api.Resources;
@@ -16,7 +16,14 @@ using Microsoft.OpenApi.Models;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using RabbitMQ.Client;
 using Serilog;
-WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
+
+namespace TraineeManagement.Api
+{
+    public class Program
+    {
+        public static void Main(string[] args)
+        {
+            WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 builder.Configuration.AddJsonFile(Path.Combine(builder.Environment.ContentRootPath, "..", "appsettings.json"), optional: true, reloadOnChange: true);
 builder.Configuration.AddJsonFile(Path.Combine(builder.Environment.ContentRootPath, "..", $"appsettings.{builder.Environment.EnvironmentName}.json"), optional: true, reloadOnChange: true);
@@ -219,4 +226,7 @@ app.MapHealthChecks("/health/ready", new Microsoft.AspNetCore.Diagnostics.Health
     }
 });
 
-app.Run();
+            app.Run();
+        }
+    }
+}

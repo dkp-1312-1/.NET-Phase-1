@@ -6,11 +6,11 @@ using RabbitMQ.Client.Events;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.DependencyInjection;
-using TraineeManagement.Api.DTOs;
-using TraineeManagement.Api.Models;
+using TraineeManagement.Data.DTOs;
+using TraineeManagement.Data.Models;
 using TraineeManagement.Api.Services;
-using TraineeManagement.Api.Data;
-using TraineeManagement.Api.Enums;
+using TraineeManagement.Data.Data;
+using TraineeManagement.Data.Enums;
 using Microsoft.EntityFrameworkCore;
 using SubmissionProcessor.Worker.Services;
 using SubmissionProcessor.Worker.Models;
@@ -85,7 +85,7 @@ public class Worker : BackgroundService
 
         await _channel.ExchangeDeclareAsync(
             exchange: StringConstants.DeadLetterExchange,
-            type: "direct",
+            type: StringConstants.ExchangeTypeDirect,
             durable: true,
             autoDelete: false,
             arguments: null,
@@ -109,8 +109,8 @@ public class Worker : BackgroundService
 
         Dictionary<string, object?> queueArgs = new Dictionary<string, object?>
         {
-            { "x-dead-letter-exchange", StringConstants.DeadLetterExchange },
-            { "x-dead-letter-routing-key", StringConstants.SubmissionFailedRoutingKey }
+            { StringConstants.XDeadLetterExchange, StringConstants.DeadLetterExchange },
+            { StringConstants.XDeadLetterRoutingKey, StringConstants.SubmissionFailedRoutingKey }
         };
         await _channel.QueueDeclareAsync(
             queue: StringConstants.SubmissionProcessingQueue,
@@ -149,7 +149,7 @@ public class Worker : BackgroundService
             await _channel!.BasicNackAsync(ea.DeliveryTag, false, requeue: false);
             return;
         }
-        using (_logger.BeginScope("=>=>CorrelationId<=<= {CorrelationId}", request.CorrelationId))
+        using (_logger.BeginScope(StringConstants.CorrelationIdLogScope, request.CorrelationId))
         {
             using IServiceScope scope = _scopeFactory.CreateScope();
             TrainingDirectoryClient directoryClient = scope.ServiceProvider.GetRequiredService<TrainingDirectoryClient>();
@@ -193,11 +193,11 @@ public class Worker : BackgroundService
                     await _channel.BasicNackAsync(ea.DeliveryTag, false, requeue: false);
                     return;
                 }
-                string uploadsDir = "/app/uploads";
+                string uploadsDir = StringConstants.UploadsDirectory;
                 string fullPath = Path.Combine(uploadsDir, fileRecord.StorageFileName!);
                 if (!File.Exists(fullPath))
                 {
-                    _logger.LogError("File not found in storage: {FullPath}", fullPath);
+                    _logger.LogError(StringConstants.FileNotFoundInStorage, fullPath);
                     await _channel.BasicNackAsync(ea.DeliveryTag, false, requeue: false);
                     return;
                 }

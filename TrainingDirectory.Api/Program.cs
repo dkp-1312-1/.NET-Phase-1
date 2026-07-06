@@ -3,7 +3,13 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Serilog;
 
-WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
+namespace TrainingDirectory.Api
+{
+    public class Program
+    {
+        public static void Main(string[] args)
+        {
+            WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 TrainingDirectory.Api.Utils.Config.Initialize(builder.Configuration);
 
@@ -34,4 +40,7 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-app.Run();
+            app.Run();
+        }
+    }
+}

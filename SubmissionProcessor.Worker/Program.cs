@@ -1,8 +1,8 @@
 using SubmissionProcessor.Worker;
 using Microsoft.EntityFrameworkCore;
-using TraineeManagement.Api.DTOs;
+using TraineeManagement.Data.DTOs;
 using TraineeManagement.Api.Services;
-using TraineeManagement.Api.Data;
+using TraineeManagement.Data.Data;
 using TraineeManagement.Api.Repositories;
 using MySql.EntityFrameworkCore;
 using Polly;
@@ -12,10 +12,17 @@ using TraineeManagement.Api.Utils;
 using Polly.Retry;
 using Polly.CircuitBreaker;
 using Serilog;
+using SubmissionProcessor.Worker.Resources;
 
-HostApplicationBuilder builder = Host.CreateApplicationBuilder(args);
+namespace SubmissionProcessor.Worker
+{
+    public class Program
+    {
+        public static void Main(string[] args)
+        {
+            HostApplicationBuilder builder = Host.CreateApplicationBuilder(args);
 
-builder.Configuration.AddJsonFile(Path.Combine(builder.Environment.ContentRootPath, "..", "appsettings.json"), optional: true, reloadOnChange: true);
+builder.Configuration.AddJsonFile(Path.Combine(builder.Environment.ContentRootPath, "..", StringConstants.AppSettingsJson), optional: true, reloadOnChange: true);
 builder.Configuration.AddJsonFile(Path.Combine(builder.Environment.ContentRootPath, "..", $"appsettings.{builder.Environment.EnvironmentName}.json"), optional: true, reloadOnChange: true);
 
 SubmissionProcessor.Worker.Utils.Config.Initialize(builder.Configuration);
@@ -26,15 +33,15 @@ AsyncRetryPolicy<HttpResponseMessage> retryPolicy = HttpPolicyExtensions
 AsyncCircuitBreakerPolicy<HttpResponseMessage> circuitBreakerPolicy = HttpPolicyExtensions
     .HandleTransientHttpError()
     .CircuitBreakerAsync(5, TimeSpan.FromSeconds(30));
-string redisString = builder.Configuration.GetConnectionString("RedisConnection")
-    ?? throw new InvalidOperationException("RedisConnection string not found.");
+string redisString = builder.Configuration.GetConnectionString(StringConstants.RedisConnectionKey)
+    ?? throw new InvalidOperationException(StringConstants.RedisConnectionNotFound);
 
 builder.Services.AddStackExchangeRedisCache(options =>
 {
     options.Configuration = redisString;
-    options.InstanceName = "TraineeManagement";
+    options.InstanceName = StringConstants.RedisInstanceName;
 });
-builder.Services.AddHttpClient("DirectoryApi",client =>
+builder.Services.AddHttpClient(StringConstants.DirectoryApiClientName,client =>
 {
     client.BaseAddress = new Uri(SubmissionProcessor.Worker.Utils.Config.DirectoryApiBaseUrl); 
     client.Timeout = TimeSpan.FromSeconds(5); 
@@ -44,8 +51,8 @@ builder.Services.AddHttpClient("DirectoryApi",client =>
 
 builder.Services.AddScoped<TrainingDirectoryClient>();
 
-string connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
-    ?? throw new InvalidOperationException("DefaultConnection string not found.");
+string connectionString = builder.Configuration.GetConnectionString(StringConstants.DefaultConnectionKey)
+    ?? throw new InvalidOperationException(StringConstants.DefaultConnectionNotFound);
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseMySQL(connectionString));
     
@@ -61,13 +68,16 @@ Log.Logger = new LoggerConfiguration()
             || value.ToString().Contains("Microsoft.EntityFrameworkCore.Database")))
         .WriteTo.Console()) 
     .WriteTo.File(
-        path: "logs/app-.txt",
+        path: StringConstants.LogFilePath,
         rollingInterval: RollingInterval.Day,
-        outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level:u3}] {Message:lj}{NewLine}")        
+        outputTemplate: StringConstants.LogOutputTemplate)        
     .CreateLogger();
     
 builder.Logging.AddSerilog(Log.Logger);
 builder.Services.AddHostedService<Worker>();
 
 IHost host = builder.Build();
-host.Run();
+            host.Run();
+        }
+    }
+}

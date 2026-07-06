@@ -1,5 +1,5 @@
 using System.Security.Claims;
-using TraineeManagement.Api.DTOs;
+using TraineeManagement.Data.DTOs;
 namespace TraineeManagement.Api.Services
 {
     public interface IJWTService

@@ -1,4 +1,4 @@
-using TraineeManagement.Api.Models;
+using TraineeManagement.Data.Models;
 
 namespace TraineeManagement.Api.Repositories
 {

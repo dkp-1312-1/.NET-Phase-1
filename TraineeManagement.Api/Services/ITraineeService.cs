@@ -1,7 +1,7 @@
 using System.Diagnostics.Eventing.Reader;
-using TraineeManagement.Api.DTOs;
-using TraineeManagement.Api.Data;
-using TraineeManagement.Api.Enums;
+using TraineeManagement.Data.DTOs;
+using TraineeManagement.Data.Data;
+using TraineeManagement.Data.Enums;
 
 namespace TraineeManagement.Api.Services
 {

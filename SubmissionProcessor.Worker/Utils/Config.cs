@@ -1,3 +1,5 @@
+using SubmissionProcessor.Worker.Resources;
+
 namespace SubmissionProcessor.Worker.Utils;
 
 public static class Config
@@ -12,13 +14,13 @@ public static class Config
     public static void Initialize(IConfiguration configuration)
     {
         DotNetEnv.Env.Load();
-        IConfigurationSection rabbitSection = configuration.GetSection("RabbitMQ");
-        RabbitHostName = rabbitSection["HostName"] ?? "localhost";
-        RabbitPort = int.TryParse(rabbitSection["Port"], out int port) ? port : 5672;
-        RabbitUserName = rabbitSection["UserName"] ?? "guest";
-        RabbitPassword = rabbitSection["Password"] ?? "guest";
-        RabbitVirtualHost = rabbitSection["VirtualHost"] ?? "mqhost";
+        IConfigurationSection rabbitSection = configuration.GetSection(StringConstants.RabbitMQSection);
+        RabbitHostName = rabbitSection[StringConstants.HostNameKey] ?? StringConstants.DefaultLocalhost;
+        RabbitPort = int.TryParse(rabbitSection[StringConstants.PortKey], out int port) ? port : 5672;
+        RabbitUserName = rabbitSection[StringConstants.UserNameKey] ?? StringConstants.DefaultGuest;
+        RabbitPassword = rabbitSection[StringConstants.PasswordKey] ?? StringConstants.DefaultGuest;
+        RabbitVirtualHost = rabbitSection[StringConstants.VirtualHostKey] ?? StringConstants.DefaultMqHost;
 
-        DirectoryApiBaseUrl = configuration["DirectoryApi:BaseUrl"] ?? "http://training_directory_api:8080/";
+        DirectoryApiBaseUrl = configuration[StringConstants.DirectoryApiBaseUrlKey] ?? StringConstants.DefaultDirectoryApiBaseUrl;
     }
 }

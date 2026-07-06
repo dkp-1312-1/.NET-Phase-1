@@ -2,7 +2,7 @@ using System.ComponentModel;
 using System.Security.Authentication;
 using System.Text;
 using System.Text.Json;
-using TraineeManagement.Api.DTOs;
+using TraineeManagement.Data.DTOs;
 using RabbitMQ.Client;
 using TraineeManagement.Api.Resources;
 

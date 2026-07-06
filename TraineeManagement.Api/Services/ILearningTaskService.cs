@@ -1,5 +1,5 @@
-using TraineeManagement.Api.DTOs;
-using TraineeManagement.Api.Enums;
+using TraineeManagement.Data.DTOs;
+using TraineeManagement.Data.Enums;
 
 namespace TraineeManagement.Api.Services
 {

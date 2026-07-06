@@ -4,7 +4,7 @@ using System.Net;
 using System.Text.Json;
 using TraineeManagement.Api.Services;
 using MySql.Data.MySqlClient;
-using TraineeManagement.Api.DTOs;
+using TraineeManagement.Data.DTOs;
 using TraineeManagement.Api.Resources;
 using Google.Protobuf.WellKnownTypes;
 using Microsoft.AspNetCore.Cors.Infrastructure;

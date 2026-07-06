@@ -27,4 +27,38 @@ public static class StringConstants
     public const string JobSuccessfullyCompleted = "Job {Id} successfully completed with Checksum: {Checksum}";
     public const string ErrorProcessingJob = "Error processing Job {Id}";
     public const string JobExhaustedRetries = "Job {Id} exhausted retries.Moved to Dead Letter Queue.";
+
+    public const string ExchangeTypeDirect = "direct";
+    public const string XDeadLetterExchange = "x-dead-letter-exchange";
+    public const string XDeadLetterRoutingKey = "x-dead-letter-routing-key";
+    public const string CorrelationIdLogScope = "=>=>CorrelationId<=<= {CorrelationId}";
+    public const string UploadsDirectory = "/app/uploads";
+    public const string FileNotFoundInStorage = "File not found in storage: {FullPath}";
+
+    public const string DirectoryApiClientName = "DirectoryApi";
+    public const string CorrelationIdHeader = "X-Correlation-ID";
+    public const string DirectoryApiReturnedError = "Directory API returned {StatusCode} for Trainee {Id}";
+    public const string DirectoryApiTimeout = "Directory API request timed out for Trainee {Id}";
+    public const string DirectoryApiFailed = "Failed to call Directory API.";
+
+    public const string AppSettingsJson = "appsettings.json";
+    public const string RedisConnectionKey = "RedisConnection";
+    public const string RedisConnectionNotFound = "RedisConnection string not found.";
+    public const string RedisInstanceName = "TraineeManagement";
+    public const string DefaultConnectionKey = "DefaultConnection";
+    public const string DefaultConnectionNotFound = "DefaultConnection string not found.";
+    public const string LogFilePath = "logs/app-.txt";
+    public const string LogOutputTemplate = "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level:u3}] {Message:lj}{NewLine}";
+
+    public const string RabbitMQSection = "RabbitMQ";
+    public const string HostNameKey = "HostName";
+    public const string PortKey = "Port";
+    public const string UserNameKey = "UserName";
+    public const string PasswordKey = "Password";
+    public const string VirtualHostKey = "VirtualHost";
+    public const string DefaultLocalhost = "localhost";
+    public const string DefaultGuest = "guest";
+    public const string DefaultMqHost = "mqhost";
+    public const string DirectoryApiBaseUrlKey = "DirectoryApi:BaseUrl";
+    public const string DefaultDirectoryApiBaseUrl = "http://training_directory_api:8080/";
 }

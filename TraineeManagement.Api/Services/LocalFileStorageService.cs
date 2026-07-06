@@ -2,12 +2,12 @@ using TraineeManagement.Api.Utils;
 using Org.BouncyCastle.Crypto.Prng;
 using TraineeManagement.Api.Services;
 using TraineeManagement.Api.Repositories;
-using TraineeManagement.Api.Models;
+using TraineeManagement.Data.Models;
 using TraineeManagement.Api.Resources;
 using System.Security.Cryptography;
 using System.Text;
 using System.Security.Claims;
-using TraineeManagement.Api.DTOs;
+using TraineeManagement.Data.DTOs;
 public class LocalFileStorageService : IFileStorageService
 {
     private readonly ISubmissionFileRepository _submissionFileRepository;

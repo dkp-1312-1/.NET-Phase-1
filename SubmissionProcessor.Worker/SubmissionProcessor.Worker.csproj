@@ -19,6 +19,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\TraineeManagement.Api\TraineeManagement.Api.csproj" />
+    <ProjectReference Include="..\TraineeManagement.Data\src\TraineeManagement.Data\TraineeManagement.Data.csproj" />
   </ItemGroup>
   <ItemGroup>
   <Content Include="../appsettings.json">

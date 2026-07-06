@@ -1,7 +1,7 @@
 using System.Runtime.CompilerServices;
 using System.Security.Permissions;
-using TraineeManagement.Api.Data;
-using TraineeManagement.Api.Models;
+using TraineeManagement.Data.Data;
+using TraineeManagement.Data.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace TraineeManagement.Api.Repositories

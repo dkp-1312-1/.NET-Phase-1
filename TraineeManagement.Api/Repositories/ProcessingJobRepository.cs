@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
-using TraineeManagement.Api.Data;
-using TraineeManagement.Api.Models;
+using TraineeManagement.Data.Data;
+using TraineeManagement.Data.Models;
 namespace TraineeManagement.Api.Repositories
 {
     public class ProcessingJobRepository : IProcessingJobRepository

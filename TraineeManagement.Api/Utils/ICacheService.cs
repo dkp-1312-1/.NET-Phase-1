@@ -1,5 +1,5 @@
-using TraineeManagement.Api.Models;
-using TraineeManagement.Api.DTOs;
+using TraineeManagement.Data.Models;
+using TraineeManagement.Data.DTOs;
 namespace TraineeManagement.Api.Utils
 {
     public interface ICacheService
