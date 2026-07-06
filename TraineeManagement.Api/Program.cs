@@ -81,7 +81,8 @@ namespace TraineeManagement.Api
                 .CreateLogger();
 
 
-            builder.Host.UseSerilog();
+            builder.Host.UseSerilog((context, services, configuration) => configuration
+    .ReadFrom.Configuration(context.Configuration));
 
             builder.Services.AddOpenApi("v1", options =>
             {

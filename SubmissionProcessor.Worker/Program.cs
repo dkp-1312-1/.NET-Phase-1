@@ -64,6 +64,7 @@ namespace SubmissionProcessor.Worker
                     path: StringConstants.LogFilePath,
                     rollingInterval: RollingInterval.Day,
                     outputTemplate: StringConstants.LogOutputTemplate)
+                    .ReadFrom.Configuration(builder.Configuration)
                 .CreateLogger();
 
             builder.Logging.AddSerilog(Log.Logger);

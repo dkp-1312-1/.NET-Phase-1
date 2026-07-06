@@ -189,3 +189,153 @@ LIMIT 1
 2026-07-06 06:23:01.148 +00:00 [INF] Executed endpoint 'TraineeManagement.Api.Controllers.AuthController.Login (TraineeManagement.Api)'
 2026-07-06 06:23:01.162 +00:00 [INF] Request finished HTTP/1.1 POST http://localhost:5073/api/Auth/login - 200 null application/json; charset=utf-8 2138.287ms
 2026-07-06 06:25:55.359 +00:00 [INF] Application is shutting down...
+2026-07-06 06:42:12.831 +00:00 [INF] Attempting to connect to RabbitMQ (Attempt 1/10)...
+2026-07-06 06:42:13.013 +00:00 [WRN] Failed to connect to RabbitMQ on attempt 1.
+2026-07-06 06:42:13.037 +00:00 [INF] Waiting 5 seconds before retrying...
+2026-07-06 06:42:18.041 +00:00 [INF] Attempting to connect to RabbitMQ (Attempt 2/10)...
+2026-07-06 06:42:18.044 +00:00 [WRN] Failed to connect to RabbitMQ on attempt 2.
+2026-07-06 06:42:18.046 +00:00 [INF] Waiting 5 seconds before retrying...
+2026-07-06 06:42:23.049 +00:00 [INF] Attempting to connect to RabbitMQ (Attempt 3/10)...
+2026-07-06 06:42:23.139 +00:00 [INF] Successfully connected to RabbitMQ.
+2026-07-06 06:42:23.143 +00:00 [INF] Application started. Press Ctrl+C to shut down.
+2026-07-06 06:42:23.144 +00:00 [INF] Hosting environment: Production
+2026-07-06 06:42:23.145 +00:00 [INF] Content root path: /app
+2026-07-06 06:42:23.169 +00:00 [INF] Going to Process Queue
+2026-07-06 06:43:29.033 +00:00 [INF] Application is shutting down...
+c87-865661670c69} may be persisted to storage in unencrypted form.
+2026-07-06 06:42:13.236 +00:00 [INF] Writing data to file '/root/.aspnet/DataProtection-Keys/key-fabb257f-a425-4ee4-ac87-865661670c69.xml'.
+2026-07-06 06:42:13.393 +00:00 [INF] Now listening on: http://[::]:8080
+2026-07-06 06:42:13.397 +00:00 [INF] Application started. Press Ctrl+C to shut down.
+2026-07-06 06:42:13.398 +00:00 [INF] Hosting environment: Production
+2026-07-06 06:42:13.400 +00:00 [INF] Content root path: /app
+2026-07-06 06:42:29.917 +00:00 [INF] Request starting HTTP/1.1 POST http://localhost:5073/api/Auth/login - application/json 52
+2026-07-06 06:42:29.951 +00:00 [INF] CORS policy execution failed.
+2026-07-06 06:42:29.952 +00:00 [INF] Request origin http://localhost:5073 does not have permission to access the resource.
+2026-07-06 06:42:29.957 +00:00 [WRN] Failed to determine the https port for redirect.
+2026-07-06 06:42:30.004 +00:00 [INF] Executing endpoint 'TraineeManagement.Api.Controllers.AuthController.Login (TraineeManagement.Api)'
+2026-07-06 06:42:30.042 +00:00 [INF] Route matched with {action = "Login", controller = "Auth"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Login(TraineeManagement.Data.DTOs.LoginRequestDTO) on controller TraineeManagement.Api.Controllers.AuthController (TraineeManagement.Api).
+2026-07-06 06:42:31.602 +00:00 [INF] Executed DbCommand (23ms) [Parameters=[@username='?' (Size = 4000)], CommandType='"Text"', CommandTimeout='30']
+SELECT `u`.`Id`, `u`.`CreatedDate`, `u`.`Email`, `u`.`PasswordHash`, `u`.`Role`, `u`.`UpdatedDate`, `u`.`Username`
+FROM `Users` AS `u`
+WHERE `u`.`Username` = @username
+LIMIT 1
+2026-07-06 06:42:32.209 +00:00 [INF] Successful login for username: admin
+2026-07-06 06:42:32.224 +00:00 [INF] Executing OkObjectResult, writing value of type 'TraineeManagement.Data.DTOs.LoginResponseDTO'.
+2026-07-06 06:42:32.267 +00:00 [INF] Executed action TraineeManagement.Api.Controllers.AuthController.Login (TraineeManagement.Api) in 2219.7714ms
+2026-07-06 06:42:32.272 +00:00 [INF] Executed endpoint 'TraineeManagement.Api.Controllers.AuthController.Login (TraineeManagement.Api)'
+2026-07-06 06:42:32.295 +00:00 [INF] Request finished HTTP/1.1 POST http://localhost:5073/api/Auth/login - 200 null application/json; charset=utf-8 2378.7605ms
+2026-07-06 06:43:29.027 +00:00 [INF] Application is shutting down...
+2026-07-06 06:44:59.081 +00:00 [INF] Attempting to connect to RabbitMQ (Attempt 1/10)...
+2026-07-06 06:44:59.251 +00:00 [WRN] Failed to connect to RabbitMQ on attempt 1.
+2026-07-06 06:44:59.278 +00:00 [INF] Waiting 5 seconds before retrying...
+2026-07-06 06:45:04.284 +00:00 [INF] Attempting to connect to RabbitMQ (Attempt 2/10)...
+2026-07-06 06:45:04.348 +00:00 [INF] Successfully connected to RabbitMQ.
+2026-07-06 06:45:04.352 +00:00 [INF] Application started. Press Ctrl+C to shut down.
+2026-07-06 06:45:04.354 +00:00 [INF] Hosting environment: Production
+2026-07-06 06:45:04.356 +00:00 [INF] Content root path: /app
+2026-07-06 06:45:04.375 +00:00 [INF] Going to Process Queue
+2026-07-06 06:46:02.286 +00:00 [INF] Application is shutting down...
+1f-ffe3-4ccb-86b6-c99f6ae92176} with creation date 2026-07-06 06:44:59Z, activation date 2026-07-06 06:44:59Z, and expiration date 2026-10-04 06:44:59Z.
+2026-07-06 06:44:59.444 +00:00 [WRN] No XML encryptor configured. Key {4a5ee21f-ffe3-4ccb-86b6-c99f6ae92176} may be persisted to storage in unencrypted form.
+2026-07-06 06:44:59.454 +00:00 [INF] Writing data to file '/root/.aspnet/DataProtection-Keys/key-4a5ee21f-ffe3-4ccb-86b6-c99f6ae92176.xml'.
+2026-07-06 06:44:59.584 +00:00 [INF] Now listening on: http://[::]:8080
+2026-07-06 06:44:59.590 +00:00 [INF] Application started. Press Ctrl+C to shut down.
+2026-07-06 06:44:59.592 +00:00 [INF] Hosting environment: Production
+2026-07-06 06:44:59.593 +00:00 [INF] Content root path: /app
+2026-07-06 06:45:12.876 +00:00 [INF] Request starting HTTP/1.1 POST http://localhost:5073/api/Auth/login - application/json 52
+2026-07-06 06:45:12.912 +00:00 [INF] CORS policy execution failed.
+2026-07-06 06:45:12.913 +00:00 [INF] Request origin http://localhost:5073 does not have permission to access the resource.
+2026-07-06 06:45:12.916 +00:00 [WRN] Failed to determine the https port for redirect.
+2026-07-06 06:45:12.965 +00:00 [INF] Executing endpoint 'TraineeManagement.Api.Controllers.AuthController.Login (TraineeManagement.Api)'
+2026-07-06 06:45:12.990 +00:00 [INF] Route matched with {action = "Login", controller = "Auth"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Login(TraineeManagement.Data.DTOs.LoginRequestDTO) on controller TraineeManagement.Api.Controllers.AuthController (TraineeManagement.Api).
+2026-07-06 06:45:14.339 +00:00 [INF] Executed DbCommand (19ms) [Parameters=[@username='?' (Size = 4000)], CommandType='"Text"', CommandTimeout='30']
+SELECT `u`.`Id`, `u`.`CreatedDate`, `u`.`Email`, `u`.`PasswordHash`, `u`.`Role`, `u`.`UpdatedDate`, `u`.`Username`
+FROM `Users` AS `u`
+WHERE `u`.`Username` = @username
+LIMIT 1
+2026-07-06 06:45:14.843 +00:00 [INF] Successful login for username: admin
+2026-07-06 06:45:14.851 +00:00 [INF] Executing OkObjectResult, writing value of type 'TraineeManagement.Data.DTOs.LoginResponseDTO'.
+2026-07-06 06:45:14.877 +00:00 [INF] Executed action TraineeManagement.Api.Controllers.AuthController.Login (TraineeManagement.Api) in 1882.1353ms
+2026-07-06 06:45:14.879 +00:00 [INF] Executed endpoint 'TraineeManagement.Api.Controllers.AuthController.Login (TraineeManagement.Api)'
+2026-07-06 06:45:14.888 +00:00 [INF] Request finished HTTP/1.1 POST http://localhost:5073/api/Auth/login - 200 null application/json; charset=utf-8 2012.8724ms
+2026-07-06 06:46:02.301 +00:00 [INF] Application is shutting down...
+2026-07-06 06:47:46.022 +00:00 [INF] Attempting to connect to RabbitMQ (Attempt 1/10)...
+2026-07-06 06:47:46.241 +00:00 [WRN] Failed to connect to RabbitMQ on attempt 1.
+2026-07-06 06:47:46.279 +00:00 [INF] Waiting 5 seconds before retrying...
+2026-07-06 06:47:51.286 +00:00 [INF] Attempting to connect to RabbitMQ (Attempt 2/10)...
+2026-07-06 06:47:51.349 +00:00 [INF] Successfully connected to RabbitMQ.
+2026-07-06 06:47:51.353 +00:00 [INF] Application started. Press Ctrl+C to shut down.
+2026-07-06 06:47:51.354 +00:00 [INF] Hosting environment: Production
+2026-07-06 06:47:51.355 +00:00 [INF] Content root path: /app
+2026-07-06 06:47:51.375 +00:00 [INF] Going to Process Queue
+2026-07-06 06:53:50.067 +00:00 [INF] Application is shutting down...
+d4-697a-4068-98c1-520be9092c20} with creation date 2026-07-06 06:47:46Z, activation date 2026-07-06 06:47:46Z, and expiration date 2026-10-04 06:47:46Z.
+2026-07-06 06:47:46.543 +00:00 [WRN] No XML encryptor configured. Key {638fd2d4-697a-4068-98c1-520be9092c20} may be persisted to storage in unencrypted form.
+2026-07-06 06:47:46.554 +00:00 [INF] Writing data to file '/root/.aspnet/DataProtection-Keys/key-638fd2d4-697a-4068-98c1-520be9092c20.xml'.
+2026-07-06 06:47:46.703 +00:00 [INF] Now listening on: http://[::]:8080
+2026-07-06 06:47:46.707 +00:00 [INF] Application started. Press Ctrl+C to shut down.
+2026-07-06 06:47:46.708 +00:00 [INF] Hosting environment: Production
+2026-07-06 06:47:46.709 +00:00 [INF] Content root path: /app
+2026-07-06 06:47:56.774 +00:00 [INF] Request starting HTTP/1.1 POST http://localhost:5073/api/Auth/login - application/json 52
+2026-07-06 06:47:56.808 +00:00 [INF] CORS policy execution failed.
+2026-07-06 06:47:56.809 +00:00 [INF] Request origin http://localhost:5073 does not have permission to access the resource.
+2026-07-06 06:47:56.812 +00:00 [WRN] Failed to determine the https port for redirect.
+2026-07-06 06:47:56.865 +00:00 [INF] Executing endpoint 'TraineeManagement.Api.Controllers.AuthController.Login (TraineeManagement.Api)'
+2026-07-06 06:47:56.889 +00:00 [INF] Route matched with {action = "Login", controller = "Auth"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Login(TraineeManagement.Data.DTOs.LoginRequestDTO) on controller TraineeManagement.Api.Controllers.AuthController (TraineeManagement.Api).
+2026-07-06 06:47:58.408 +00:00 [INF] Executed DbCommand (32ms) [Parameters=[@username='?' (Size = 4000)], CommandType='"Text"', CommandTimeout='30']
+SELECT `u`.`Id`, `u`.`CreatedDate`, `u`.`Email`, `u`.`PasswordHash`, `u`.`Role`, `u`.`UpdatedDate`, `u`.`Username`
+FROM `Users` AS `u`
+WHERE `u`.`Username` = @username
+LIMIT 1
+2026-07-06 06:47:59.064 +00:00 [INF] Successful login for username: admin
+2026-07-06 06:47:59.074 +00:00 [INF] Executing OkObjectResult, writing value of type 'TraineeManagement.Data.DTOs.LoginResponseDTO'.
+2026-07-06 06:47:59.106 +00:00 [INF] Executed action TraineeManagement.Api.Controllers.AuthController.Login (TraineeManagement.Api) in 2211.1038ms
+2026-07-06 06:47:59.109 +00:00 [INF] Executed endpoint 'TraineeManagement.Api.Controllers.AuthController.Login (TraineeManagement.Api)'
+2026-07-06 06:47:59.125 +00:00 [INF] Request finished HTTP/1.1 POST http://localhost:5073/api/Auth/login - 200 null application/json; charset=utf-8 2351.6712ms
+2026-07-06 06:53:50.067 +00:00 [INF] Application is shutting down...
+2026-07-06 06:55:17.723 +00:00 [INF] Attempting to connect to RabbitMQ (Attempt 1/10)...
+2026-07-06 06:55:17.898 +00:00 [WRN] Failed to connect to RabbitMQ on attempt 1.
+2026-07-06 06:55:17.928 +00:00 [INF] Waiting 5 seconds before retrying...
+2026-07-06 06:55:22.933 +00:00 [INF] Attempting to connect to RabbitMQ (Attempt 2/10)...
+2026-07-06 06:55:22.998 +00:00 [INF] Successfully connected to RabbitMQ.
+2026-07-06 06:55:23.004 +00:00 [INF] Application started. Press Ctrl+C to shut down.
+2026-07-06 06:55:23.006 +00:00 [INF] Hosting environment: Production
+2026-07-06 06:55:23.007 +00:00 [INF] Content root path: /app
+2026-07-06 06:55:23.026 +00:00 [INF] Going to Process Queue
+2026-07-06 06:56:17.812 +00:00 [INF] Executed DbCommand (10ms) [Parameters=[@request_MessageId='?' (Size = 4000)], CommandType='"Text"', CommandTimeout='30']
+SELECT `p`.`Id`, `p`.`Attempts`, `p`.`CompletedAt`, `p`.`CorrelationId`, `p`.`ErrorSummary`, `p`.`MessageId`, `p`.`StartedAt`, `p`.`Status`, `p`.`SubmissionId`
+FROM `ProcessingJobs` AS `p`
+WHERE `p`.`MessageId` = @request_MessageId
+LIMIT 1
+2026-07-06 06:56:17.978 +00:00 [INF] Executed DbCommand (29ms) [Parameters=[@p3='?' (DbType = Int32), @p0='?' (DbType = Int32), @p1='?' (DbType = DateTime), @p2='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+UPDATE `ProcessingJobs` SET `Attempts` = @p0, `StartedAt` = @p1, `Status` = @p2
+WHERE `Id` = @p3;
+SELECT ROW_COUNT();
+2026-07-06 06:56:17.987 +00:00 [INF] Processing Job 50. Attempt 1
+2026-07-06 06:56:18.007 +00:00 [INF] Start processing HTTP request GET http://training_directory_api:8080/api/directory/trainees/1/profile
+2026-07-06 06:56:18.017 +00:00 [INF] Sending HTTP request GET http://training_directory_api:8080/api/directory/trainees/1/profile
+2026-07-06 06:56:18.216 +00:00 [INF] Received HTTP response headers after 194.7633ms - 200
+2026-07-06 06:56:18.220 +00:00 [INF] End processing HTTP request after 217.8414ms - 200
+2026-07-06 06:56:18.230 +00:00 [INF] Successfully retrieved profile for processing: SubmissionProcessor.Worker.Models.DirectoryProfile
+2026-07-06 06:56:18.265 +00:00 [INF] Executed DbCommand (2ms) [Parameters=[@p='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT `s`.`Id`, `s`.`CheckSum`, `s`.`ContentType`, `s`.`OriginalFileName`, `s`.`SizeBytes`, `s`.`StorageFileName`, `s`.`SubmissionId`, `s`.`UploadedByUserId`, `s`.`UploadedDate`
+FROM `SubmissionFiles` AS `s`
+WHERE `s`.`Id` = @p
+LIMIT 1
+2026-07-06 06:56:18.284 +00:00 [INF] Checksum matched: Process File.
+2026-07-06 06:56:18.299 +00:00 [INF] Executed DbCommand (2ms) [Parameters=[@p='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT `s`.`Id`, `s`.`Notes`, `s`.`Status`, `s`.`SubmissionUrl`, `s`.`SubmittedDate`, `s`.`TaskAssignmentId`
+FROM `Submissions` AS `s`
+WHERE `s`.`Id` = @p
+LIMIT 1
+2026-07-06 06:56:18.421 +00:00 [INF] Executed DbCommand (20ms) [Parameters=[@p='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT `t`.`Id`, `t`.`AssignedDate`, `t`.`DueDate`, `t`.`LearningTaskId`, `t`.`MentorId`, `t`.`Remarks`, `t`.`Status`, `t`.`TraineeId`
+FROM `TaskAssignments` AS `t`
+WHERE `t`.`Id` = @p
+LIMIT 1
+2026-07-06 06:56:18.533 +00:00 [INF] Executed DbCommand (32ms) [Parameters=[@p2='?' (DbType = Int32), @p0='?' (DbType = DateTime), @p1='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+UPDATE `ProcessingJobs` SET `CompletedAt` = @p0, `Status` = @p1
+WHERE `Id` = @p2;
+SELECT ROW_COUNT();
+2026-07-06 06:56:18.535 +00:00 [INF] Job 50 successfully completed with Checksum: 2113506faf13304ae723fcee12ba9546fbf00a8686139a5f54891299bf3719e3
+2026-07-06 06:59:27.431 +00:00 [INF] Application is shutting down...
