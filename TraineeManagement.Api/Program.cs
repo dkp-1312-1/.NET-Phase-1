@@ -78,11 +78,11 @@ namespace TraineeManagement.Api
                     path: StringConstants.LogFilePath,
                     rollingInterval: RollingInterval.Day,
                     outputTemplate: StringConstants.LogOutputTemplate)
+                    .ReadFrom.Configuration(builder.Configuration)
                 .CreateLogger();
 
 
-            builder.Host.UseSerilog((context, services, configuration) => configuration
-    .ReadFrom.Configuration(context.Configuration));
+           builder.Logging.AddSerilog(Log.Logger);
 
             builder.Services.AddOpenApi("v1", options =>
             {
