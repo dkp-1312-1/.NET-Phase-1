@@ -43,7 +43,7 @@ namespace TraineeManagement.Api.Services
             Trainee? trainee = await _traineeRepository.GetByIdAsync(Id);
             if(trainee != null)
                 await _cacheService.SetAsync(cacheKey, MapToResponse(trainee));
-            return trainee != null ? MapToResponse(trainee) : null;
+            return trainee != null ? MapToResponse(trainee) : null!;
         }
 
         public async Task<TraineeResponseDTO> Create(CreateTraineeRequestDTO trainee)

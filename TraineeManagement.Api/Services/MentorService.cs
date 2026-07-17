@@ -31,7 +31,7 @@ namespace TraineeManagement.Api.Services
         public async Task<MentorResponseDTO> GetById(int Id)
         {
             Mentor mentor = await _mentorRepository.GetByIdAsync(Id);
-            return mentor != null ? MapToResponse(mentor) : null;
+            return mentor != null ? MapToResponse(mentor) : null!;
         }
 
         public async Task<MentorResponseDTO> Create(CreateMentorRequestDTO mentor)
@@ -46,7 +46,7 @@ namespace TraineeManagement.Api.Services
         {
             Mentor updatedMentor = await _mentorRepository.GetByIdAsync(Id);
             if (updatedMentor == null)
-                return null;
+                return null!;
 
             updatedMentor.FirstName = mentor.FirstName;
             updatedMentor.LastName = mentor.LastName;

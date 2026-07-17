@@ -44,7 +44,7 @@ namespace TraineeManagement.Api.Services
             TaskAssignment? assignment = await _taskAssignmentRepository.GetByIdAsync(id);
             if(assignment!=null)
                 await _cacheService.SetAsync(cacheKey, MapToResponse(assignment));
-            return assignment != null ? MapToResponse(assignment) : null;
+            return assignment != null ? MapToResponse(assignment) : null!;
         }
 
         public async Task<TaskAssignmentResponseDTO> Create(CreateTaskAssignmentRequestDTO request)

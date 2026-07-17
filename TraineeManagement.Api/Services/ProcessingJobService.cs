@@ -13,7 +13,7 @@ namespace TraineeManagement.Api.Services
         public async Task<ProcessingJobResponseDTO> GetById(string id)
         {
             ProcessingJob processingJob = await _processingJobRepository.GetByIdAsync(id);
-            return processingJob != null ? MapToResponse(processingJob) : null;
+            return processingJob != null ? MapToResponse(processingJob) : null!;
         }
         private ProcessingJobResponseDTO MapToResponse(ProcessingJob job)
         {

@@ -31,7 +31,7 @@ namespace TraineeManagement.Api.Services
         public async Task<ReviewResponseDTO> GetById(int id)
         {
             Review review = await _reviewRepository.GetByIdAsync(id);
-            return review != null ? MapToResponse(review) : null;
+            return review != null ? MapToResponse(review) : null!;
         }
 
         public async Task<ReviewResponseDTO> Create(CreateReviewRequestDTO request)
