@@ -50,5 +50,10 @@
         "Name": ""
       }
     ]
+  },
+  "AdminData":{
+    "userName":"",
+    "email":"",
+    "password":""
   }
 }
