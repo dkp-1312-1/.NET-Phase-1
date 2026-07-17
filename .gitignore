@@ -1,5 +1,7 @@
-**/*.env/
+**/.env/
 **/bin/
 **/obj/
 **/logs/
 **/TraineeSubmissionFile/
+./SubmissionProcessor.Worker/.env
+./TraineeManagement.Api/.env
