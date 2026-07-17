@@ -11,6 +11,9 @@ namespace TraineeManagement.Data.Data
 {
     public class AppDbContextFactory : IDesignTimeDbContextFactory<AppDbContext>
     {
+        private static string adminUserName = string.Empty;
+        private static string adminEmail = string.Empty;
+        private static string adminPassword = string.Empty;
         public AppDbContext CreateDbContext(string[] args)
         {
             // Load configuration from appsettings.json
@@ -23,6 +26,10 @@ namespace TraineeManagement.Data.Data
         ? "DefaultConnection"
         : "LocalConnection");
 
+            IConfigurationSection section = configuration.GetSection("AdminData");
+            adminUserName = section["userName"];
+            adminEmail = section["email"];
+            adminPassword = section["password"];
             DbContextOptionsBuilder<AppDbContext> optionsBuilder = new DbContextOptionsBuilder<AppDbContext>();
             optionsBuilder.UseMySQL(connectionString);
 
@@ -65,9 +72,9 @@ namespace TraineeManagement.Data.Data
                new User()
                {
                    Id = 1,
-                   Username = "admin",
-                   Email = "admin@gmail.com",
-                   PasswordHash = BCrypt.Net.BCrypt.EnhancedHashPassword("Admin@123", workFactor: 12),
+                   Username = adminUserName,
+                   Email = adminEmail,
+                   PasswordHash = BCrypt.Net.BCrypt.EnhancedHashPassword(adminPassword, workFactor: 12),
                    Role = RoleType.Admin,
                    CreatedDate = DateTime.UtcNow,
                    UpdatedDate = DateTime.UtcNow
@@ -128,7 +135,7 @@ namespace TraineeManagement.Data.Data
         {
             modelBuilder.Entity<ProcessingJob>()
             .HasOne(p => p.Submission)
-                .WithMany(ps =>ps.ProcessingJobs)
+                .WithMany(ps => ps.ProcessingJobs)
                 .HasForeignKey(pj => pj.SubmissionId)
                 .OnDelete(DeleteBehavior.Cascade);
         }
