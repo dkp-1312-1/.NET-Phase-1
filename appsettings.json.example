@@ -1,0 +1,54 @@
+{
+  "ConnectionStrings": {
+    "DefaultConnection": "",
+    "LocalConnection": "",
+    "RedisConnection": ""
+  },
+  "RabbitMQ": {
+    "HostName": "",
+    "Port": ,
+    "UserName": "",
+    "Password": "",
+    "VirtualHost": ""
+  },
+  "AllowedHosts": "",
+  "Jwt": {
+    "Key": "",
+    "Issuer": "",
+    "Audience": "",
+    "ExpiryMinutes": 
+  },
+  "FileStorage": {
+    "RootPath": "",
+    "FileSizeLimit": ,
+    "AllowedExtensions": [
+      "",
+      "",
+      ""
+    ]
+  },
+  "Redis": {
+    "CacheTimeLimit": 
+  },
+  "Serilog": {
+    "MinimumLevel": {
+      "Default": "",
+      "Override": {
+        "Microsoft": "",
+        "Microsoft.Hosting.Lifetime": "",
+        "Microsoft.AspNetCore.Hosting": "",
+        "Microsoft.EntityFrameworkCore.Database": "",
+        "System.Net.Http.HttpClient": "",
+        "Microsoft.AspNetCore.Hosting.Diagnostics": "",
+        "Microsoft.AspNetCore.Routing.EndpointMiddleware": "",
+        "System": "",
+        "MySql": ""
+      }
+    },
+    "WriteTo": [
+      {
+        "Name": ""
+      }
+    ]
+  }
+}

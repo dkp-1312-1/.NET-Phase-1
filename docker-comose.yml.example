@@ -1,0 +1,105 @@
+services:
+  redis:
+    image: 
+    container_name: 
+    restart: 
+    healthcheck:
+      test: 
+      interval: 
+      timeout: 
+      retries: 
+    ports:
+      - ""
+    command:
+    volumes:
+      - 
+
+  mysql:
+    image:
+    container_name: 
+    restart: 
+    healthcheck:
+      test: 
+      interval: 
+      timeout: 
+      retries: 
+    environment:
+      MYSQL_ROOT_PASSWORD: ""
+      MYSQL_DATABASE: ""
+    ports:
+      - 
+    volumes:
+      - 
+  
+  rabbitmq:
+    image: 
+    container_name: 
+    restart: 
+    healthcheck:
+      test:
+      interval: 
+      timeout:
+      retries: 
+    ports:
+      - 
+      - 
+    environment:
+      RABBITMQ_DEFAULT_USER: 
+      RABBITMQ_DEFAULT_PASS: 
+      RABBITMQ_DEFAULT_VHOST: 
+    volumes:
+      - 
+
+  # --- .NET SERVICES ---
+  training_directory_api:
+    build:
+      context: .
+      dockerfile:
+    restart: 
+    ports:
+      - 
+    env_file:
+      -
+
+  trainee_management_api:
+    build:
+      context: .
+      dockerfile: 
+    restart: 
+    ports:
+      - 
+    volumes:
+      -
+      - 
+    env_file:
+      - 
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+
+  submission_worker:
+    build:
+      context: .
+      dockerfile:
+    restart: 
+    volumes:
+      - 
+      - 
+    env_file:
+      - 
+
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+volumes:
+  redis_data:
+  mysql_data:
+  dotnetrabbitmq:
+  shared_uploads:
