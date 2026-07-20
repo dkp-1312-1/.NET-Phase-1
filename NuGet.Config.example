@@ -8,9 +8,6 @@
     <add key="nuget.org" value="true" />
   </disabledPackageSources>
   <packageSourceCredentials>
-    <zeuslearning_x002F_training-nuget-store>
-        <add key="Username" value="" />
-        <add key="ClearTextPassword" value="" />
-      </zeuslearning_x002F_training-nuget-store>
+    // Use Required nuget package which is accessible
   </packageSourceCredentials>
 </configuration>

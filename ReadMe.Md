@@ -195,12 +195,12 @@ POST /api/auth/login
 }
 >Response:
 {
- "token": "jwt-token-value",
- "expiresIn": 3600,
+ "token": "",
+ "expiresIn": ,
  "user": {
- "id": 1,
- "username": "admin",
- "role": "Admin"
+ "id": ,
+ "username": "",
+ "role": ""
  }
 }
 
@@ -252,6 +252,6 @@ GET /api/reviews/{id}
 -builder.Logging.ClearProviders();builder.Logging.AddConsole(); Added This command to Enable it to work BeginScope
 -add "/vhostname" in rabiitmq Api name to add its virtualHostName 
 -configure redis in Worker YML File
--Port and HostName Differ in docker-conpose.yml and appSettting.json
+-Port and HostName Differ in docker-compose.yml and appSettting.json
 -give different name for storage Directory in appSetting.js and include same in docker-compose.yml file.
 -Configure connectionString in yml to override it from appSetting.json in Docker Container 
