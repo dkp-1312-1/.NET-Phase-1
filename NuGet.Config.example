@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<configuration>
+  <packageSources>
+    <add key="nuget.org" value="https://api.nuget.org/v3/index.json" protocolVersion="3" />
+    <add key="" value="" />
+  </packageSources>
+  <disabledPackageSources>
+    <add key="nuget.org" value="true" />
+  </disabledPackageSources>
+  <packageSourceCredentials>
+    <zeuslearning_x002F_training-nuget-store>
+        <add key="Username" value="" />
+        <add key="ClearTextPassword" value="" />
+      </zeuslearning_x002F_training-nuget-store>
+  </packageSourceCredentials>
+</configuration>

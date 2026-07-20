@@ -1,6 +1,7 @@
 **/.env
 **/appsettings.json
 **/docker-compose.yml
+**/NuGet.Config 
 **/bin/
 **/obj/
 **/logs/

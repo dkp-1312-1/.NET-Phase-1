@@ -29,39 +29,64 @@ Microsoft.Extensions.Http.Resilience
 >docker compose down //To inactive Container
 
 # Configuration
->./AppSetting.json File 
+>./AppSetting.json.example File 
 {
   "ConnectionStrings": {
-    "DefaultConnection": "server=mysql;port=3306;database=trainee_management_db;user=root;password=root;",
-    "LocalConnection": "server=localhost;port=3307;database=trainee_management_db;user=root;password=root;",
-    "RedisConnection": "localhost:6379,abortConnect=false"
-  },
-  "Logging": {
-    "LogLevel": {
-      "Default": "Information",
-      "Microsoft.AspNetCore": "Warning"
-    }
+    "DefaultConnection": "",
+    "LocalConnection": "",
+    "RedisConnection": ""
   },
   "RabbitMQ": {
-    "HostName": "localhost",
-    "Port": 5672,
-    "UserName": "guest",
-    "Password": "guest",
-    "VirtualHost": "mqhost"
+    "HostName": "",
+    "Port": ,
+    "UserName": "",
+    "Password": "",
+    "VirtualHost": ""
   },
-  "AllowedHosts": "*",
+  "AllowedHosts": "",
   "Jwt": {
-    "Key": "fdjf2nfnKFifFk3FNff5ifbu7d7dyndnDdJ4KENE5DEYekEB7kEBBE8BE9kjb",
-    "Issuer": "TraineeManagementApi1",
-    "Audience": "TraineeManagement1Client",
-    "ExpiryMinutes": 60
+    "Key": "",
+    "Issuer": "",
+    "Audience": "",
+    "ExpiryMinutes": 
   },
   "FileStorage": {
-    "RootPath": "/app/uploads"
+    "RootPath": "",
+    "FileSizeLimit": ,
+    "AllowedExtensions": [
+      "",
+      "",
+      ""
+    ]
   },
   "Redis": {
-    "FileSizeLimit": 10,
-    "CacheTimeLimit": 30
+    "CacheTimeLimit": 
+  },
+  "Serilog": {
+    "MinimumLevel": {
+      "Default": "",
+      "Override": {
+        "Microsoft": "",
+        "Microsoft.Hosting.Lifetime": "",
+        "Microsoft.AspNetCore.Hosting": "",
+        "Microsoft.EntityFrameworkCore.Database": "",
+        "System.Net.Http.HttpClient": "",
+        "Microsoft.AspNetCore.Hosting.Diagnostics": "",
+        "Microsoft.AspNetCore.Routing.EndpointMiddleware": "",
+        "System": "",
+        "MySql": ""
+      }
+    },
+    "WriteTo": [
+      {
+        "Name": ""
+      }
+    ]
+  },
+  "AdminData":{
+    "userName":"",
+    "email":"",
+    "password":""
   }
 }
 
@@ -95,7 +120,7 @@ Failure Behaviour
 {  
 "ConnectionStrings":  
   {  
-    "DefaultConnection": "server=localhost;port=3306;database=trainee_management_db;user=root;password=your_password;"  
+    "DefaultConnection": ""  
   }  
 } 
 
@@ -112,8 +137,8 @@ dotnet ef migrations add InitialCreate
 dotnet ef database update 
  
 # Login credentials for testing
->user=admin
->password=Admin@123
+>user=
+>password=
 
 # JWT usage instructions
 In .env File, You can change JWT variables like Key,Issuer,Audience,ExpiryIn
@@ -165,8 +190,8 @@ POST /api/auth/login
 
 >Request:
 {
- "username": "admin",
- "password": "Admin@123"
+ "username": "",
+ "password": ""
 }
 >Response:
 {
