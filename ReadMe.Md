@@ -135,7 +135,16 @@ dotnet ef migrations add InitialCreate
 
 >Run given command in ubuntu for updating and connecting to databases. 
 dotnet ef database update 
- 
+
+# NyGet.Config Setup Steps
+
+- make NuGet.Config file in root folder and add same format as given in NuGet.Config.example file.
+
+- now whenever private fields are there,change them with the values that are given in NuGet.Config file which can be located at "\\wsl.\Ubuntu\home\user-name\.nuget\NuGet"
+
+- or simply you can copy that exact content and paste it in NuGet.Config File.
+
+
 # Login credentials for testing
 >user=
 >password=

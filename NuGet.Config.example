@@ -2,12 +2,16 @@
 <configuration>
   <packageSources>
     <add key="nuget.org" value="https://api.nuget.org/v3/index.json" protocolVersion="3" />
-    <add key="" value="" />
+    <add key="key_from_private_package" value="path_of_package" />
   </packageSources>
   <disabledPackageSources>
     <add key="nuget.org" value="true" />
   </disabledPackageSources>
   <packageSourceCredentials>
     // Use Required nuget package which is accessible
+    <private_package_name>
+    <add key="Username" value="username_from_Config"/>
+    <add key="ClearTextPassword" value="password_from_Config"/>
+    </private_package_name>
   </packageSourceCredentials>
 </configuration>
