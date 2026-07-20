@@ -1,5 +1,5 @@
 **/.env
-**/appsettings.json.example
+**/appsettings.json
 **/docker-compose.yml
 **/bin/
 **/obj/
